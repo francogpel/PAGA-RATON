@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pagá Ratón</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0E0E10;color:#F2F0EB;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:390px;padding:0 24px 80px;display:flex;flex-direction:column}
+input,button{font-family:inherit}
+input{background:#1F1F23;border:1.5px solid #2A2A2E;border-radius:10px;color:#F2F0EB;font-size:14px;padding:10px 12px;outline:none;width:100%;transition:border-color .2s}
+input:focus{border-color:#F0A843}
+input::placeholder{color:#48484D}
+.label{color:#76767A;font-size:12px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px}
+.card{background:#1F1F23;border-radius:14px;border:1px solid #2A2A2E;padding:14px 16px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;transition:background .4s,box-shadow .4s}
+.dot.paid{background:#6ECB3C;box-shadow:0 0 8px #6ECB3C}
+.dot.unpaid{background:#E85D5D}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px}
+.badge.paid{color:#6ECB3C;background:#1E3D10}
+.badge.me{color:#F0A843;background:#3A2E10}
+.badge.open{color:#F0A843;background:rgba(240,168,67,.15)}
+.badge.closed{color:#6ECB3C;background:#1E3D10}
+.btn-primary{background:#F0A843;color:#000;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:14px;cursor:pointer;width:100%;transition:opacity .2s}
+.btn-primary:disabled{opacity:.35;cursor:default}
+.btn-ghost{background:#18181B;border:1px solid #2A2A2E;border-radius:14px;padding:14px;color:#76767A;font-size:14px;cursor:pointer;width:100%}
+.btn-google{background:#fff;color:#111;border:none;border-radius:14px;padding:14px;font-weight:600;font-size:14px;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-mp{background:#009EE3;color:#fff;border:none;border-radius:14px;padding:14px 18px;font-weight:700;font-size:14px;cursor:pointer;width:100%;display:flex;align-items:center;gap:12px}
+.btn-mp:disabled{opacity:.5;cursor:default}
+.btn-small{font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #2A2A2E;background:none;color:#76767A;cursor:pointer}
+.add-btn{background:#F0A843;color:#000;border:none;border-radius:10px;padding:0 18px;font-weight:800;font-size:20px;cursor:pointer;flex-shrink:0}
+.add-btn:disabled{background:#1F1F23;color:#48484D;cursor:default}
+.dashed{border:1px dashed #2A2A2E;border-radius:12px;padding:22px;text-align:center}
+.muted{color:#48484D;font-size:12px}
+.sub{color:#76767A;font-size:13px}
+.accent{color:#F0A843}
+.green{color:#6ECB3C}
+.mp-color{color:#009EE3}
+.gap8{display:flex;flex-direction:column;gap:8px}
+.gap10{display:flex;flex-direction:column;gap:10px}
+.gap18{display:flex;flex-direction:column;gap:18px}
+.mp-connected{background:#0A1E2E;border:1px solid rgba(0,158,227,.3);border-radius:14px;padding:14px 16px}
+.pay-box{background:#0A1E2E;border-radius:16px;padding:16px;border:1px solid rgba(0,158,227,.25)}
+.paid-box{background:#1E3D10;border-radius:16px;padding:14px 16px;border:1px solid rgba(110,203,60,.3);display:flex;align-items:center;gap:12px}
+.all-paid{background:#1E3D10;border-radius:14px;padding:14px;text-align:center;border:1px solid rgba(110,203,60,.3)}
+.summary{background:#18181B;border-radius:14px;padding:14px 16px;border:1px solid #2A2A2E;display:flex;justify-content:space-between}
+.link-box{background:#18181B;border-radius:8px;padding:10px 12px;border:1px solid #2A2A2E;overflow:hidden;flex:1}
+.link-text{color:#48484D;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.copy-btn{background:#3A2E10;color:#F0A843;border:none;border-radius:7px;padding:8px 12px;font-size:11px;font-weight:600;cursor:pointer;flex-shrink:0}
+.copy-btn.done{background:#1E3D10;color:#6ECB3C}
+.divider{display:flex;align-items:center;gap:12px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:#2A2A2E}
+.divider span{color:#48484D;font-size:12px}
+.err{color:#E85D5D;font-size:13px;text-align:center;min-height:18px}
+.join-btn{background:#1F1F23;border:1px solid #2A2A2E;border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;width:100%}
+.big-btn{border-radius:16px;padding:20px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;width:100%;text-align:left;border:none}
+.room-card{background:#1F1F23;border:1px solid #2A2A2E;border-radius:16px;padding:16px;width:100%;text-align:left;cursor:pointer}
+.progress-bar{height:4px;background:#2A2A2E;border-radius:2px;overflow:hidden;margin:10px 0}
+.progress-fill{height:100%;border-radius:2px;transition:width .4s ease}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
+#modal.show{display:flex}
+.modal-box{background:#1F1F23;border-radius:20px;padding:28px 24px;width:100%;max-width:320px;border:1px solid #2A2A2E;text-align:center}
+.user-pill{display:flex;align-items:center;gap:8px;background:#1F1F23;border:1px solid #2A2A2E;border-radius:10px;padding:7px 12px;margin-top:16px;margin-bottom:16px}
+.user-pill .av{width:26px;height:26px;border-radius:50%;background:#3A2E10;display:flex;align-items:center;justify-content:center;font-size:10px;color:#F0A843;font-weight:700;flex-shrink:0}
+.menu{position:absolute;top:calc(100% + 8px);right:0;background:#1F1F23;border:1px solid #2A2A2E;border-radius:12px;padding:6px;min-width:190px;z-index:151;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-radius:8px;padding:10px 12px;font-size:14px;cursor:pointer;font-family:inherit;text-align:left}
+.hamb{background:#252529;border:1px solid #2A2A2E;border-radius:8px;width:32px;height:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;flex-shrink:0}
+.hamb span{width:14px;height:2px;background:#76767A;border-radius:1px}
+svg{overflow:visible}
+</style>
+</head>
+<body>
+
+<div id="modal">
+  <div class="modal-box">
+    <div style="font-size:32px;margin-bottom:12px">💵</div>
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#F2F0EB">Pago en efectivo</h3>
+    <p style="color:#76767A;font-size:14px;line-height:1.5;margin-bottom:24px">
+      ¿Confirmás que <strong style="color:#F2F0EB" id="modal-name"></strong> pagó su parte en efectivo?
+    </p>
+    <div style="display:flex;gap:10px">
+      <button onclick="closeModal()" class="btn-ghost" style="flex:1;padding:14px">No</button>
+      <button onclick="confirmMarkPaid()" class="btn-primary" style="flex:1;padding:14px">Sí, confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div style="display:flex;justify-content:center;align-items:center;height:100vh">
+    <p style="color:#48484D">Cargando…</p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<script>
+const LOGO = "./paga-raton-logo.jpeg";
+const S = {
+  screen:"loading", user:null, rooms:[], room:null, myId:null, shareUrl:"",
+  loadingId:null, animTotal:0, polling:null, pendingMarkId:null, mpStatus:null,
+  authReady:false, menuOpen:false, names:[], mpConnecting:false,
+};
+
+const urlParams   = new URLSearchParams(location.search);
+const roomParam   = urlParams.get("room");
+const mpConnected = urlParams.get("mp_connected");
+
+async function initFirebase(){
+  try{
+    const cfg = await fetch("/api/config").then(r=>r.json());
+    if(!cfg.apiKey){ S.authReady=true; startApp(); return; }
+    firebase.initializeApp(cfg);
+    firebase.auth().onAuthStateChanged(async user=>{
+      S.user = user;
+      if(user) await loadAdminData();
+      if(!S.authReady){ S.authReady=true; startApp(); } else render();
+    });
+  }catch{ S.authReady=true; startApp(); }
+}
+function startApp(){
+  if(roomParam){ S.screen="join"; }
+  else if(!S.user && firebase.apps?.length){ S.screen="login"; }
+  else { if(mpConnected) history.replaceState({},"","/"); S.screen="home"; }
+  render();
+}
+
+async function getToken(){ return S.user ? S.user.getIdToken() : ""; }
+async function authFetch(url,opts={}){
+  const token = await getToken();
+  return fetch(url,{...opts,headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{}),...opts.headers}});
+}
+async function signInGoogle(){
+  setAuthErr("");
+  try{ await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); await loadAdminData(); S.screen="home"; render(); }
+  catch(e){ setAuthErr(authErrMsg(e.code)); }
+}
+async function signInEmail(isSignup){
+  setAuthErr("");
+  const email=document.getElementById("inp-email")?.value.trim();
+  const pass=document.getElementById("inp-pass")?.value;
+  if(!email||!pass) return setAuthErr("Completá email y contraseña");
+  try{
+    if(isSignup) await firebase.auth().createUserWithEmailAndPassword(email,pass);
+    else         await firebase.auth().signInWithEmailAndPassword(email,pass);
+    await loadAdminData(); S.screen="home"; render();
+  }catch(e){ setAuthErr(authErrMsg(e.code)); }
+}
+function signOut(){
+  firebase.auth().signOut();
+  S.user=null;S.room=null;S.myId=null;S.rooms=[];S.mpStatus=null;S.menuOpen=false;
+  S.screen="login"; stopPolling(); render();
+}
+function authErrMsg(code){
+  const m={"auth/user-not-found":"No existe una cuenta con ese email","auth/wrong-password":"Contraseña incorrecta",
+    "auth/invalid-credential":"Email o contraseña incorrectos","auth/email-already-in-use":"Ya existe una cuenta con ese email",
+    "auth/weak-password":"La contraseña debe tener al menos 6 caracteres","auth/invalid-email":"Email inválido","auth/popup-closed-by-user":""};
+  return m[code]||"Ocurrió un error. Intentá de nuevo.";
+}
+function setAuthErr(msg){ const el=document.getElementById("auth-err"); if(el) el.textContent=msg; }
+
+async function loadAdminData(){
+  try{
+    const [roomsRes,mpRes]=await Promise.all([authFetch("/api/rooms"),authFetch("/api/mp-oauth/status")]);
+    if(roomsRes.ok) S.rooms=await roomsRes.json();
+    if(mpRes.ok)    S.mpStatus=await mpRes.json();
+  }catch{}
+}
+
+async function connectMercadoPago(){
+  try{
+    const res=await authFetch("/api/mp-oauth/url"); const data=await res.json();
+    if(data.url) window.location.href=data.url;
+    else alert(data.error||"No se pudo obtener el link de Mercado Pago");
+  }catch{ alert("Error al conectar con Mercado Pago."); }
+}
+async function disconnectMP(){ try{ await authFetch("/api/mp-oauth/disconnect",{method:"POST"}); }catch{} S.mpStatus={connected:false}; render(); }
+
+function polar(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];}
+function slicePath(cx,cy,r,ri,s,e){
+  const g=1.5;s+=g;e-=g;
+  const[x1,y1]=polar(cx,cy,r,s),[x2,y2]=polar(cx,cy,r,e);
+  const[ix1,iy1]=polar(cx,cy,ri,s),[ix2,iy2]=polar(cx,cy,ri,e);
+  const la=e-s>180?1:0;
+  return`M${ix1} ${iy1}L${x1} ${y1}A${r} ${r} 0 ${la} 1 ${x2} ${y2}L${ix2} ${iy2}A${ri} ${ri} 0 ${la} 0 ${ix1} ${iy1}Z`;
+}
+function buildWheel(participants,myId,isAdmin){
+  const cx=155,cy=155,r=132,ri=52,n=participants.length,step=360/n;
+  let svg=`<svg width="310" height="310" viewBox="0 0 310 310"><defs><filter id="gp"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  participants.forEach((p,i)=>{
+    const sa=i*step,ea=sa+step,ma=sa+step/2;
+    const[lx,ly]=polar(cx,cy,(r+ri)/2,ma);
+    const isMe=p.id===myId,busy=S.loadingId===p.id;
+    const fill=p.paid?"#6ECB3C":busy?"#888":"#E85D5D";
+    const canTap=(isMe||isAdmin)&&!p.paid&&!S.loadingId;
+    const short=p.name.length>7?p.name.slice(0,6)+"…":p.name;
+    svg+=`<g ${canTap?`onclick="doPay('${p.id}','${isAdmin}')"`:""} style="cursor:${canTap?"pointer":"default"}">`;
+    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+7,ri-5,sa,ea)}" fill="#F0A843" opacity="0.2"/>`;
+    svg+=`<path d="${slicePath(cx,cy,r,ri,sa,ea)}" fill="${fill}" ${p.paid?'filter="url(#gp)"':""} opacity="${p.paid?1:.84}" style="transition:fill .5s"/>`;
+    if(step>28)svg+=`<text x="${lx}" y="${ly-(step>50?7:0)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${step>60?12:step>40?11:9}" font-weight="600" style="pointer-events:none">${short}</text>`;
+    if(step>50)svg+=`<text x="${lx}" y="${ly+8}" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,.6)" font-size="9" style="pointer-events:none">${p.paid?"✓":busy?"…":isMe?"tocame":"—"}</text>`;
+    svg+=`</g>`;
+  });
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="#18181B"/><circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="none" stroke="#2A2A2E" stroke-width="1"/></svg>`;
+  return svg;
+}
+function mpLogo(sz,onBlue){return `<img src="${onBlue?'./mp-logo-badge.png':'./mp-logo.png'}" alt="MP" style="height:${sz}px;width:auto;display:block;flex-shrink:0"/>`;}
+
+function render(){
+  const app=document.getElementById("app");
+  if(S.screen==="login")     return app.innerHTML=renderLogin();
+  if(S.screen==="home")      return app.innerHTML=renderHome();
+  if(S.screen==="setup")     { app.innerHTML=renderSetup(); return; }
+  if(S.screen==="mis-salas") return app.innerHTML=renderMisSalas();
+  if(S.screen==="created")   return app.innerHTML=renderCreated();
+  if(S.screen==="join")      return renderJoin(app);
+  if(S.screen==="adminRoom") return app.innerHTML=renderRoom(true),tickTotal();
+  if(S.screen==="room")      return app.innerHTML=renderRoom(false),tickTotal();
+}
+function tickTotal(){
+  if(!S.room)return;
+  const amount=Math.round(S.room.total/S.room.participants.length);
+  const paidCount=S.room.participants.filter(p=>p.paid).length;
+  animateTotal(S.animTotal, paidCount*amount);
+}
+
+function renderLogin(){
+  return `
+    <div style="padding-top:60px;text-align:center;margin-bottom:36px">
+      <img src="${LOGO}" style="display:block;margin:0 auto 14px;width:88px;height:88px;border-radius:20px;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,.4)"/>
+      <h1 style="font-size:28px;font-weight:800;margin-bottom:6px;letter-spacing:.5px">BIENVENIDO</h1>
+      <p class="sub">Administrá tus salas de gastos compartidos</p>
+    </div>
+    <div class="gap10">
+      <button class="btn-google" onclick="signInGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continuar con Google
+      </button>
+      <div class="divider"><span>o ingresá con email</span></div>
+      <input id="inp-email" type="email" placeholder="Email" autocomplete="email"/>
+      <input id="inp-pass" type="password" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')signInEmail(false)"/>
+      <p class="err" id="auth-err"></p>
+      <button class="btn-primary" onclick="signInEmail(false)">Ingresar</button>
+      <button class="btn-ghost" onclick="signInEmail(true)">Crear cuenta nueva</button>
+    </div>
+    <div style="text-align:center;margin-top:32px;display:flex;flex-direction:column;gap:4px">
+      <p style="color:#48484D;font-size:11px;margin:0">© 2026 Tropel Solutions • Todos los derechos reservados.</p>
+      <p style="color:#48484D;font-size:11px;margin:0">Desarrollado por <a href="https://www.instagram.com/francogpel?igsh=MzZ4bTljam04ZHQy&utm_source=qr" target="_blank" rel="noopener" style="color:#E85D5D;text-decoration:none;font-weight:600">Francogpel</a></p>
+      <p style="margin:0"><a href="#" style="color:#48484D;font-size:11px;text-decoration:underline">Políticas de privacidad</a></p>
+    </div>`;
+}
+
+function hamburgerHTML(){
+  return `<div style="position:relative;flex-shrink:0">
+    <div class="hamb" onclick="toggleMenu(event)"><span></span><span></span><span></span></div>
+    ${S.menuOpen?`<div class="menu">
+      <button style="color:#F2F0EB" onclick="menuGo('mis-salas')">📋 Salas</button>
+      <div style="height:1px;background:#2A2A2E;margin:4px 6px"></div>
+      <button style="color:#F2F0EB" onclick="menuGo('home')">🏠 Inicio</button>
+      <div style="height:1px;background:#2A2A2E;margin:4px 6px"></div>
+      <button style="color:#E85D5D" onclick="menuLogout()">🚪 Salir de la sesión</button>
+    </div>`:""}
+  </div>`;
+}
+function toggleMenu(e){ e.stopPropagation(); S.menuOpen=!S.menuOpen; render(); }
+function menuGo(screen){ S.menuOpen=false; stopPolling(); S.screen=screen; render(); }
+function menuLogout(){ S.menuOpen=false; signOut(); }
+
+function userPillHTML(withMenu){
+  if(!S.user) return "";
+  const name=S.user.displayName||S.user.email||"Admin";
+  const ini=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  return `<div class="user-pill">
+    <div class="av">${ini}</div>
+    <span class="sub" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
+    ${withMenu?hamburgerHTML():`<button onclick="signOut()" style="background:none;border:none;color:#48484D;font-size:12px;cursor:pointer">Salir</button>`}
+  </div>`;
+}
+
+function renderHome(){
+  const hasRooms=S.rooms.length>0;
+  const openCount=S.rooms.filter(r=>r.participants.some(p=>!p.paid)).length;
+  const closedCount=S.rooms.filter(r=>r.participants.every(p=>p.paid)).length;
+  return `
+    ${userPillHTML(false)}
+    <div style="text-align:center;margin-top:24px;margin-bottom:36px">
+      <img src="${LOGO}" style="display:block;margin:0 auto 12px;width:60px;height:60px;border-radius:15px;object-fit:cover"/>
+      <h1 style="font-size:22px;font-weight:700;margin-bottom:6px">¿Qué querés hacer?</h1>
+      <p class="sub">Creá una sala nueva o revisá las que ya tenés</p>
+    </div>
+    <div class="gap10" style="gap:12px">
+      <button class="big-btn" style="background:#F0A843" onclick="S.screen='setup';render()">
+        <div style="width:40px;height:40px;border-radius:11px;background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">➕</div>
+        <div style="flex:1"><p style="color:#000;font-size:15px;font-weight:700;margin:0 0 2px">Crear sala</p><p style="color:rgba(0,0,0,.6);font-size:12px;margin:0">Armá un nuevo gasto para dividir</p></div>
+        <span style="color:rgba(0,0,0,.5);font-size:18px">→</span>
+      </button>
+      <button class="big-btn" style="background:${hasRooms?'#1F1F23':'#252529'};border:1px solid #2A2A2E;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
+        <div style="width:40px;height:40px;border-radius:11px;background:#18181B;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
+        <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px">Ver salas</p><p class="sub" style="font-size:12px;margin:0">
+          ${hasRooms?`${openCount>0?`<span class="accent">${openCount} abierta${openCount!==1?"s":""}</span>`:""}${openCount>0&&closedCount>0?" · ":""}${closedCount>0?`<span class="green">${closedCount} cerrada${closedCount!==1?"s":""}</span>`:""}`:"Todavía no creaste ninguna sala"}
+        </p></div>
+        ${hasRooms?`<span style="color:#48484D;font-size:18px">→</span>`:""}
+      </button>
+    </div>`;
+}
+
+function renderSetup(){
+  const connected=S.mpStatus?.connected, nickname=S.mpStatus?.nickname||"";
+  setTimeout(()=>{
+    const t=document.getElementById("inp-title"), to=document.getElementById("inp-total"), n=document.getElementById("inp-name");
+    if(t)t.oninput=updateSetupBtn; if(to)to.oninput=updateSetupBtn;
+    if(n){n.oninput=updateAddBtn;n.onkeydown=e=>{if(e.key==="Enter")addName();}}
+  },0);
+  return `
+    ${userPillHTML(false)}
+    <button onclick="S.screen='home';render()" style="background:none;border:1px solid #2A2A2E;border-radius:8px;color:#76767A;font-size:12px;padding:6px 12px;cursor:pointer;margin-bottom:18px;align-self:flex-start">← Volver</button>
+    <div style="margin-bottom:20px">
+      <p class="label">Nuevo gasto compartido</p>
+      <h1 style="font-size:24px;font-weight:700">Configurá la sala</h1>
+    </div>
+    <div class="gap18">
+      <div>
+        <span class="label">Tu cuenta de Mercado Pago</span>
+        ${connected?`
+        <div class="mp-connected">
+          <div class="row"><div style="display:flex;align-items:center;gap:10px">${mpLogo(22)}
+            <div><p class="mp-color" style="font-size:12px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.5px">Mercado Pago conectado</p><p class="sub" style="font-size:13px;margin:0">${nickname}</p></div></div>
+            <button onclick="disconnectMP()" class="btn-small">Desconectar</button></div>
+          <p style="color:rgba(0,158,227,.7);font-size:11px;margin-top:10px">✓ Los pagos se acreditarán directamente en tu cuenta</p>
+        </div>`:`
+        <button class="btn-mp" onclick="connectMercadoPago()">
+          ${mpLogo(22,true)}
+          <div style="text-align:left;flex:1"><p style="color:#fff;font-size:14px;font-weight:700;margin:0 0 2px">Conectar con Mercado Pago</p><p style="color:rgba(255,255,255,.65);font-size:12px;margin:0">Los pagos se acreditan directo en tu cuenta</p></div>
+          <span style="color:rgba(255,255,255,.7);font-size:18px">→</span>
+        </button>
+        <p class="muted" style="margin-top:8px;text-align:center">Necesitás conectar tu cuenta para recibir los pagos</p>`}
+      </div>
+      <div style="height:1px;background:#2A2A2E"></div>
+      <div><span class="label">¿Qué están dividiendo?</span><input id="inp-title" placeholder="La cena, El asado, El viaje…"/></div>
+      <div><span class="label">Total a dividir ($)</span><input id="inp-total" type="number" placeholder="60000"/><p id="amount-hint" class="muted" style="margin-top:6px"></p></div>
+      <div>
+        <span class="label">Participantes</span>
+        <div class="row" style="gap:8px;margin-bottom:10px">
+          <input id="inp-name" placeholder="Nombre del participante" style="flex:1"/>
+          <button class="add-btn" onclick="addName()" id="btn-add" disabled>+</button>
+        </div>
+        <div id="names-list" class="dashed"><p class="muted">Agregá al menos 2 participantes</p></div>
+      </div>
+      <button class="btn-primary" onclick="createRoom()" id="btn-create" disabled>Completá todos los campos</button>
+    </div>`;
+}
+function updateAddBtn(){const v=document.getElementById("inp-name")?.value.trim();const b=document.getElementById("btn-add");if(b){b.disabled=!v;b.style.background=v?"#F0A843":"#1F1F23";b.style.color=v?"#000":"#48484D";}}
+function updateSetupBtn(){
+  const t=document.getElementById("inp-title")?.value.trim();
+  const tot=parseInt(document.getElementById("inp-total")?.value||"0",10);
+  const n=S.names.length, mp=S.mpStatus?.connected, ok=!!t&&tot>0&&n>=2&&mp;
+  const b=document.getElementById("btn-create");
+  if(b){b.disabled=!ok;b.textContent=!mp?"Conectá tu Mercado Pago primero":!t||!tot?"Completá todos los campos":n<2?"Agregá al menos 2 participantes":`Crear sala con ${n} persona${n!==1?"s":""} →`;}
+  const hint=document.getElementById("amount-hint");
+  if(hint)hint.textContent=n>=2&&tot>0?`$${Math.round(tot/n).toLocaleString("es-AR")} por persona`:"";
+}
+function addName(){const inp=document.getElementById("inp-name");const n=inp.value.trim();if(!n||S.names.includes(n))return;S.names.push(n);inp.value="";inp.focus();updateAddBtn();renderNamesList();updateSetupBtn();}
+function removeName(name){S.names=S.names.filter(x=>x!==name);renderNamesList();updateSetupBtn();}
+function renderNamesList(){
+  const el=document.getElementById("names-list");if(!el)return;
+  if(!S.names.length){el.innerHTML=`<p class="muted">Agregá al menos 2 participantes</p>`;el.className="dashed";return;}
+  el.className="gap8";
+  el.innerHTML=S.names.map((n,i)=>`<div class="card row"><div class="row" style="gap:10px"><span class="muted">${i+1}</span><span>${n}</span></div><button onclick="removeName('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#48484D;cursor:pointer;font-size:18px;padding:0 4px">×</button></div>`).join("");
+}
+async function createRoom(){
+  const title=document.getElementById("inp-title")?.value.trim();
+  const total=parseInt(document.getElementById("inp-total")?.value,10);
+  if(!title||!total||S.names.length<2)return;
+  const b=document.getElementById("btn-create");b.disabled=true;b.textContent="Creando sala…";
+  try{
+    const res=await authFetch("/api/rooms",{method:"POST",body:JSON.stringify({title,total,participants:S.names})});
+    if(res.status===401){alert("Sesión expirada. Volvé a ingresar.");S.screen="login";render();return;}
+    const data=await res.json();
+    S.room=data;S.shareUrl=data.shareUrl||`${location.origin}/?room=${data.id}`;
+    S.rooms=[data,...S.rooms];S.names=[];
+    S.screen="created";render();
+  }catch{alert("Error al crear la sala.");b.disabled=false;updateSetupBtn();}
+}
+
+function renderMisSalas(){
+  const openRooms=S.rooms.filter(r=>r.participants.some(p=>!p.paid));
+  const closedRooms=S.rooms.filter(r=>r.participants.every(p=>p.paid));
+  function card(r){
+    const paidCount=r.participants.filter(p=>p.paid).length,total=r.participants.length,allPaid=paidCount===total;
+    const pct=Math.round((paidCount/total)*100),amount=Math.round(r.total/total);
+    const date=new Date(r.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
+    return `<button class="room-card" onclick="openRoom('${r.id}')" style="border-color:${allPaid?'#1E3D10':'#2A2A2E'}">
+      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F2F0EB">${r.title}</p><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#6ECB3C":"#F0A843"}"></div></div>
+      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#6ECB3C":"#F2F0EB"};font-weight:600">${paidCount}</span>/${total} pagaron · $${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
+    </button>`;
+  }
+  return `
+    ${userPillHTML(true)}
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <button onclick="S.screen='home';render()" style="background:none;border:1px solid #2A2A2E;border-radius:8px;color:#76767A;font-size:12px;padding:6px 12px;cursor:pointer;flex-shrink:0">← Volver</button>
+      <div><h1 style="font-size:22px;font-weight:700;margin:0">Mis salas</h1><p class="sub" style="margin:0">${S.rooms.length} sala${S.rooms.length!==1?"s":""} creada${S.rooms.length!==1?"s":""}</p></div>
+    </div>
+    ${!S.rooms.length?`<div class="dashed" style="padding:40px 24px"><div style="font-size:36px;margin-bottom:12px">📋</div><p style="color:#76767A;font-size:15px;font-weight:500;margin:0 0 6px">Todavía no creaste ninguna sala</p><p class="muted" style="margin:0">Volvé al inicio para crear tu primera sala</p></div>`:``}
+    ${openRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#F0A843"></div><p class="label" style="margin:0">Salas abiertas (${openRooms.length})</p></div><div class="gap8" style="margin-bottom:20px">${openRooms.map(card).join("")}</div>`:``}
+    ${closedRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#6ECB3C"></div><p class="label" style="margin:0">Salas cerradas (${closedRooms.length})</p></div><div class="gap8">${closedRooms.map(card).join("")}</div>`:``}`;
+}
+function openRoom(id){const r=S.rooms.find(x=>x.id===id);if(r){S.room=r;S.shareUrl=`${location.origin}/?room=${r.id}`;S.screen="adminRoom";startPolling();render();}}
+
+function renderCreated(){
+  const r=S.room,amount=Math.round(r.total/r.participants.length);
+  return `
+    ${userPillHTML(false)}
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:44px;margin-bottom:10px">🎉</div><h2 style="font-size:22px;font-weight:700;margin-bottom:6px">${r.title}</h2><p class="sub">$${r.total.toLocaleString("es-AR")} · ${r.participants.length} personas · <span class="accent">$${amount.toLocaleString("es-AR")} c/u</span></p></div>
+    <div class="card" style="margin-bottom:12px">
+      <p class="label" style="margin-bottom:10px">Link para compartir</p>
+      <div class="row" style="margin-bottom:8px"><div class="link-box"><p class="link-text">${S.shareUrl}</p></div><button class="copy-btn" id="btn-copy" onclick="copyLink()">Copiar</button></div>
+      <p class="muted">Cada participante entra al link, elige su nombre y paga directo a tu Mercado Pago</p>
+    </div>
+    ${r.mpAlias?`<div style="background:#0A1E2E;border:1px solid rgba(0,158,227,.25);border-radius:14px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${mpLogo(20)}<div><p class="mp-color" style="font-size:11px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.5px">Mercado Pago conectado</p><p class="sub" style="font-size:13px;margin:0">${r.mpAlias}</p></div></div>`:""}
+    <div class="gap10">
+      <button class="btn-primary" onclick="S.screen='adminRoom';startPolling();render()">Ver sala →</button>
+      <button onclick="S.screen='setup';render()" style="background:none;border:none;color:#48484D;font-size:13px;padding:8px;cursor:pointer">+ Crear otra sala</button>
+    </div>`;
+}
+function copyLink(){navigator.clipboard.writeText(S.shareUrl).catch(()=>{});const b=document.getElementById("btn-copy");if(b){b.textContent="✓ Copiado";b.className="copy-btn done";setTimeout(()=>{b.textContent="Copiar";b.className="copy-btn";},2000);}}
+
+async function renderJoin(app){
+  if(!S.room&&roomParam){
+    app.innerHTML=`<div style="display:flex;justify-content:center;align-items:center;height:80vh"><p class="sub">Cargando sala…</p></div>`;
+    try{const res=await fetch(`/api/rooms/${roomParam}`);if(!res.ok)throw new Error();S.room=await res.json();S.shareUrl=`${location.origin}/?room=${roomParam}`;}
+    catch{app.innerHTML=`<div style="display:flex;justify-content:center;align-items:center;height:80vh"><p style="color:#E85D5D">Sala no encontrada o link inválido.</p></div>`;return;}
+  }
+  const r=S.room,amount=Math.round(r.total/r.participants.length);
+  app.innerHTML=`
+    <div style="padding-top:16px;display:flex;justify-content:flex-end;margin-bottom:8px">
+      <button onclick="goToLogin()" style="background:#1F1F23;border:1px solid #2A2A2E;border-radius:10px;color:#F0A843;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer">Iniciar sesión / Registrarse</button>
+    </div>
+    <div style="text-align:center;margin-bottom:24px">
+      <img src="${LOGO}" style="display:block;margin:0 auto 14px;width:88px;height:88px;border-radius:20px;object-fit:cover;box-shadow:0 6px 20px rgba(0,0,0,.4)"/>
+      <h1 style="font-size:19px;font-weight:800;margin:0 0 10px;line-height:1.3">Fuiste invitado a una sala de<br/>PAGÁ RATÓN</h1>
+      <p class="label" style="margin-bottom:3px">${r.title}</p>
+      <p class="sub">$${amount.toLocaleString("es-AR")} por persona · ${r.participants.length} personas</p>
+    </div>
+    <p style="color:#76767A;font-size:14px;font-weight:500;margin-bottom:14px">¿Cuál es tu nombre?</p>
+    <div class="gap8">
+      ${r.participants.map(p=>`<button class="join-btn" onclick="joinAs('${p.id}')"><div class="row" style="gap:12px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:15px;font-weight:500;color:#F2F0EB">${p.name}</span>${p.paid?`<span class="badge paid">Ya pagó</span>`:""}</div><span style="color:#48484D">→</span></button>`).join("")}
+      <button onclick="joinAs(null)" style="background:none;border:none;color:#48484D;font-size:13px;padding:10px;cursor:pointer;margin-top:4px">Solo quiero ver el estado →</button>
+    </div>`;
+}
+function joinAs(id){S.myId=id;S.screen="room";startPolling();render();}
+// El invitado puede optar por crear su propia cuenta. Lo mandamos al login
+// quitando el ?room= de la URL, para que entre al flujo normal de admin.
+// (Pagar como invitado NUNCA requiere cuenta — esto es totalmente opcional.)
+function goToLogin(){ location.href = location.origin + "/"; }
+
+function renderRoom(isAdmin){
+  const r=S.room,amount=Math.round(r.total/r.participants.length);
+  const paidCount=r.participants.filter(p=>p.paid).length,allPaid=paidCount===r.participants.length;
+  const me=r.participants.find(p=>p.id===S.myId);
+  const today=new Date().toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
+  let h="";
+  if(isAdmin)h+=userPillHTML(true);
+  else h+=`<div style="padding-top:44px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><p class="sub" style="font-size:11px;margin:0;text-transform:capitalize">${today}</p><button onclick="leaveRoom()" style="background:none;border:1px solid #2A2A2E;border-radius:8px;color:#76767A;font-size:12px;padding:6px 12px;cursor:pointer">← Salir</button></div>`;
+  h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:${isAdmin?10:6}px;flex-wrap:wrap"><h1 style="font-size:21px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${r.title}</h1>${isAdmin?`<span class="badge me">Admin</span><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span>`:""}</div>`;
+  if(isAdmin){
+    h+=`<div class="card row" style="gap:8px;margin-bottom:10px"><div class="link-box"><p class="link-text">${S.shareUrl}</p></div><button class="copy-btn" id="btn-copy" onclick="copyLink()">Copiar link</button></div>`;
+    h+=`<div style="background:#12181E;border:1px solid rgba(0,158,227,.2);border-radius:14px;padding:14px 16px;margin-bottom:10px"><div class="row" style="margin-bottom:8px"><span class="label" style="margin:0">💳 Cuenta Mercado Pago</span></div><p style="font-size:15px;font-weight:700;color:#F2F0EB;margin:0">${r.mpAlias||"Sin alias configurado"}</p></div>`;
+  }
+  h+=`<div style="display:flex;justify-content:center;position:relative;margin-top:4px">${buildWheel(r.participants,S.myId,isAdmin)}<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none"><p style="color:#76767A;font-size:9px;margin:0;letter-spacing:1px;text-transform:uppercase">cobrado</p><p style="font-size:15px;font-weight:700;margin:1px 0 0" id="anim-total">$${S.animTotal.toLocaleString("es-AR")}</p><p style="color:${allPaid?"#6ECB3C":"#76767A"};font-size:10px;margin:1px 0 0">${paidCount}/${r.participants.length}</p></div></div>`;
+  if(!isAdmin&&me&&!me.paid)h+=`<div class="pay-box" style="margin-top:14px"><p class="mp-color" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px">Tu parte — ${me.name}</p><div class="row"><p style="font-size:24px;font-weight:700;margin:0">$${amount.toLocaleString("es-AR")}</p><button onclick="doPay('${me.id}','false')" id="btn-pay" ${S.loadingId?"disabled":""} style="background:${S.loadingId===me.id?"#1F1F23":"#009EE3"};color:${S.loadingId===me.id?"#48484D":"#fff"};border:none;border-radius:12px;padding:13px 16px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">${mpLogo(18,true)}${S.loadingId===me.id?"Abriendo…":"Pagar ahora"}</button></div></div>`;
+  if(!isAdmin&&me?.paid)h+=`<div class="paid-box" style="margin-top:14px"><span style="font-size:22px">✅</span><div><p class="green" style="font-size:13px;font-weight:600;margin:0">¡Ya pagaste tu parte!</p><p class="sub" style="font-size:11px;margin-top:2px">Gracias, ${me.name} · $${amount.toLocaleString("es-AR")}</p></div></div>`;
+  if(!isAdmin&&!me)h+=`<div class="card" style="margin-top:14px;text-align:center"><p class="sub" style="font-size:13px">Estás viendo el estado de la sala</p></div>`;
+  if(allPaid)h+=`<div class="all-paid" style="margin-top:12px"><p class="green" style="font-size:15px;font-weight:600">🎉 ¡Todos pagaron! La sala está cerrada.</p></div>`;
+  h+=`<div class="summary" style="margin-top:14px"><div><p class="sub" style="font-size:11px;margin:0">Total</p><p style="font-size:18px;font-weight:700;margin:2px 0 0">$${r.total.toLocaleString("es-AR")}</p></div><div style="text-align:right"><p class="sub" style="font-size:11px;margin:0">Por persona</p><p class="accent" style="font-size:18px;font-weight:700;margin:2px 0 0">$${amount.toLocaleString("es-AR")}</p></div></div>`;
+  h+=`<div style="margin-top:16px"><p class="label" style="margin-bottom:10px">Participantes</p><div class="gap8">${r.participants.map(p=>{
+    const isMe=p.id===S.myId,busy=S.loadingId===p.id;
+    return `<div class="card row" style="border-color:${p.paid?"#1E3D10":isMe&&!isAdmin?"rgba(240,168,67,.25)":"#2A2A2E"};background:${isMe&&!isAdmin?"#252529":"#1F1F23"}"><div class="row" style="gap:10px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:14px;font-weight:${isMe?600:400}">${p.name}</span>${isMe&&!isAdmin?`<span class="badge me">(vos)</span>`:""}${p.paid?`<span class="badge paid">Pagado</span>`:""}</div><div class="row" style="gap:8px"><span class="sub" style="font-size:13px">$${amount.toLocaleString("es-AR")}</span>${isAdmin&&!p.paid?`<button class="btn-small" onclick="askMarkPaid('${p.id}','${p.name.replace(/'/g,"\\'")}')">${busy?"…":"💵 Efectivo"}</button>`:""}</div></div>`;
+  }).join("")}</div></div>`;
+  return h;
+}
+function leaveRoom(){stopPolling();S.myId=null;S.loadingId=null;S.animTotal=0;if(roomParam)location.href="/";else S.screen="home";render();}
+
+function askMarkPaid(id,name){S.pendingMarkId=id;document.getElementById("modal-name").textContent=name;document.getElementById("modal").classList.add("show");}
+function closeModal(){document.getElementById("modal").classList.remove("show");S.pendingMarkId=null;}
+async function confirmMarkPaid(){
+  const id=S.pendingMarkId;closeModal();if(!id)return;
+  S.loadingId=id;render();
+  try{const res=await authFetch(`/api/rooms/${S.room.id}/mark-paid/${id}`,{method:"POST"});if(res.ok){S.room=await res.json();S.rooms=S.rooms.map(r=>r.id===S.room.id?S.room:r);}}
+  catch{alert("Error al marcar como pagado.");}
+  S.loadingId=null;render();
+}
+async function doPay(participantId,isAdminStr){
+  if(S.loadingId)return;
+  if(isAdminStr==="true"){const p=S.room.participants.find(x=>x.id===participantId);askMarkPaid(participantId,p?.name||"");return;}
+  S.loadingId=participantId;render();
+  try{const res=await fetch(`/api/rooms/${S.room.id}/pay/${participantId}`,{method:"POST",headers:{"Content-Type":"application/json"}});const data=await res.json();if(data.init_point)window.open(data.init_point,"_blank");else alert(data.error||"No se pudo generar el link de pago.");}
+  catch{alert("Error al generar el link de pago.");}
+  S.loadingId=null;render();
+}
+function startPolling(){
+  stopPolling();
+  S.polling=setInterval(async()=>{
+    if(!S.room)return;
+    try{const res=await fetch(`/api/rooms/${S.room.id}`);if(!res.ok)return;const updated=await res.json();
+      const prev=JSON.stringify(S.room.participants.map(p=>p.paid)),next=JSON.stringify(updated.participants.map(p=>p.paid));
+      if(prev!==next){S.room=updated;S.rooms=S.rooms.map(r=>r.id===updated.id?updated:r);render();}}catch{}
+  },3000);
+}
+function stopPolling(){if(S.polling){clearInterval(S.polling);S.polling=null;}}
+
+let animFrame;
+function animateTotal(from,to){
+  if(animFrame)cancelAnimationFrame(animFrame);
+  if(from===to){S.animTotal=to;return;}
+  const t0=performance.now(),dur=600;
+  function tick(now){const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);S.animTotal=Math.round(from+(to-from)*e);const el=document.getElementById("anim-total");if(el)el.textContent="$"+S.animTotal.toLocaleString("es-AR");if(p<1)animFrame=requestAnimationFrame(tick);else S.animTotal=to;}
+  animFrame=requestAnimationFrame(tick);
+}
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
+document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".hamb")&&!e.target.closest(".menu")){S.menuOpen=false;render();}});
+
+initFirebase();
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+════════════════════════════════════════════════════════════════════════════
+  GUÍA DE DESPLIEGUE — DIVIDIR GASTOS
+  Seguí estos pasos EN ORDEN. No te saltees ninguno.
+════════════════════════════════════════════════════════════════════════════
+
+
+PARTE 1 — FIREBASE (login del administrador)
+──────────────────────────────────────────────────────────────────────────
+
+1. Entrá a https://console.firebase.google.com
+2. Hacé clic en "Crear un proyecto" (o "Add project"). Ponele cualquier
+   nombre, por ejemplo "dividir-gastos". Podés desactivar Google Analytics
+   si te lo pregunta, no hace falta.
+
+3. Una vez creado el proyecto, en el menú de la izquierda entrá a:
+   Authentication → pestaña "Sign-in method" → hacé clic en "Agregar
+   nuevo proveedor" y habilitá:
+     • Google
+     • Correo electrónico/Contraseña
+
+3b. ⭐ MUY IMPORTANTE — HABILITAR FIRESTORE (acá se guardan las salas)
+    Esto es lo que hace que las salas NO se borren nunca (en la versión
+    anterior se perdían porque se guardaban en el disco de Render, que
+    se borra en cada reinicio). Ahora se guardan en Firestore, para siempre.
+
+    En el menú de la izquierda entrá a: "Firestore Database" →
+    hacé clic en "Crear base de datos".
+      • Elegí el modo "Producción" (production mode)
+      • Elegí la ubicación más cercana (ej: southamerica-east1)
+      • Confirmá
+
+    Luego, en la pestaña "Reglas" (Rules) de Firestore, dejá las reglas
+    así (el backend accede con permisos de administrador, así que los
+    clientes NO necesitan acceso directo — es lo más seguro):
+
+      rules_version = '2';
+      service cloud.firestore {
+        match /databases/{database}/documents {
+          match /{document=**} {
+            allow read, write: if false;
+          }
+        }
+      }
+
+    Publicá las reglas. Listo — no hace falta crear colecciones a mano,
+    el servidor las crea solo la primera vez que se guarda una sala.
+
+4. Andá a la Configuración del proyecto (ícono de engranaje, arriba a la
+   izquierda) → pestaña "General" → bajá hasta "Tus apps" → hacé clic en
+   el ícono </> (Web) para agregar una app web. Ponele un nombre y hacé
+   clic en "Registrar app".
+
+5. Firebase te va a mostrar un bloque de código con un objeto llamado
+   firebaseConfig. Copiá estos 3 valores, los vas a necesitar en la
+   PARTE 5 de esta guía:
+
+     apiKey:      ___________________________  → FIREBASE_API_KEY
+     authDomain:  ___________________________  → FIREBASE_AUTH_DOMAIN
+     projectId:   ___________________________  → FIREBASE_PROJECT_ID
+
+6. En esa misma Configuración del proyecto, andá a la pestaña
+   "Cuentas de servicio" → hacé clic en "Generar nueva clave privada"
+   → confirmá. Se descarga un archivo .json. GUARDALO, es secreto.
+
+7. Convertí ese archivo a base64 (necesario para pegarlo en una sola
+   variable de entorno). Abrí una terminal en la carpeta donde está
+   el archivo descargado y corré:
+
+     Mac / Linux:
+       base64 -i nombre-del-archivo.json | tr -d '\n'
+
+     Windows (PowerShell):
+       [Convert]::ToBase64String([IO.File]::ReadAllBytes("nombre-del-archivo.json"))
+
+   Va a aparecer un texto larguísimo en una sola línea. Copialo completo.
+   Esto va a ser tu FIREBASE_SERVICE_ACCOUNT_JSON (PARTE 5).
+
+
+PARTE 2 — MERCADO PAGO: CREDENCIALES BÁSICAS
+──────────────────────────────────────────────────────────────────────────
+
+8. Entrá a https://www.mercadopago.com.ar/developers/panel/app
+   (necesitás iniciar sesión con tu cuenta de Mercado Pago)
+
+9. Hacé clic en "Crear aplicación". Ponele un nombre, por ejemplo
+   "Dividir Gastos". Cuando te pregunte el modelo de integración,
+   elegí "Pagos online" o "Checkout Pro" (cualquiera de las opciones
+   de pago con redirección sirve).
+
+10. Una vez creada la aplicación, andá a la sección "Credenciales de
+    producción" (o "Credenciales de prueba" si querés probar primero
+    sin plata real) y copiá el Access Token:
+
+      Access Token: ___________________________  → MP_ACCESS_TOKEN
+
+
+PARTE 3 — MERCADO PAGO: OAUTH (para conectar la cuenta del admin)
+──────────────────────────────────────────────────────────────────────────
+Esto es lo que permite que, al presionar "Conectar con Mercado Pago" en
+la app, cada administrador conecte SU PROPIA cuenta y los pagos de sus
+participantes lleguen directo a él.
+
+11. En el panel de tu aplicación de Mercado Pago (la misma del paso 9),
+    buscá la sección "Credenciales OAuth" o "OAuth / Marketplace".
+    Copiá:
+
+      Client ID:     ___________________________  → MP_CLIENT_ID
+      Client Secret: ___________________________  → MP_CLIENT_SECRET
+
+12. En la misma sección vas a ver un campo "URLs de redirección" o
+    "Redirect URI". Ahí tenés que agregar la siguiente URL (vas a
+    completarla en la PARTE 6, cuando tengas la URL de Render):
+
+      https://TU-DOMINIO-DE-RENDER.onrender.com/api/mp-oauth/callback
+
+    ⚠️ IMPORTANTE: esta URL debe ser EXACTAMENTE igual a la que configures
+    como PUBLIC_URL + "/api/mp-oauth/callback". Si no coinciden letra por
+    letra, Mercado Pago va a rechazar la conexión.
+
+12b. ⭐⭐ CRÍTICO — HABILITAR QUE OTROS USUARIOS CONECTEN SU CUENTA
+     (leé esto SÍ o SÍ si querés que la app la use más gente que vos)
+
+     El código ya está preparado para que CUALQUIER persona que se
+     registre en la app conecte su propia cuenta de Mercado Pago y reciba
+     los pagos de sus invitados. Eso funciona para todos por igual.
+
+     PERO Mercado Pago exige que TU aplicación esté habilitada como
+     "Marketplace" para permitir que terceros (que no sean el dueño de la
+     app) autoricen su cuenta vía OAuth. Si no hacés esto, solo VOS vas a
+     poder conectar tu Mercado Pago; cualquier otra persona verá un error
+     al intentar autorizar.
+
+     Para habilitarlo, en el panel de tu aplicación en Mercado Pago:
+
+       a) Asegurate de que la aplicación esté en modo PRODUCTIVO
+          (no en modo de prueba / sandbox).
+
+       b) En la configuración de la app, buscá el modelo de negocio o
+          tipo de integración y elegí / activá "Marketplace" (o
+          "Plataforma de pagos" / "Split de pagos", según cómo lo llame
+          el panel en ese momento). Esto es lo que habilita el OAuth
+          para terceros.
+
+       c) Verificá que la app tenga los permisos (scopes):
+          read, write y offline_access.
+
+     Nota: Mercado Pago puede pedirte completar datos de tu empresa/
+     emprendimiento o una validación de identidad para activar el modo
+     Marketplace en producción. Es un requisito de ellos, no del código.
+
+     Mientras probás vos solo, no necesitás nada de esto — con tu propia
+     cuenta ya funciona. El Marketplace hace falta recién cuando OTRAS
+     personas vayan a conectar SU cuenta.
+
+
+PARTE 4 — SUBIR EL PROYECTO A GITHUB
+──────────────────────────────────────────────────────────────────────────
+
+13. Si no tenés cuenta, creála en https://github.com
+
+14. Entrá a GitHub → botón "New" (o "+" arriba a la derecha) →
+    "New repository" → ponele un nombre, por ejemplo "dividir-gastos" →
+    "Create repository". NO marques "Add a README" (ya tenés uno).
+
+15. Descomprimí el zip que te dieron en tu computadora. Abrí una
+    terminal DENTRO de esa carpeta y corré, uno por uno:
+
+      git init
+      git add .
+      git commit -m "primera version"
+      git branch -M main
+      git remote add origin https://github.com/TU-USUARIO/dividir-gastos.git
+      git push -u origin main
+
+    (Reemplazá TU-USUARIO por tu usuario real de GitHub. La URL exacta
+    te la muestra GitHub en la pantalla del repositorio recién creado)
+
+
+PARTE 5 — DESPLEGAR EN RENDER
+──────────────────────────────────────────────────────────────────────────
+
+16. Entrá a https://render.com y creá una cuenta (podés entrar
+    directamente con tu cuenta de GitHub, es más rápido).
+
+17. Hacé clic en "New" → "Web Service".
+
+18. Conectá el repositorio "dividir-gastos" que subiste en la PARTE 4.
+
+19. Completá la configuración:
+      Build command: npm install
+      Start command: npm start
+      Plan:          Free
+
+20. ANTES de crear el servicio, bajá hasta "Environment Variables" y
+    agregá, una por una, TODAS estas variables (los valores son los
+    que fuiste anotando en los pasos anteriores):
+
+      PUBLIC_URL                      → (dejalo vacío por ahora, o poné
+                                          cualquier texto, lo vas a
+                                          corregir en el paso 22)
+      MP_ACCESS_TOKEN                 → (del paso 10)
+      MP_CLIENT_ID                    → (del paso 11)
+      MP_CLIENT_SECRET                → (del paso 11)
+      FIREBASE_API_KEY                → (del paso 5)
+      FIREBASE_AUTH_DOMAIN            → (del paso 5)
+      FIREBASE_PROJECT_ID             → (del paso 5)
+      FIREBASE_SERVICE_ACCOUNT_JSON   → (del paso 7 — el texto largo en base64)
+      PORT                             → 3000
+
+21. Hacé clic en "Create Web Service". Esperá 1-2 minutos a que termine
+    de desplegar (vas a ver los logs corriendo en pantalla).
+
+22. Una vez desplegado, Render te muestra tu URL real arriba de todo,
+    algo como:
+
+      https://dividir-gastos-a1b2.onrender.com
+
+    Copiala completa (SIN la barra "/" al final). Ahora hacé DOS cosas:
+
+    a) Volvé a "Environment" en Render, editá la variable PUBLIC_URL
+       y pegá esa URL exacta. Guardá — Render va a reiniciar el
+       servicio solo.
+
+    b) Volvé al panel de Mercado Pago (PARTE 3, paso 12) y completá
+       la URL de redirección OAuth con:
+
+         https://dividir-gastos-a1b2.onrender.com/api/mp-oauth/callback
+
+       (con TU URL real, no la de ejemplo)
+
+
+PARTE 6 — VERIFICAR QUE TODO FUNCIONA
+──────────────────────────────────────────────────────────────────────────
+
+23. Abrí tu URL de Render en el navegador. Deberías ver la pantalla
+    de login "Dividir gastos".
+
+24. Iniciá sesión con Google o creando una cuenta con email.
+
+25. En la pantalla de "Configurá la sala", tocá el botón azul
+    "Conectar con Mercado Pago". Te va a redirigir a Mercado Pago
+    para autorizar la app — iniciá sesión con la cuenta de MP donde
+    querés recibir los pagos y aceptá los permisos.
+
+26. Te va a volver a traer a tu app con el mensaje de "Mercado Pago
+    conectado" y tu nickname de MP visible.
+
+27. Completá título, total y agregá 2 o 3 participantes de prueba.
+    Creá la sala.
+
+28. Copiá el link generado y abrilo en otra pestaña (o mandátelo a tu
+    celular). Deberías ver la pantalla "¿Cuál es tu nombre?" con los
+    participantes que agregaste.
+
+29. Elegí un nombre y tocá "Pagar ahora". Te va a redirigir al checkout
+    real de Mercado Pago. Para probar sin gastar plata real, usá las
+    tarjetas de prueba oficiales de Mercado Pago, que están acá:
+
+      https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/additional-content/your-integrations/test/cards
+
+30. Después de "pagar" con una tarjeta de prueba, volvé a la pestaña
+    de la sala (o esperá unos segundos si la dejaste abierta) — la
+    porción de esa persona en la rueda debería ponerse verde sola.
+
+31. Volvé a la pantalla de "Mis salas" (desde el setup) y confirmá que
+    la sala aparece como "🟡 Abierta" si falta gente por pagar, o
+    "✅ Cerrada" si ya pagaron todos.
+
+
+════════════════════════════════════════════════════════════════════════════
+  COSAS QUE SUELEN OLVIDARSE (revisar si algo no funciona)
+════════════════════════════════════════════════════════════════════════════
+
+□ Si las salas "no se guardan" o desaparecen, casi seguro es que NO
+  habilitaste Firestore (paso 3b). Sin Firestore el servidor no puede
+  guardar nada. Revisá en los logs de Render que diga
+  "Firestore: ✅ conectado (salas persistentes)"
+
+□ La PUBLIC_URL en Render NO debe terminar con "/"
+
+□ La URL de redirección en Mercado Pago (paso 12) debe ser IDÉNTICA a
+  PUBLIC_URL + "/api/mp-oauth/callback" — cualquier diferencia (http vs
+  https, con o sin "/", mayúsculas) hace que falle el OAuth
+
+□ El FIREBASE_SERVICE_ACCOUNT_JSON debe ser el archivo JSON COMPLETO
+  convertido a base64, no un fragmento
+
+□ El webhook de Mercado Pago (que confirma pagos automáticamente) SOLO
+  funciona con una URL pública real (https). Nunca va a funcionar
+  probando en localhost
+
+□ Si cambiás cualquier variable de entorno en Render, el servicio se
+  reinicia solo y tarda unos 30-60 segundos en estar disponible de nuevo
+
+□ Las credenciales de PRUEBA de Mercado Pago (las que empiezan con
+  "TEST-") solo funcionan con tarjetas de prueba, nunca con tarjetas
+  reales. Para cobrar de verdad necesitás las credenciales de
+  PRODUCCIÓN (empiezan con "APP_USR-")
+
+□ Si el botón "Conectar con Mercado Pago" no hace nada o tira error,
+  revisá que MP_CLIENT_ID y MP_CLIENT_SECRET estén bien copiados sin
+  espacios de más
+
+════════════════════════════════════════════════════════════════════════════

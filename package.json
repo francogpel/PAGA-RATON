@@ -1,0 +1,19 @@
+{
+  "name": "dividir-gastos",
+  "version": "3.0.0",
+  "description": "App para dividir gastos con Mercado Pago y Firebase Auth",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "mercadopago": "^2.0.15",
+    "node-fetch": "^2.7.0"
+  }
+}
