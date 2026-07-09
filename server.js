@@ -295,7 +295,9 @@ app.post("/api/rooms/:roomId/pay/:participantId", async (req, res) => {
           quantity: 1, unit_price: amount, currency_id: "ARS",
         }],
         external_reference: `${room.id}:${p.id}`,
-        notification_url: `${PUBLIC_URL}/api/webhook`,
+        // 📡 WEBHOOK: incluimos el roomId en la URL para que la verificación
+        // use el token del admin de ESA sala (crítico para multi-usuario)
+        notification_url: `${PUBLIC_URL}/api/webhook?roomId=${room.id}`,
         back_urls: {
           success: `${PUBLIC_URL}/?room=${room.id}&pago=ok`,
           failure: `${PUBLIC_URL}/?room=${room.id}&pago=error`,
@@ -322,16 +324,50 @@ app.post("/api/webhook", async (req, res) => {
     const paymentId = req.query["data.id"] || req.body?.data?.id;
     if (topic !== "payment" || !paymentId) return;
 
-    const payment = new Payment(defaultMpClient);
-    const info    = await payment.get({ id: paymentId });
-    if (info.status !== "approved") return;
+    // El roomId viene en la URL del webhook (lo pusimos al crear la preferencia).
+    // Lo necesitamos ANTES de verificar, para usar el token del admin correcto.
+    const roomIdFromQuery = req.query.roomId || null;
 
+    // Función que verifica el pago con un token dado
+    async function getPaymentInfo(accessToken) {
+      const client  = accessToken ? new MercadoPagoConfig({ accessToken }) : defaultMpClient;
+      const payment = new Payment(client);
+      return payment.get({ id: paymentId });
+    }
+
+    let info = null;
+    let room = null;
+    let ref  = null;
+
+    if (roomIdFromQuery) {
+      // Camino principal: cargamos la sala y verificamos con SU token
+      ref = roomsCol().doc(roomIdFromQuery);
+      const doc = await ref.get();
+      if (doc.exists) {
+        room = doc.data();
+        try {
+          info = await getPaymentInfo(room.mpAccessToken || process.env.MP_ACCESS_TOKEN);
+        } catch (e) {
+          // fallback: intentar con el token del servidor
+          info = await getPaymentInfo(process.env.MP_ACCESS_TOKEN);
+        }
+      }
+    }
+    if (!info) {
+      // Camino de respaldo (webhooks viejos sin roomId): token del servidor
+      info = await getPaymentInfo(process.env.MP_ACCESS_TOKEN);
+    }
+    if (!info || info.status !== "approved") return;
+
+    // Identificar sala y participante desde la referencia del pago
     const [roomId, participantId] = (info.external_reference || "").split(":");
-    const ref = roomsCol().doc(roomId);
-    const doc = await ref.get();
-    if (!doc.exists) return;
+    if (!room || room.id !== roomId) {
+      ref = roomsCol().doc(roomId);
+      const doc = await ref.get();
+      if (!doc.exists) return;
+      room = doc.data();
+    }
 
-    const room = doc.data();
     const participants = room.participants.map(p =>
       p.id === participantId && !p.paid
         ? { ...p, paid: true, paymentId: String(paymentId), paidAt: new Date().toISOString() }
