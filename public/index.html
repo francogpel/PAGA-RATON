@@ -144,6 +144,15 @@ input::placeholder{color:var(--dim)}
 .hamb{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;flex-shrink:0;transition:.2s}
 .hamb:hover{border-color:var(--border-hi)}
 .hamb span{width:14px;height:2px;background:var(--muted);border-radius:1px}
+/* ── Crédito de desarrollo (Infinity Solutions) ───────────────────────── */
+.dev-credit{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center}
+.dev-credit p{font-size:12px;color:var(--dim);margin:0}
+.dev-credit p a{color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:2px;transition:color .2s}
+.dev-credit p a:hover{color:var(--accent)}
+.dev-logo{display:inline-flex;transition:opacity .2s}
+.dev-logo:hover{opacity:.75}
+.dev-logo img{height:34px;width:auto;max-width:170px;object-fit:contain}
+.dev-privacy{color:var(--dim);font-size:11px;text-decoration:underline;margin-top:2px}
 svg{overflow:visible}
 </style>
 </head>
@@ -346,10 +355,12 @@ function renderLogin(){
           : `¿Todavía no tenés cuenta? <button onclick="setAuthTab('signup')">Creá una</button>`}
       </p>
     </div>
-    <div style="text-align:center;margin-top:28px;display:flex;flex-direction:column;gap:5px">
-      <p style="color:var(--dim);font-size:11px;margin:0">© 2026 Tropel Solutions • Todos los derechos reservados.</p>
-      <p style="color:var(--dim);font-size:11px;margin:0">Desarrollado por <a href="https://www.instagram.com/francogpel?igsh=MzZ4bTljam04ZHQy&utm_source=qr" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-weight:600">Francogpel</a></p>
-      <p style="margin:0"><a href="#" style="color:var(--dim);font-size:11px;text-decoration:underline">Políticas de privacidad</a></p>
+    <div class="dev-credit">
+      <p>Desarrollado por <a href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer">Infinity Solutions</a></p>
+      <a class="dev-logo" href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer" aria-label="Infinity Solutions">
+        <img src="./infinity-solutions.png" alt="Infinity Solutions" width="218" height="120" loading="lazy"/>
+      </a>
+      <a class="dev-privacy" href="#">Políticas de privacidad</a>
     </div>`;
 }
 // Alterna entre "Ingresar" y "Crear cuenta" sin mostrar los dos formularios juntos.
