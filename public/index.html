@@ -10,30 +10,30 @@
 <style>
 /* ── Tokens de diseño ─────────────────────────────────────────────────── */
 :root{
-  --bg:#0B0B0F;
-  --surface:#16161C;
-  --surface-2:#101016;
-  --elevated:#22222B;
-  --border:#2A2A34;
-  --border-hi:#3A3A46;
-  --text:#F5F3EE;
-  --muted:#8A8A96;
-  --dim:#56565F;
-  --accent:#FFB547;
-  --accent-2:#FF8A3D;
+  --bg:#080B12;
+  --surface:#121822;
+  --surface-2:#0C111A;
+  --elevated:#1A2331;
+  --border:#222C3C;
+  --border-hi:#313F55;
+  --text:#F2F5FA;
+  --muted:#8D97A8;
+  --dim:#5B6678;
+  --accent:#FFA23A;
+  --accent-2:#FF6B00;
   --green:#4ADE80;
   --red:#F87171;
   --mp:#009EE3;
   --r-sm:10px;--r-md:14px;--r-lg:18px;--r-xl:24px;
   --shadow:0 12px 32px rgba(0,0,0,.45);
-  --glow:0 8px 22px rgba(255,140,60,.22);
+  --glow:0 8px 22px rgba(255,107,0,.22);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   background:var(--bg);
   background-image:
-    radial-gradient(900px 520px at 50% -12%,rgba(255,181,71,.10),transparent 70%),
+    radial-gradient(900px 520px at 50% -12%,rgba(255,162,58,.08),transparent 70%),
     radial-gradient(700px 420px at 115% 105%,rgba(0,158,227,.07),transparent 70%);
   background-attachment:fixed;
   color:var(--text);min-height:100vh;display:flex;justify-content:center;
@@ -56,13 +56,13 @@ body{
 
 /* ── Formularios ──────────────────────────────────────────────────────── */
 input,button{font-family:inherit}
-input{background:rgba(255,255,255,.035);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:16px;padding:14px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s,background .2s}
-input:focus{border-color:var(--accent);background:rgba(255,255,255,.055);box-shadow:0 0 0 3px rgba(255,181,71,.15)}
+input{background:rgba(255,255,255,.035);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:16px;padding:15px 14px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s,background .2s}
+input:focus{border-color:var(--accent);background:rgba(255,255,255,.055);box-shadow:0 0 0 3px rgba(255,162,58,.15)}
 input::placeholder{color:var(--dim)}
 
 /* ── Botones ──────────────────────────────────────────────────────────── */
 .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#1A1206;border:none;border-radius:var(--r-md);padding:16px;font-weight:700;font-size:15px;letter-spacing:.2px;cursor:pointer;width:100%;box-shadow:var(--glow);transition:transform .15s,box-shadow .2s,filter .2s}
-.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 28px rgba(255,140,60,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 28px rgba(255,107,0,.3)}
 .btn-primary:active:not(:disabled){transform:translateY(0)}
 .btn-primary:disabled{background:var(--elevated);color:var(--dim);box-shadow:none;cursor:default}
 .btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r-md);padding:15px;color:var(--text);font-size:14.5px;font-weight:500;cursor:pointer;width:100%;transition:background .2s,border-color .2s}
@@ -80,12 +80,12 @@ input::placeholder{color:var(--dim)}
 .add-btn:disabled{background:var(--elevated);color:var(--dim);cursor:default}
 
 /* ── Login / registro ─────────────────────────────────────────────────── */
-.logo-img{display:block;margin:0 auto 16px;width:92px;height:92px;border-radius:26px;object-fit:cover;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,181,71,.18)}
-.auth-card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:var(--r-xl);padding:20px;box-shadow:var(--shadow)}
+.logo-img{display:block;margin:0 auto 16px;width:92px;height:92px;border-radius:26px;object-fit:cover;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,162,58,.18)}
+.auth-card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:var(--r-xl);padding:22px;box-shadow:var(--shadow)}
 .seg{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:4px;gap:4px}
 .seg button{flex:1;background:none;border:none;border-radius:10px;padding:11px 8px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:.22s}
 .seg button:hover{color:var(--text)}
-.seg button.on{background:var(--elevated);color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.seg button.on{background:var(--elevated);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.4)}
 .switch-line{text-align:center;color:var(--dim);font-size:12.5px;margin-top:16px}
 .switch-line button{background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline}
 .divider{display:flex;align-items:center;gap:12px}
@@ -115,8 +115,8 @@ input::placeholder{color:var(--dim)}
 .dot.unpaid{background:var(--red)}
 .badge{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.2px}
 .badge.paid{color:var(--green);background:rgba(74,222,128,.14)}
-.badge.me{color:var(--accent);background:rgba(255,181,71,.14)}
-.badge.open{color:var(--accent);background:rgba(255,181,71,.14)}
+.badge.me{color:var(--accent);background:rgba(255,162,58,.14)}
+.badge.open{color:var(--accent);background:rgba(255,162,58,.14)}
 .badge.closed{color:var(--green);background:rgba(74,222,128,.14)}
 .progress-bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden;margin:11px 0}
 .progress-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1)}
@@ -128,8 +128,8 @@ input::placeholder{color:var(--dim)}
 .all-paid{background:linear-gradient(180deg,rgba(74,222,128,.14),rgba(74,222,128,.04));border-radius:var(--r-md);padding:15px;text-align:center;border:1px solid rgba(74,222,128,.3)}
 .link-box{background:var(--surface-2);border-radius:var(--r-sm);padding:11px 12px;border:1px solid var(--border);overflow:hidden;flex:1}
 .link-text{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.copy-btn{background:rgba(255,181,71,.14);color:var(--accent);border:none;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:.2s}
-.copy-btn:hover{background:rgba(255,181,71,.22)}
+.copy-btn{background:rgba(255,162,58,.14);color:var(--accent);border:none;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:.2s}
+.copy-btn:hover{background:rgba(255,162,58,.22)}
 .copy-btn.done{background:rgba(74,222,128,.16);color:var(--green)}
 
 /* ── Modal / navegación ───────────────────────────────────────────────── */
@@ -144,6 +144,34 @@ input::placeholder{color:var(--dim)}
 .hamb{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;flex-shrink:0;transition:.2s}
 .hamb:hover{border-color:var(--border-hi)}
 .hamb span{width:14px;height:2px;background:var(--muted);border-radius:1px}
+/* ── Hero de la portada + marca ───────────────────────────────────────── */
+.hero{position:relative;margin:0 -20px;height:280px;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:50% 14%;display:block}
+.hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,11,18,.30) 0%,rgba(8,11,18,0) 20%,rgba(8,11,18,.55) 50%,rgba(8,11,18,.93) 76%,var(--bg) 90%)}
+.hero-pill{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:8px;background:rgba(8,11,18,.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:8px 14px;font-size:12.5px;font-weight:600;color:#E6EBF4}
+.hero-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green);flex-shrink:0}
+.brand-block{text-align:center;margin:-20px 0 24px;position:relative;z-index:2}
+.brand{font-size:44px;font-weight:900;letter-spacing:-1.2px;margin:0 0 10px;line-height:1.05}
+.brand-block .sub{font-size:14px}
+.brand span{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+
+/* ── Campos con ícono ─────────────────────────────────────────────────── */
+.label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.label-row .label{margin-bottom:0}
+.link-accent{background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:600;cursor:pointer;padding:0}
+.link-accent:hover{text-decoration:underline}
+.field{position:relative;display:flex;align-items:center}
+.field-icon{position:absolute;left:14px;color:var(--dim);display:flex;pointer-events:none}
+.field input{padding-left:42px}
+.field.has-eye input{padding-right:46px}
+.field .eye{position:absolute;right:8px;background:none;border:none;color:var(--dim);cursor:pointer;padding:8px;display:flex;border-radius:8px;transition:color .2s}
+.field .eye:hover{color:var(--text)}
+.btn-cta{display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:800}
+
+/* ── Píldora de Mercado Pago ──────────────────────────────────────────── */
+.mp-pill{margin-top:20px;text-align:center;border:1px solid var(--border);border-radius:99px;padding:12px 14px;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-pill strong{color:var(--mp);font-weight:700}
+
 /* ── Crédito de desarrollo (Infinity Solutions) ───────────────────────── */
 .dev-credit{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center}
 .dev-credit p{font-size:12px;color:var(--dim);margin:0}
@@ -161,9 +189,9 @@ svg{overflow:visible}
 <div id="modal">
   <div class="modal-box">
     <div style="font-size:32px;margin-bottom:12px">💵</div>
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#F5F3EE">Pago en efectivo</h3>
-    <p style="color:#8A8A96;font-size:14px;line-height:1.5;margin-bottom:24px">
-      ¿Confirmás que <strong style="color:#F5F3EE" id="modal-name"></strong> pagó su parte en efectivo?
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#F2F5FA">Pago en efectivo</h3>
+    <p style="color:#8D97A8;font-size:14px;line-height:1.5;margin-bottom:24px">
+      ¿Confirmás que <strong style="color:#F2F5FA" id="modal-name"></strong> pagó su parte en efectivo?
     </p>
     <div style="display:flex;gap:10px">
       <button onclick="closeModal()" class="btn-ghost" style="flex:1;padding:14px">No</button>
@@ -246,7 +274,8 @@ function authErrMsg(code){
     "auth/weak-password":"La contraseña debe tener al menos 6 caracteres","auth/invalid-email":"Email inválido","auth/popup-closed-by-user":""};
   return m[code]||"Ocurrió un error. Intentá de nuevo.";
 }
-function setAuthErr(msg){ const el=document.getElementById("auth-err"); if(el) el.textContent=msg; }
+function setAuthErr(msg){ const el=document.getElementById("auth-err"); if(el){ el.style.color=""; el.textContent=msg; } }
+function setAuthOk(msg){ const el=document.getElementById("auth-err"); if(el){ el.style.color="var(--green)"; el.textContent=msg; } }
 
 async function loadAdminData(){
   try{
@@ -280,17 +309,17 @@ function buildWheel(participants,myId,isAdmin){
     const sa=i*step,ea=sa+step,ma=sa+step/2;
     const[lx,ly]=polar(cx,cy,(r+ri)/2,ma);
     const isMe=p.id===myId,busy=S.loadingId===p.id;
-    const fill=p.paid?"#4ADE80":busy?"#6B6B78":"#F87171";
+    const fill=p.paid?"#4ADE80":busy?"#5B6678":"#F87171";
     const canTap=(isMe||isAdmin)&&!p.paid&&!S.loadingId;
     const short=p.name.length>7?p.name.slice(0,6)+"…":p.name;
     svg+=`<g ${canTap?`onclick="doPay('${p.id}','${isAdmin}')"`:""} style="cursor:${canTap?"pointer":"default"}">`;
-    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+7,ri-5,sa,ea)}" fill="#FFB547" opacity="0.2"/>`;
+    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+7,ri-5,sa,ea)}" fill="#FFA23A" opacity="0.2"/>`;
     svg+=`<path d="${slicePath(cx,cy,r,ri,sa,ea)}" fill="${fill}" ${p.paid?'filter="url(#gp)"':""} opacity="${p.paid?1:.84}" style="transition:fill .5s"/>`;
     if(step>28)svg+=`<text x="${lx}" y="${ly-(step>50?7:0)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${step>60?12:step>40?11:9}" font-weight="600" style="pointer-events:none">${short}</text>`;
     if(step>50)svg+=`<text x="${lx}" y="${ly+8}" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,.6)" font-size="9" style="pointer-events:none">${p.paid?"✓":busy?"…":isMe?"tocame":"—"}</text>`;
     svg+=`</g>`;
   });
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="#101016"/><circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="none" stroke="#2A2A34" stroke-width="1"/></svg>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="#0C111A"/><circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="none" stroke="#222C3C" stroke-width="1"/></svg>`;
   return svg;
 }
 function mpLogo(sz,onBlue){return `<img src="${onBlue?'./mp-logo-badge.png':'./mp-logo.png'}" alt="MP" style="height:${sz}px;width:auto;display:block;flex-shrink:0"/>`;}
@@ -313,6 +342,11 @@ function tickTotal(){
   animateTotal(S.animTotal, paidCount*amount);
 }
 
+const ICON_AT   = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5.5a2.8 2.8 0 0 0 5.6 0V12a9.6 9.6 0 1 0-3.8 7.7"/></svg>`;
+const ICON_LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>`;
+const ICON_EYE  = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.9"/></svg>`;
+const ICON_EYE_OFF = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.9"/><path d="M3.5 3.5l17 17"/></svg>`;
+
 function renderLogin(){
   const isSignup = S.authTab === "signup";
   // Al alternar entre pestañas conservamos el email ya tipeado (la contraseña no).
@@ -321,10 +355,14 @@ function renderLogin(){
     if(e){ e.value=S.authEmail||""; e.oninput=()=>{ S.authEmail=e.value; }; }
   },0);
   return `
-    <div style="padding-top:52px;text-align:center;margin-bottom:26px">
-      <img src="${LOGO}" class="logo-img"/>
-      <h1 class="h1">PAGÁ RATÓN</h1>
-      <p class="sub">Dividí gastos y cobrá directo a tu Mercado Pago</p>
+    <div class="hero">
+      <img src="${LOGO}" alt="Pagá Ratón"/>
+      <div class="hero-fade"></div>
+      <div class="hero-pill"><span class="hero-dot"></span>Directo a Mercado Pago</div>
+    </div>
+    <div class="brand-block">
+      <h1 class="brand">PAGÁ <span>RATÓN</span></h1>
+      <p class="sub">Dividí gastos de partidos y cobrá sin vueltas</p>
     </div>
     <div class="auth-card">
       <div class="seg" style="margin-bottom:20px">
@@ -335,32 +373,45 @@ function renderLogin(){
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         ${isSignup?"Registrarme con Google":"Continuar con Google"}
       </button>
-      <div class="divider" style="margin:18px 0"><span>o con tu email</span></div>
+      <div class="divider" style="margin:20px 0"><span>o con tu email</span></div>
       <div class="gap10">
         <div>
           <span class="label">Email</span>
-          <input id="inp-email" type="email" placeholder="tu@email.com" autocomplete="email"/>
+          <div class="field">
+            <span class="field-icon">${ICON_AT}</span>
+            <input id="inp-email" type="email" placeholder="tu@email.com" autocomplete="email"/>
+          </div>
         </div>
         <div>
-          <span class="label">Contraseña</span>
-          <input id="inp-pass" type="password" placeholder="${isSignup?"Creá una contraseña":"Tu contraseña"}" autocomplete="${isSignup?"new-password":"current-password"}" onkeydown="if(event.key==='Enter')signInEmail(${isSignup})"/>
-          ${isSignup?`<p class="muted" style="margin-top:7px">Mínimo 6 caracteres</p>`:""}
+          <div class="label-row">
+            <span class="label">Contraseña</span>
+            ${isSignup?"":`<button class="link-accent" onclick="resetPassword()">¿Olvidaste la clave?</button>`}
+          </div>
+          <div class="field has-eye">
+            <span class="field-icon">${ICON_LOCK}</span>
+            <input id="inp-pass" type="password" placeholder="${isSignup?"Creá una contraseña":"Tu contraseña secreta"}" autocomplete="${isSignup?"new-password":"current-password"}" onkeydown="if(event.key==='Enter')signInEmail(${isSignup})"/>
+            <button class="eye" id="btn-eye" type="button" aria-label="Mostrar contraseña" onclick="togglePass()">${ICON_EYE}</button>
+          </div>
+          ${isSignup?`<p class="muted" style="margin-top:8px">Mínimo 6 caracteres</p>`:""}
         </div>
         <p class="err" id="auth-err"></p>
-        <button class="btn-primary" onclick="signInEmail(${isSignup})">${isSignup?"Crear mi cuenta":"Ingresar"}</button>
+        <button class="btn-primary btn-cta" onclick="signInEmail(${isSignup})">
+          ${isSignup?"Crear mi cuenta":"Ingresar a la cancha"}<span>→</span>
+        </button>
       </div>
       <p class="switch-line">
         ${isSignup
           ? `¿Ya tenés cuenta? <button onclick="setAuthTab('login')">Ingresá acá</button>`
-          : `¿Todavía no tenés cuenta? <button onclick="setAuthTab('signup')">Creá una</button>`}
+          : `¿Todavía no tenés cuenta? <button onclick="setAuthTab('signup')">Creá una gratis</button>`}
       </p>
     </div>
+    <div class="mp-pill">Link de pago directo y transferencias con <strong>Mercado Pago</strong></div>
     <div class="dev-credit">
       <p>Desarrollado por <a href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer">Infinity Solutions</a></p>
       <a class="dev-logo" href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer" aria-label="Infinity Solutions">
         <img src="./infinity-solutions.png" alt="Infinity Solutions" width="218" height="120" loading="lazy"/>
       </a>
-      <a class="dev-privacy" href="#">Políticas de privacidad</a>
+      <a class="dev-privacy" href="#">Políticas de privacidad y términos</a>
     </div>`;
 }
 // Alterna entre "Ingresar" y "Crear cuenta" sin mostrar los dos formularios juntos.
@@ -370,15 +421,33 @@ function setAuthTab(tab){
   S.authTab=tab;
   render();
 }
+// Ojito para ver la contraseña que se está tipeando.
+function togglePass(){
+  const i=document.getElementById("inp-pass"), b=document.getElementById("btn-eye");
+  if(!i||!b) return;
+  const ver = i.type==="password";
+  i.type = ver ? "text" : "password";
+  b.innerHTML = ver ? ICON_EYE_OFF : ICON_EYE;
+  b.setAttribute("aria-label", ver ? "Ocultar contraseña" : "Mostrar contraseña");
+}
+// Recuperación de clave: Firebase manda el mail con el link para restablecerla.
+async function resetPassword(){
+  const email=document.getElementById("inp-email")?.value.trim();
+  if(!email) return setAuthErr("Escribí tu email arriba y volvé a tocar acá");
+  try{
+    await firebase.auth().sendPasswordResetEmail(email);
+    setAuthOk(`Te mandamos un mail a ${email} para crear una clave nueva`);
+  }catch(e){ setAuthErr(authErrMsg(e.code)); }
+}
 
 function hamburgerHTML(){
   return `<div style="position:relative;flex-shrink:0">
     <div class="hamb" onclick="toggleMenu(event)"><span></span><span></span><span></span></div>
     ${S.menuOpen?`<div class="menu">
-      <button style="color:#F5F3EE" onclick="menuGo('mis-salas')">📋 Salas</button>
-      <div style="height:1px;background:#2A2A34;margin:4px 6px"></div>
-      <button style="color:#F5F3EE" onclick="menuGo('home')">🏠 Inicio</button>
-      <div style="height:1px;background:#2A2A34;margin:4px 6px"></div>
+      <button style="color:#F2F5FA" onclick="menuGo('mis-salas')">📋 Salas</button>
+      <div style="height:1px;background:#222C3C;margin:4px 6px"></div>
+      <button style="color:#F2F5FA" onclick="menuGo('home')">🏠 Inicio</button>
+      <div style="height:1px;background:#222C3C;margin:4px 6px"></div>
       <button style="color:#F87171" onclick="menuLogout()">🚪 Salir de la sesión</button>
     </div>`:""}
   </div>`;
@@ -394,7 +463,7 @@ function userPillHTML(withMenu){
   return `<div class="user-pill">
     <div class="av">${ini}</div>
     <span class="sub" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
-    ${withMenu?hamburgerHTML():`<button onclick="signOut()" style="background:none;border:none;color:#56565F;font-size:12px;cursor:pointer">Salir</button>`}
+    ${withMenu?hamburgerHTML():`<button onclick="signOut()" style="background:none;border:none;color:#5B6678;font-size:12px;cursor:pointer">Salir</button>`}
   </div>`;
 }
 
@@ -410,17 +479,17 @@ function renderHome(){
       <p class="sub">Creá una sala nueva o revisá las que ya tenés</p>
     </div>
     <div class="gap10" style="gap:12px">
-      <button class="big-btn" style="background:linear-gradient(135deg,#FFB547,#FF8A3D);box-shadow:0 10px 26px rgba(255,140,60,.22)" onclick="S.screen='setup';render()">
+      <button class="big-btn" style="background:linear-gradient(135deg,#FFA23A,#FF6B00);box-shadow:0 10px 26px rgba(255,107,0,.22)" onclick="S.screen='setup';render()">
         <div style="width:40px;height:40px;border-radius:11px;background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">➕</div>
         <div style="flex:1"><p style="color:#000;font-size:15px;font-weight:700;margin:0 0 2px">Crear sala</p><p style="color:rgba(0,0,0,.6);font-size:12px;margin:0">Armá un nuevo gasto para dividir</p></div>
         <span style="color:rgba(0,0,0,.5);font-size:18px">→</span>
       </button>
-      <button class="big-btn" style="background:${hasRooms?'#16161C':'#22222B'};border:1px solid #2A2A34;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
-        <div style="width:40px;height:40px;border-radius:11px;background:#101016;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
+      <button class="big-btn" style="background:${hasRooms?'#121822':'#1A2331'};border:1px solid #222C3C;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
+        <div style="width:40px;height:40px;border-radius:11px;background:#0C111A;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
         <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px">Ver salas</p><p class="sub" style="font-size:12px;margin:0">
           ${hasRooms?`${openCount>0?`<span class="accent">${openCount} abierta${openCount!==1?"s":""}</span>`:""}${openCount>0&&closedCount>0?" · ":""}${closedCount>0?`<span class="green">${closedCount} cerrada${closedCount!==1?"s":""}</span>`:""}`:"Todavía no creaste ninguna sala"}
         </p></div>
-        ${hasRooms?`<span style="color:#56565F;font-size:18px">→</span>`:""}
+        ${hasRooms?`<span style="color:#5B6678;font-size:18px">→</span>`:""}
       </button>
     </div>`;
 }
@@ -456,7 +525,7 @@ function renderSetup(){
         </button>
         <p class="muted" style="margin-top:8px;text-align:center">Necesitás conectar tu cuenta para recibir los pagos</p>`}
       </div>
-      <div style="height:1px;background:#2A2A34"></div>
+      <div style="height:1px;background:#222C3C"></div>
       <div><span class="label">¿Qué están dividiendo?</span><input id="inp-title" placeholder="La cena, El asado, El viaje…"/></div>
       <div><span class="label">Total a dividir ($)</span><input id="inp-total" type="number" placeholder="60000"/><p id="amount-hint" class="muted" style="margin-top:6px"></p></div>
       <div>
@@ -470,7 +539,7 @@ function renderSetup(){
       <button class="btn-primary" onclick="createRoom()" id="btn-create" disabled>Completá todos los campos</button>
     </div>`;
 }
-function updateAddBtn(){const v=document.getElementById("inp-name")?.value.trim();const b=document.getElementById("btn-add");if(b){b.disabled=!v;b.style.background=v?"#FFB547":"#16161C";b.style.color=v?"#000":"#56565F";}}
+function updateAddBtn(){const v=document.getElementById("inp-name")?.value.trim();const b=document.getElementById("btn-add");if(b){b.disabled=!v;b.style.background=v?"#FFA23A":"#121822";b.style.color=v?"#000":"#5B6678";}}
 function updateSetupBtn(){
   const t=document.getElementById("inp-title")?.value.trim();
   const tot=parseInt(document.getElementById("inp-total")?.value||"0",10);
@@ -486,7 +555,7 @@ function renderNamesList(){
   const el=document.getElementById("names-list");if(!el)return;
   if(!S.names.length){el.innerHTML=`<p class="muted">Agregá al menos 2 participantes</p>`;el.className="dashed";return;}
   el.className="gap8";
-  el.innerHTML=S.names.map((n,i)=>`<div class="card row"><div class="row" style="gap:10px"><span class="muted">${i+1}</span><span>${n}</span></div><button onclick="removeName('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#56565F;cursor:pointer;font-size:18px;padding:0 4px">×</button></div>`).join("");
+  el.innerHTML=S.names.map((n,i)=>`<div class="card row"><div class="row" style="gap:10px"><span class="muted">${i+1}</span><span>${n}</span></div><button onclick="removeName('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#5B6678;cursor:pointer;font-size:18px;padding:0 4px">×</button></div>`).join("");
 }
 async function createRoom(){
   const title=document.getElementById("inp-title")?.value.trim();
@@ -510,10 +579,10 @@ function renderMisSalas(){
     const paidCount=r.participants.filter(p=>p.paid).length,total=r.participants.length,allPaid=paidCount===total;
     const pct=Math.round((paidCount/total)*100),amount=Math.round(r.total/total);
     const date=new Date(r.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
-    return `<button class="room-card" onclick="openRoom('${r.id}')" style="border-color:${allPaid?'#14331F':'#2A2A34'}">
-      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F5F3EE">${r.title}</p><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span></div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#4ADE80":"#FFB547"}"></div></div>
-      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F5F3EE"};font-weight:600">${paidCount}</span>/${total} pagaron · $${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
+    return `<button class="room-card" onclick="openRoom('${r.id}')" style="border-color:${allPaid?'#14331F':'#222C3C'}">
+      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F2F5FA">${r.title}</p><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#4ADE80":"#FFA23A"}"></div></div>
+      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F2F5FA"};font-weight:600">${paidCount}</span>/${total} pagaron · $${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
     </button>`;
   }
   return `
@@ -522,8 +591,8 @@ function renderMisSalas(){
       <button onclick="S.screen='home';render()" class="btn-back" style="flex-shrink:0">← Volver</button>
       <div><h1 style="font-size:22px;font-weight:700;margin:0">Mis salas</h1><p class="sub" style="margin:0">${S.rooms.length} sala${S.rooms.length!==1?"s":""} creada${S.rooms.length!==1?"s":""}</p></div>
     </div>
-    ${!S.rooms.length?`<div class="dashed" style="padding:40px 24px"><div style="font-size:36px;margin-bottom:12px">📋</div><p style="color:#8A8A96;font-size:15px;font-weight:500;margin:0 0 6px">Todavía no creaste ninguna sala</p><p class="muted" style="margin:0">Volvé al inicio para crear tu primera sala</p></div>`:``}
-    ${openRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#FFB547"></div><p class="label" style="margin:0">Salas abiertas (${openRooms.length})</p></div><div class="gap8" style="margin-bottom:20px">${openRooms.map(card).join("")}</div>`:``}
+    ${!S.rooms.length?`<div class="dashed" style="padding:40px 24px"><div style="font-size:36px;margin-bottom:12px">📋</div><p style="color:#8D97A8;font-size:15px;font-weight:500;margin:0 0 6px">Todavía no creaste ninguna sala</p><p class="muted" style="margin:0">Volvé al inicio para crear tu primera sala</p></div>`:``}
+    ${openRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#FFA23A"></div><p class="label" style="margin:0">Salas abiertas (${openRooms.length})</p></div><div class="gap8" style="margin-bottom:20px">${openRooms.map(card).join("")}</div>`:``}
     ${closedRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#4ADE80"></div><p class="label" style="margin:0">Salas cerradas (${closedRooms.length})</p></div><div class="gap8">${closedRooms.map(card).join("")}</div>`:``}`;
 }
 function openRoom(id){const r=S.rooms.find(x=>x.id===id);if(r){S.room=r;S.shareUrl=`${location.origin}/?room=${r.id}`;S.screen="adminRoom";startPolling();render();}}
@@ -541,7 +610,7 @@ function renderCreated(){
     ${r.mpAlias?`<div style="background:#0A1C2B;border:1px solid rgba(0,158,227,.25);border-radius:14px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${mpLogo(20)}<div><p class="mp-color" style="font-size:11px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.5px">Mercado Pago conectado</p><p class="sub" style="font-size:13px;margin:0">${r.mpAlias}</p></div></div>`:""}
     <div class="gap10">
       <button class="btn-primary" onclick="S.screen='adminRoom';startPolling();render()">Ver sala →</button>
-      <button onclick="S.screen='setup';render()" style="background:none;border:none;color:#56565F;font-size:13px;padding:8px;cursor:pointer">+ Crear otra sala</button>
+      <button onclick="S.screen='setup';render()" style="background:none;border:none;color:#5B6678;font-size:13px;padding:8px;cursor:pointer">+ Crear otra sala</button>
     </div>`;
 }
 function copyLink(){navigator.clipboard.writeText(S.shareUrl).catch(()=>{});const b=document.getElementById("btn-copy");if(b){b.textContent="✓ Copiado";b.className="copy-btn done";setTimeout(()=>{b.textContent="Copiar";b.className="copy-btn";},2000);}}
@@ -555,7 +624,7 @@ async function renderJoin(app){
   const r=S.room,amount=Math.round(r.total/r.participants.length);
   app.innerHTML=`
     <div style="padding-top:16px;display:flex;justify-content:flex-end;margin-bottom:8px">
-      <button onclick="goToLogin()" style="background:#16161C;border:1px solid #2A2A34;border-radius:10px;color:#FFB547;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer">Iniciar sesión / Registrarse</button>
+      <button onclick="goToLogin()" style="background:#121822;border:1px solid #222C3C;border-radius:10px;color:#FFA23A;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer">Iniciar sesión / Registrarse</button>
     </div>
     <div style="text-align:center;margin-bottom:24px">
       <img src="${LOGO}" style="display:block;margin:0 auto 14px;width:88px;height:88px;border-radius:20px;object-fit:cover;box-shadow:0 6px 20px rgba(0,0,0,.4)"/>
@@ -563,10 +632,10 @@ async function renderJoin(app){
       <p class="label" style="margin-bottom:3px">${r.title}</p>
       <p class="sub">$${amount.toLocaleString("es-AR")} por persona · ${r.participants.length} personas</p>
     </div>
-    <p style="color:#8A8A96;font-size:14px;font-weight:500;margin-bottom:14px">¿Cuál es tu nombre?</p>
+    <p style="color:#8D97A8;font-size:14px;font-weight:500;margin-bottom:14px">¿Cuál es tu nombre?</p>
     <div class="gap8">
-      ${r.participants.map(p=>`<button class="join-btn" onclick="joinAs('${p.id}')"><div class="row" style="gap:12px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:15px;font-weight:500;color:#F5F3EE">${p.name}</span>${p.paid?`<span class="badge paid">Ya pagó</span>`:""}</div><span style="color:#56565F">→</span></button>`).join("")}
-      <button onclick="joinAs(null)" style="background:none;border:none;color:#56565F;font-size:13px;padding:10px;cursor:pointer;margin-top:4px">Solo quiero ver el estado →</button>
+      ${r.participants.map(p=>`<button class="join-btn" onclick="joinAs('${p.id}')"><div class="row" style="gap:12px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:15px;font-weight:500;color:#F2F5FA">${p.name}</span>${p.paid?`<span class="badge paid">Ya pagó</span>`:""}</div><span style="color:#5B6678">→</span></button>`).join("")}
+      <button onclick="joinAs(null)" style="background:none;border:none;color:#5B6678;font-size:13px;padding:10px;cursor:pointer;margin-top:4px">Solo quiero ver el estado →</button>
     </div>`;
 }
 function joinAs(id){S.myId=id;S.screen="room";startPolling();render();}
@@ -586,17 +655,17 @@ function renderRoom(isAdmin){
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:${isAdmin?10:6}px;flex-wrap:wrap"><h1 style="font-size:21px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${r.title}</h1>${isAdmin?`<span class="badge me">Admin</span><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span>`:""}</div>`;
   if(isAdmin){
     h+=`<div class="card row" style="gap:8px;margin-bottom:10px"><div class="link-box"><p class="link-text">${S.shareUrl}</p></div><button class="copy-btn" id="btn-copy" onclick="copyLink()">Copiar link</button></div>`;
-    h+=`<div style="background:#101820;border:1px solid rgba(0,158,227,.2);border-radius:14px;padding:14px 16px;margin-bottom:10px"><div class="row" style="margin-bottom:8px"><span class="label" style="margin:0">💳 Cuenta Mercado Pago</span></div><p style="font-size:15px;font-weight:700;color:#F5F3EE;margin:0">${r.mpAlias||"Sin alias configurado"}</p></div>`;
+    h+=`<div style="background:#101820;border:1px solid rgba(0,158,227,.2);border-radius:14px;padding:14px 16px;margin-bottom:10px"><div class="row" style="margin-bottom:8px"><span class="label" style="margin:0">💳 Cuenta Mercado Pago</span></div><p style="font-size:15px;font-weight:700;color:#F2F5FA;margin:0">${r.mpAlias||"Sin alias configurado"}</p></div>`;
   }
-  h+=`<div style="display:flex;justify-content:center;position:relative;margin-top:4px">${buildWheel(r.participants,S.myId,isAdmin)}<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none"><p style="color:#8A8A96;font-size:9px;margin:0;letter-spacing:1px;text-transform:uppercase">cobrado</p><p style="font-size:15px;font-weight:700;margin:1px 0 0" id="anim-total">$${S.animTotal.toLocaleString("es-AR")}</p><p style="color:${allPaid?"#4ADE80":"#8A8A96"};font-size:10px;margin:1px 0 0">${paidCount}/${r.participants.length}</p></div></div>`;
-  if(!isAdmin&&me&&!me.paid)h+=`<div class="pay-box" style="margin-top:14px"><p class="mp-color" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px">Tu parte — ${me.name}</p><div class="row"><p style="font-size:24px;font-weight:700;margin:0">$${amount.toLocaleString("es-AR")}</p><button onclick="doPay('${me.id}','false')" id="btn-pay" ${S.loadingId?"disabled":""} style="background:${S.loadingId===me.id?"#16161C":"#009EE3"};color:${S.loadingId===me.id?"#56565F":"#fff"};border:none;border-radius:12px;padding:13px 16px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">${mpLogo(18,true)}${S.loadingId===me.id?"Abriendo…":"Pagar ahora"}</button></div></div>`;
+  h+=`<div style="display:flex;justify-content:center;position:relative;margin-top:4px">${buildWheel(r.participants,S.myId,isAdmin)}<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none"><p style="color:#8D97A8;font-size:9px;margin:0;letter-spacing:1px;text-transform:uppercase">cobrado</p><p style="font-size:15px;font-weight:700;margin:1px 0 0" id="anim-total">$${S.animTotal.toLocaleString("es-AR")}</p><p style="color:${allPaid?"#4ADE80":"#8D97A8"};font-size:10px;margin:1px 0 0">${paidCount}/${r.participants.length}</p></div></div>`;
+  if(!isAdmin&&me&&!me.paid)h+=`<div class="pay-box" style="margin-top:14px"><p class="mp-color" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px">Tu parte — ${me.name}</p><div class="row"><p style="font-size:24px;font-weight:700;margin:0">$${amount.toLocaleString("es-AR")}</p><button onclick="doPay('${me.id}','false')" id="btn-pay" ${S.loadingId?"disabled":""} style="background:${S.loadingId===me.id?"#121822":"#009EE3"};color:${S.loadingId===me.id?"#5B6678":"#fff"};border:none;border-radius:12px;padding:13px 16px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">${mpLogo(18,true)}${S.loadingId===me.id?"Abriendo…":"Pagar ahora"}</button></div></div>`;
   if(!isAdmin&&me?.paid)h+=`<div class="paid-box" style="margin-top:14px"><span style="font-size:22px">✅</span><div><p class="green" style="font-size:13px;font-weight:600;margin:0">¡Ya pagaste tu parte!</p><p class="sub" style="font-size:11px;margin-top:2px">Gracias, ${me.name} · $${amount.toLocaleString("es-AR")}</p></div></div>`;
   if(!isAdmin&&!me)h+=`<div class="card" style="margin-top:14px;text-align:center"><p class="sub" style="font-size:13px">Estás viendo el estado de la sala</p></div>`;
   if(allPaid)h+=`<div class="all-paid" style="margin-top:12px"><p class="green" style="font-size:15px;font-weight:600">🎉 ¡Todos pagaron! La sala está cerrada.</p></div>`;
   h+=`<div class="summary" style="margin-top:14px"><div><p class="sub" style="font-size:11px;margin:0">Total</p><p style="font-size:18px;font-weight:700;margin:2px 0 0">$${r.total.toLocaleString("es-AR")}</p></div><div style="text-align:right"><p class="sub" style="font-size:11px;margin:0">Por persona</p><p class="accent" style="font-size:18px;font-weight:700;margin:2px 0 0">$${amount.toLocaleString("es-AR")}</p></div></div>`;
   h+=`<div style="margin-top:16px"><p class="label" style="margin-bottom:10px">Participantes</p><div class="gap8">${r.participants.map(p=>{
     const isMe=p.id===S.myId,busy=S.loadingId===p.id;
-    return `<div class="card row" style="border-color:${p.paid?"#14331F":isMe&&!isAdmin?"rgba(255,181,71,.25)":"#2A2A34"};background:${isMe&&!isAdmin?"#22222B":"#16161C"}"><div class="row" style="gap:10px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:14px;font-weight:${isMe?600:400}">${p.name}</span>${isMe&&!isAdmin?`<span class="badge me">(vos)</span>`:""}${p.paid?`<span class="badge paid">Pagado</span>`:""}</div><div class="row" style="gap:8px"><span class="sub" style="font-size:13px">$${amount.toLocaleString("es-AR")}</span>${isAdmin&&!p.paid?`<button class="btn-small" onclick="askMarkPaid('${p.id}','${p.name.replace(/'/g,"\\'")}')">${busy?"…":"💵 Efectivo"}</button>`:""}</div></div>`;
+    return `<div class="card row" style="border-color:${p.paid?"#14331F":isMe&&!isAdmin?"rgba(255,162,58,.25)":"#222C3C"};background:${isMe&&!isAdmin?"#1A2331":"#121822"}"><div class="row" style="gap:10px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:14px;font-weight:${isMe?600:400}">${p.name}</span>${isMe&&!isAdmin?`<span class="badge me">(vos)</span>`:""}${p.paid?`<span class="badge paid">Pagado</span>`:""}</div><div class="row" style="gap:8px"><span class="sub" style="font-size:13px">$${amount.toLocaleString("es-AR")}</span>${isAdmin&&!p.paid?`<button class="btn-small" onclick="askMarkPaid('${p.id}','${p.name.replace(/'/g,"\\'")}')">${busy?"…":"💵 Efectivo"}</button>`:""}</div></div>`;
   }).join("")}</div></div>`;
   return h;
 }
