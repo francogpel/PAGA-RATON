@@ -250,6 +250,36 @@ app.patch("/api/rooms/:id/alias", requireAdmin, async (req, res) => {
 });
 
 // Marcar participante como pagado en efectivo (solo admin)
+// ═══════════════════════════════════════════════════════════════════════════════
+// Eliminar una sala.
+// Solo la puede borrar el admin que la creó, y solo mientras siga ABIERTA:
+// una vez que pagaron todos, la sala queda como constancia y no se elimina.
+// ═══════════════════════════════════════════════════════════════════════════════
+app.delete("/api/rooms/:id", requireAdmin, async (req, res) => {
+  try {
+    const ref = roomsCol().doc(req.params.id);
+    const doc = await ref.get();
+    if (!doc.exists) return res.status(404).json({ error: "Sala no encontrada" });
+
+    const room = doc.data();
+    if (room.adminUid !== req.user.uid)
+      return res.status(403).json({ error: "Esta sala no es tuya" });
+
+    const cerrada = Array.isArray(room.participants) && room.participants.length > 0
+      && room.participants.every(p => p.paid);
+    if (cerrada)
+      return res.status(409).json({
+        error: "La sala está cerrada: queda como constancia de que pagaron todos.",
+      });
+
+    await ref.delete();
+    res.json({ ok: true, id: req.params.id });
+  } catch (err) {
+    console.error("Error eliminando sala:", err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
 app.post("/api/rooms/:roomId/mark-paid/:participantId", requireAdmin, async (req, res) => {
   try {
     const ref = roomsCol().doc(req.params.roomId);

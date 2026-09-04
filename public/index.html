@@ -137,8 +137,12 @@ input::placeholder{color:var(--dim)}
 .copy-btn.done{background:rgba(74,222,128,.16);color:var(--green)}
 
 /* ── Modal / navegación ───────────────────────────────────────────────── */
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
-#modal.show{display:flex;animation:rise .25s ease}
+#modal,#confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
+#modal.show,#confirm-modal.show{display:flex;animation:rise .25s ease}
+.btn-primary.btn-danger{background:linear-gradient(135deg,#F87171,#E53E3E);color:#fff;box-shadow:0 8px 22px rgba(229,62,62,.28)}
+.btn-primary.btn-danger:hover:not(:disabled){box-shadow:0 12px 28px rgba(229,62,62,.36)}
+.room-del{background:none;border:1px solid var(--border);border-radius:8px;color:var(--dim);width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;flex-shrink:0;transition:.2s;padding:0}
+.room-del:hover{color:#FF8080;border-color:rgba(229,62,62,.5);background:rgba(229,62,62,.1)}
 .modal-box{background:var(--surface);border-radius:var(--r-xl);padding:28px 24px;width:100%;max-width:330px;border:1px solid var(--border);text-align:center;box-shadow:var(--shadow)}
 .user-pill{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r-md);padding:8px 12px;margin-top:18px;margin-bottom:16px}
 .user-pill .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#1A1206;font-weight:800;flex-shrink:0}
@@ -190,7 +194,7 @@ input::placeholder{color:var(--dim)}
 @media (min-width:1000px){
   /* Pantalla partida a sangre: 60% portada + features, 40% ingreso */
   #app[data-screen="login"]{max-width:none;padding:0}
-  .login-split{display:grid;grid-template-columns:60% 40%;min-height:100vh}
+  .login-split{display:grid;grid-template-columns:60% 40%;height:100%}
 
   /* Columna izquierda: la portada ocupa el alto libre, las tarjetas abajo */
   .login-art{display:flex;flex-direction:column;padding:0;min-width:0;background:radial-gradient(900px 520px at 32% 0%,rgba(255,181,71,.06),transparent 66%)}
@@ -201,7 +205,7 @@ input::placeholder{color:var(--dim)}
   .feature{animation:slideIn .6s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(.3s + var(--i) * .1s)}
 
   /* Columna derecha: bienvenida + formulario, sin tarjeta contenedora */
-  .login-form{display:flex;flex-direction:column;justify-content:center;padding:44px clamp(28px,3.4vw,56px);border-left:1px solid var(--border);animation:slideIn .7s .1s cubic-bezier(.22,1,.36,1) both}
+  .login-form{display:flex;flex-direction:column;justify-content:center;overflow-y:auto;padding:44px clamp(28px,3.4vw,56px);border-left:1px solid var(--border);animation:slideIn .7s .1s cubic-bezier(.22,1,.36,1) both}
   .login-form .welcome{display:block;width:100%;max-width:430px;margin:0 auto 26px}
   .login-form .auth-card{width:100%;max-width:430px;margin:0 auto;background:none;border:none;border-radius:0;padding:0;box-shadow:none}
   .login-form .dev-credit{width:100%;max-width:430px;margin:30px auto 0}
@@ -259,6 +263,48 @@ input::placeholder{color:var(--dim)}
 .legal-date{font-size:11.5px;color:var(--dim);margin-top:20px}
 .legal-foot{padding:16px 22px 20px;border-top:1px solid var(--border);flex-shrink:0}
 .legal-foot .btn-primary{padding:13px}
+
+/* ── Login: siempre una sola pantalla, sin scroll ─────────────────────── */
+#app[data-screen="login"]{height:100vh;height:100dvh;max-height:100dvh;padding:0;overflow:hidden}
+@media (max-width:999px){
+  .login-split{height:100%;display:flex;flex-direction:column}
+  .login-art{flex:0 0 auto}
+  .hero{height:clamp(140px,26dvh,300px);width:100%;margin:0;aspect-ratio:auto;max-height:none;border-radius:0}
+  .login-form{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;padding:0 20px clamp(8px,1.6dvh,20px)}
+  .auth-card{padding:clamp(12px,2dvh,20px)}
+  .seg{margin-bottom:clamp(10px,1.9dvh,20px)}
+  .btn-google{padding:clamp(10px,1.7dvh,15px)}
+  .divider{margin:clamp(10px,1.9dvh,20px) 0}
+  input{padding:clamp(10px,1.6dvh,15px) 14px}
+  .gap10{gap:clamp(6px,1.1dvh,10px)}
+  .btn-primary{padding:clamp(11px,2dvh,16px)}
+  .label{margin-bottom:clamp(4px,.9dvh,9px)}
+  .switch-line{margin-top:clamp(8px,1.5dvh,16px)}
+  .remember{font-size:12.5px}
+  .dev-credit{margin-top:clamp(10px,1.9dvh,28px);padding-top:clamp(8px,1.5dvh,20px);gap:clamp(4px,.9dvh,10px)}
+  .dev-logo img{height:clamp(18px,3dvh,34px)}
+}
+@media (max-width:999px) and (max-height:700px){
+  /* Celulares bajos: se recorta el respiro para que igual entre todo */
+  .hero{height:clamp(120px,20dvh,300px)}
+  .auth-card{padding:10px}
+  .seg button{padding:9px 8px}
+  .btn-google{padding:10px}
+  .divider{margin:8px 0}
+  .switch-line{margin-top:7px;font-size:12px}
+  .gap10{gap:5px}
+  .dev-credit{margin-top:5px;padding-top:5px;gap:3px}
+  .dev-credit p{font-size:11px}
+  .dev-logo img{height:20px}
+  .dev-privacy{font-size:10.5px}
+}
+@media (max-width:999px) and (max-height:655px){
+  /* Celulares muy bajos: la pestaña ya ofrece crear cuenta, el link sobra */
+  .hero{height:clamp(105px,18dvh,300px)}
+  .switch-line{display:none}
+  .dev-logo img{height:16px}
+}
+.err:empty{min-height:0;margin:0}
 
 /* ── Bienvenida y tarjetas de features (solo escritorio) ──────────────── */
 .welcome,.features{display:none}
@@ -321,6 +367,18 @@ svg{overflow:visible}
     </div>
     <div class="legal-body" id="legal-body"></div>
     <div class="legal-foot"><button class="btn-primary" onclick="closeLegal()">Entendido</button></div>
+  </div>
+</div>
+
+<div id="confirm-modal">
+  <div class="modal-box">
+    <div style="font-size:32px;margin-bottom:12px" id="confirm-emoji">❓</div>
+    <h3 id="confirm-title" style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)"></h3>
+    <p id="confirm-text" style="color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:24px"></p>
+    <div style="display:flex;gap:10px">
+      <button class="btn-ghost" style="flex:1;padding:14px" onclick="closeConfirm()" id="confirm-no">Cancelar</button>
+      <button class="btn-primary" style="flex:1;padding:14px" onclick="runConfirm()" id="confirm-yes">Sí</button>
+    </div>
   </div>
 </div>
 
@@ -560,7 +618,7 @@ function renderLogin(){
             </label>
             <p class="err" id="auth-err"></p>
             <button class="btn-primary btn-cta" onclick="signInEmail(${isSignup})">
-              ${isSignup?"Crear mi cuenta":"Ingresar a la cancha"}<span>→</span>
+              ${isSignup?"Crear mi cuenta":"Ingresar"}<span>→</span>
             </button>
           </div>
           <p class="switch-line">
@@ -632,7 +690,7 @@ function hamburgerHTML(){
 }
 function toggleMenu(e){ e.stopPropagation(); S.menuOpen=!S.menuOpen; render(); }
 function menuGo(screen){ S.menuOpen=false; stopPolling(); S.screen=screen; render(); }
-function menuLogout(){ S.menuOpen=false; signOut(); }
+function menuLogout(){ S.menuOpen=false; render(); askSignOut(); }
 
 function userPillHTML(withMenu){
   if(!S.user) return "";
@@ -641,7 +699,7 @@ function userPillHTML(withMenu){
   return `<div class="user-pill">
     <div class="av">${ini}</div>
     <span class="sub" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
-    ${withMenu?hamburgerHTML():`<button onclick="signOut()" style="background:none;border:none;color:#60606C;font-size:12px;cursor:pointer">Salir</button>`}
+    ${withMenu?hamburgerHTML():`<button onclick="askSignOut()" style="background:none;border:none;color:#60606C;font-size:12px;cursor:pointer">Salir</button>`}
   </div>`;
 }
 
@@ -757,11 +815,12 @@ function renderMisSalas(){
     const paidCount=r.participants.filter(p=>p.paid).length,total=r.participants.length,allPaid=paidCount===total;
     const pct=Math.round((paidCount/total)*100),amount=Math.round(r.total/total);
     const date=new Date(r.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
-    return `<button class="room-card" onclick="openRoom('${r.id}')" style="border-color:${allPaid?'#14331F':'#22222A'}">
-      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F5F3EE">${r.title}</p><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span></div>
+    const abrir=`openRoom('${r.id}')`;
+    return `<div class="room-card" role="button" tabindex="0" onclick="${abrir}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${abrir}}" style="border-color:${allPaid?'#14331F':'#22222A'}">
+      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F5F3EE">${r.title}</p><div class="row" style="gap:8px;flex-shrink:0"><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span>${allPaid?"":`<button class="room-del" title="Eliminar sala" aria-label="Eliminar sala" onclick="event.stopPropagation();askDeleteRoom('${r.id}','${r.title.replace(/'/g,"\\'")}')">🗑</button>`}</div></div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#4ADE80":"#FFB547"}"></div></div>
-      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F5F3EE"};font-weight:600">${paidCount}</span>/${total} pagaron · $${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
-    </button>`;
+      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F5F3EE"};font-weight:600">${paidCount}</span>/${total} pagaron · ${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
+    </div>`;
   }
   return `
     ${userPillHTML(true)}
@@ -1031,7 +1090,60 @@ function closeLegal(){
   if (m) m.classList.remove("show");
 }
 
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();closeLegal();}});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODAL DE CONFIRMACIÓN GENÉRICO
+// Lo usan el cierre de sesión y el borrado de salas.
+// ═══════════════════════════════════════════════════════════════════════════════
+let confirmAction=null;
+function askConfirm(o){
+  confirmAction=o.action||null;
+  document.getElementById("confirm-emoji").textContent=o.emoji||"❓";
+  document.getElementById("confirm-title").textContent=o.title||"";
+  document.getElementById("confirm-text").innerHTML=o.text||"";
+  const yes=document.getElementById("confirm-yes");
+  yes.textContent=o.yes||"Sí";
+  yes.classList.toggle("btn-danger",!!o.danger);
+  document.getElementById("confirm-no").textContent=o.no||"Cancelar";
+  document.getElementById("confirm-modal").classList.add("show");
+}
+function closeConfirm(){ document.getElementById("confirm-modal").classList.remove("show"); confirmAction=null; }
+function runConfirm(){ const a=confirmAction; closeConfirm(); if(a) a(); }
+
+// Cerrar sesión, previa confirmación.
+function askSignOut(){
+  askConfirm({
+    emoji:"🚪", title:"Cerrar sesión", danger:true, yes:"Sí, salir",
+    text:"¿Seguro que querés salir? Vas a tener que ingresar de nuevo para ver tus salas.",
+    action:signOut,
+  });
+}
+
+// Borrar una sala. Las cerradas no se pueden borrar: quedan como constancia,
+// así que el botón ni siquiera se dibuja. El servidor lo vuelve a chequear.
+function askDeleteRoom(id,title){
+  askConfirm({
+    emoji:"🗑️", title:"Eliminar sala", danger:true, yes:"Sí, eliminar",
+    text:`Se va a borrar <strong style="color:var(--text)">${title}</strong> y su link va a dejar de funcionar. Esto no se puede deshacer.`,
+    action:()=>deleteRoom(id),
+  });
+}
+async function deleteRoom(id){
+  try{
+    const res=await authFetch(`/api/rooms/${id}`,{method:"DELETE"});
+    if(!res.ok){
+      const d=await res.json().catch(()=>({}));
+      alert(d.error||"No se pudo eliminar la sala.");
+      return;
+    }
+    S.rooms=S.rooms.filter(r=>r.id!==id);
+    if(S.room&&S.room.id===id){ S.room=null; stopPolling(); S.screen="mis-salas"; }
+    render();
+  }catch{ alert("Error al eliminar la sala."); }
+}
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();closeLegal();closeConfirm();}});
+document.getElementById("confirm-modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeConfirm();});
 document.getElementById("legal-modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeLegal();});
 document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
 document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".hamb")&&!e.target.closest(".menu")){S.menuOpen=false;render();}});
