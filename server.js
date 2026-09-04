@@ -34,11 +34,19 @@ const PUBLIC_URL = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
 // ═══════════════════════════════════════════════════════════════════════════════
 let db = null; // referencia a Firestore
 try {
-  const raw            = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || "", "base64").toString();
-  const serviceAccount = JSON.parse(raw);
-  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+  const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_JSON || "";
+  if (b64) {
+    // Hosting externo (Render, VPS, local): la clave viaja en una variable.
+    const serviceAccount = JSON.parse(Buffer.from(b64, "base64").toString());
+    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    console.log("✅ Firebase Admin inicializado con la clave de servicio");
+  } else {
+    // Cloud Functions / Cloud Run: las credenciales las provee el entorno,
+    // así que no hace falta guardar ninguna clave en ninguna variable.
+    admin.initializeApp();
+    console.log("✅ Firebase Admin inicializado con las credenciales del entorno");
+  }
   db = admin.firestore();
-  console.log("✅ Firebase Admin + Firestore inicializados");
 } catch (e) {
   console.warn("⚠️  Firebase/Firestore NO configurado. La app necesita esto para guardar salas.");
   console.warn("    Detalle:", e.message);
@@ -410,12 +418,21 @@ app.post("/api/webhook", async (req, res) => {
   }
 });
 
-// ─── Iniciar servidor ─────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🚀 Pagá Ratón corriendo en puerto ${PORT}`);
-  console.log(`🌐 URL: ${PUBLIC_URL}`);
-  console.log(`\nEstado de configuración:`);
-  console.log(`  Firestore:  ${db ? "✅ conectado (salas persistentes)" : "❌ FALTA — las salas no se guardarán"}`);
-  console.log(`  MP Token:   ${process.env.MP_ACCESS_TOKEN ? "✅" : "❌ falta MP_ACCESS_TOKEN"}`);
-  console.log(`  MP OAuth:   ${process.env.MP_CLIENT_ID ? "✅" : "❌ falta MP_CLIENT_ID"}\n`);
-});
+// ═══════════════════════════════════════════════════════════════════════════════
+// ARRANQUE
+// Ejecutado directo (`node server.js` en Render, en un VPS o en local) levanta
+// el servidor. Importado desde index.js (Cloud Functions) NO llama a listen():
+// de escuchar se encarga el runtime.
+// ═══════════════════════════════════════════════════════════════════════════════
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Pagá Ratón corriendo en puerto ${PORT}`);
+    console.log(`🌐 URL: ${PUBLIC_URL}`);
+    console.log(`\nEstado de configuración:`);
+    console.log(`  Firestore:  ${db ? "✅ conectado (salas persistentes)" : "❌ FALTA — las salas no se guardarán"}`);
+    console.log(`  MP Token:   ${process.env.MP_ACCESS_TOKEN ? "✅" : "❌ falta MP_ACCESS_TOKEN"}`);
+    console.log(`  MP OAuth:   ${process.env.MP_CLIENT_ID ? "✅" : "❌ falta MP_CLIENT_ID"}\n`);
+  });
+}
+
+module.exports = app;
