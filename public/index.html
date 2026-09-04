@@ -209,6 +209,25 @@ input::placeholder{color:var(--dim)}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+/* ── Modal legal ──────────────────────────────────────────────────────── */
+#legal-modal{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:300;padding:20px}
+#legal-modal.show{display:flex;animation:rise .25s ease}
+.legal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column;box-shadow:var(--shadow);overflow:hidden}
+.legal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px 15px;border-bottom:1px solid var(--border);flex-shrink:0}
+.legal-head h3{font-size:17px;font-weight:700;margin:0;color:var(--text)}
+.legal-close{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;color:var(--muted);width:32px;height:32px;font-size:19px;line-height:1;cursor:pointer;flex-shrink:0;transition:.2s}
+.legal-close:hover{color:var(--text);border-color:var(--border-hi)}
+.legal-body{overflow-y:auto;padding:20px 22px;font-size:13.5px;line-height:1.62;color:var(--muted);-webkit-overflow-scrolling:touch}
+.legal-body h4{color:var(--text);font-size:14px;font-weight:700;margin:22px 0 8px}
+.legal-body p{margin:0 0 10px}
+.legal-body ul{margin:0 0 12px;padding-left:18px}
+.legal-body li{margin-bottom:7px}
+.legal-body strong{color:var(--text);font-weight:600}
+.legal-alert{background:linear-gradient(180deg,rgba(255,162,58,.11),rgba(255,162,58,.03));border:1px solid rgba(255,162,58,.3);border-radius:var(--r-md);padding:15px 17px;margin-bottom:20px;color:var(--muted);font-size:13px}
+.legal-date{font-size:11.5px;color:var(--dim);margin-top:20px}
+.legal-foot{padding:16px 22px 20px;border-top:1px solid var(--border);flex-shrink:0}
+.legal-foot .btn-primary{padding:13px}
+
 /* ── Crédito de desarrollo (Infinity Solutions) ───────────────────────── */
 .dev-credit{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center}
 .dev-credit p{font-size:12px;color:var(--dim);margin:0}
@@ -234,6 +253,17 @@ svg{overflow:visible}
       <button onclick="closeModal()" class="btn-ghost" style="flex:1;padding:14px">No</button>
       <button onclick="confirmMarkPaid()" class="btn-primary" style="flex:1;padding:14px">Sí, confirmar</button>
     </div>
+  </div>
+</div>
+
+<div id="legal-modal">
+  <div class="legal-box">
+    <div class="legal-head">
+      <h3>Políticas de privacidad y términos</h3>
+      <button class="legal-close" onclick="closeLegal()" aria-label="Cerrar">×</button>
+    </div>
+    <div class="legal-body" id="legal-body"></div>
+    <div class="legal-foot"><button class="btn-primary" onclick="closeLegal()">Entendido</button></div>
   </div>
 </div>
 
@@ -467,7 +497,7 @@ function renderLogin(){
           <a class="dev-logo" href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer" aria-label="Infinity Solutions">
             <img src="./infinity-solutions.png" alt="Infinity Solutions" width="218" height="120" loading="lazy"/>
           </a>
-          <a class="dev-privacy" href="#">Políticas de privacidad y términos</a>
+          <a class="dev-privacy" href="#" onclick="openLegal();return false">Políticas de privacidad y términos</a>
         </div>
       </section>
     </div>`;
@@ -766,7 +796,153 @@ function animateTotal(from,to){
   animFrame=requestAnimationFrame(tick);
 }
 
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODAL LEGAL — políticas de privacidad y términos de uso
+//
+// ⚠️  COMPLETAR: casilla a la que los usuarios escriben para ejercer sus derechos
+//     sobre los datos (Ley 25.326). Si queda vacía, el texto remite al sitio de
+//     Infinity Solutions en lugar de mostrar un mail inventado.
+// ═══════════════════════════════════════════════════════════════════════════════
+const LEGAL_CONTACTO = "";
+const LEGAL_FECHA    = "4 de septiembre de 2026";
+
+function legalHTML(){
+  const contacto = LEGAL_CONTACTO
+    ? `<a href="mailto:${LEGAL_CONTACTO}" style="color:var(--accent);font-weight:600">${LEGAL_CONTACTO}</a>`
+    : `el formulario de contacto de <a href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600">Infinity Solutions</a>`;
+
+  return `
+    <div class="legal-alert">
+      <strong>Datos bancarios y verificación de identidad.</strong> Para poder cobrar
+      a través de Pagá Ratón tenés que conectar tu cuenta de Mercado Pago. En ese
+      momento recolectamos y almacenamos datos personales de carácter financiero
+      —el identificador de tu usuario de Mercado Pago, tu alias y las credenciales
+      de acceso que Mercado Pago nos entrega— con la finalidad de <strong>confirmar
+      tu identidad como titular de la cuenta</strong> y garantizar que los pagos de
+      tus invitados se acrediten en esa cuenta y no en otra.
+    </div>
+
+    <h4>1. Quiénes somos y qué hace esta app</h4>
+    <p>Pagá Ratón es una herramienta para dividir gastos entre varias personas y
+    llevar el registro de quién pagó y quién no. Está desarrollada y operada por
+    <strong>Infinity Solutions</strong>.</p>
+    <p>Pagá Ratón <strong>no es un banco, ni una entidad financiera, ni un proveedor
+    de servicios de pago</strong>. No custodiamos, no administramos y no transferimos
+    dinero: los pagos se realizan íntegramente dentro de Mercado Pago y van directo
+    de quien paga a la cuenta del organizador de la sala.</p>
+
+    <h4>2. Qué datos personales recolectamos</h4>
+    <ul>
+      <li><strong>De tu cuenta:</strong> nombre, dirección de correo electrónico y,
+      si ingresás con Google, tu foto de perfil. La autenticación la administra
+      Firebase Authentication (Google).</li>
+      <li><strong>Datos financieros de identidad:</strong> al conectar tu cuenta de
+      Mercado Pago guardamos el identificador de tu usuario, tu alias o apodo de
+      Mercado Pago y los tokens de acceso y de renovación que Mercado Pago emite a
+      tu nombre. Sirven para verificar que sos el titular de la cuenta que va a
+      cobrar y para generar los links de pago.</li>
+      <li><strong>De las salas que creás:</strong> título del gasto, monto total,
+      los nombres de los participantes que cargues y el estado de pago de cada uno,
+      junto con el identificador del pago que devuelve Mercado Pago.</li>
+      <li><strong>Datos técnicos:</strong> registros de acceso y de errores
+      necesarios para operar y dar soporte al servicio.</li>
+    </ul>
+
+    <h4>3. Qué datos NO recolectamos nunca</h4>
+    <p>No pedimos, no vemos y no almacenamos <strong>números de tarjeta, código de
+    seguridad (CVV), fecha de vencimiento, CBU, CVU ni claves de home banking</strong>.
+    Esa información se ingresa exclusivamente dentro del entorno de Mercado Pago,
+    que actúa como procesador de pagos y responde por ella según sus propias
+    políticas de privacidad y seguridad.</p>
+
+    <h4>4. Para qué usamos tus datos</h4>
+    <p>Únicamente para: identificarte al ingresar; mostrarte tus salas y su historial;
+    confirmar tu identidad como titular de la cuenta de cobro; generar los links de
+    pago y acreditar automáticamente los pagos recibidos; prevenir fraudes y usos
+    indebidos; y cumplir obligaciones legales. <strong>No vendemos, alquilamos ni
+    cedemos tus datos con fines publicitarios.</strong></p>
+
+    <h4>5. Con quién los compartimos</h4>
+    <ul>
+      <li><strong>Mercado Pago:</strong> procesamiento de los pagos y verificación
+      de la titularidad de la cuenta.</li>
+      <li><strong>Google (Firebase):</strong> autenticación de usuarios y base de
+      datos donde se guardan las salas.</li>
+      <li><strong>Render:</strong> alojamiento del servidor.</li>
+    </ul>
+    <p>No compartimos información con terceros ajenos a la prestación del servicio.</p>
+
+    <h4>6. Conservación y baja de los datos</h4>
+    <p>Conservamos tus datos mientras mantengas tu cuenta activa. Podés desconectar
+    tu cuenta de Mercado Pago en cualquier momento desde la propia app, lo que
+    elimina las credenciales almacenadas. Si solicitás la baja, eliminamos tus datos
+    personales salvo aquellos que debamos conservar por una obligación legal.</p>
+
+    <h4>7. Tus derechos sobre tus datos</h4>
+    <p>Podés ejercer en cualquier momento tus derechos de <strong>acceso,
+    rectificación, actualización, supresión y oposición</strong> respecto de tus
+    datos personales, conforme a la <strong>Ley N° 25.326 de Protección de los Datos
+    Personales</strong>. Para hacerlo, escribinos a través de ${contacto}.</p>
+    <p>El titular de los datos personales tiene la facultad de ejercer el derecho de
+    acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses,
+    salvo que se acredite un interés legítimo al efecto conforme lo establecido en el
+    artículo 14, inciso 3 de la Ley N° 25.326.</p>
+    <p>La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, en su carácter de Órgano de
+    Control de la Ley N° 25.326, tiene la atribución de atender las denuncias y
+    reclamos que interpongan quienes resulten afectados en sus derechos por
+    incumplimiento de las normas vigentes en materia de protección de datos
+    personales.</p>
+
+    <h4>8. Seguridad de la información</h4>
+    <p>La comunicación con la app viaja cifrada mediante HTTPS. Las credenciales de
+    Mercado Pago se guardan en una base a la que solo accede nuestro servidor: ningún
+    navegador ni participante puede leerlas, y nunca se envían al cliente. Aun así,
+    ningún sistema es infalible; si detectamos un incidente que afecte tus datos, te
+    lo vamos a notificar.</p>
+
+    <h4>9. Mayoría de edad</h4>
+    <p>El servicio está dirigido a personas mayores de 18 años. Si sos menor de edad,
+    no podés crear una cuenta ni conectar una cuenta de Mercado Pago.</p>
+
+    <h4>10. Términos de uso y responsabilidad</h4>
+    <ul>
+      <li>Pagá Ratón es una herramienta de organización: muestra quién pagó y quién
+      no, pero <strong>no garantiza que los participantes paguen</strong> ni asume
+      responsabilidad por deudas entre ellos.</li>
+      <li>Las diferencias sobre montos, devoluciones o pagos duplicados se resuelven
+      entre los participantes y, en lo que corresponda, con Mercado Pago.</li>
+      <li>Si creás una sala y cargás los nombres de otras personas, sos responsable
+      de contar con su consentimiento para hacerlo.</li>
+      <li>No está permitido usar la app para actividades ilícitas, ni para cobrar
+      bienes o servicios prohibidos por la ley o por las políticas de Mercado Pago.</li>
+      <li>Podemos suspender cuentas que incumplan estos términos.</li>
+    </ul>
+
+    <h4>11. Cambios en estas políticas</h4>
+    <p>Podemos actualizar este texto para reflejar cambios en el servicio o en la
+    normativa. La fecha de la última actualización figura al pie.</p>
+
+    <h4>12. Ley aplicable</h4>
+    <p>Estas políticas se rigen por las leyes de la <strong>República Argentina</strong>,
+    en particular la Ley N° 25.326 de Protección de los Datos Personales y la Ley
+    N° 24.240 de Defensa del Consumidor.</p>
+
+    <p class="legal-date">Última actualización: ${LEGAL_FECHA}.</p>`;
+}
+
+function openLegal(){
+  const body = document.getElementById("legal-body");
+  if (body && !body.innerHTML.trim()) body.innerHTML = legalHTML();
+  const m = document.getElementById("legal-modal");
+  if (m) { m.classList.add("show"); m.scrollTop = 0; if (body) body.scrollTop = 0; }
+}
+function closeLegal(){
+  const m = document.getElementById("legal-modal");
+  if (m) m.classList.remove("show");
+}
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();closeLegal();}});
+document.getElementById("legal-modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeLegal();});
 document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
 document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".hamb")&&!e.target.closest(".menu")){S.menuOpen=false;render();}});
 
