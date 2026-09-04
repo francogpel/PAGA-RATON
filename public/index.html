@@ -143,6 +143,7 @@ input::placeholder{color:var(--dim)}
 .email-box .legal-head{padding:18px 20px 14px}
 .email-body{padding:18px 20px 22px}
 .email-body .switch-line{margin-top:16px}
+.btn-google:disabled,.btn-mail:disabled{opacity:.55;cursor:default;transform:none;box-shadow:none}
 .btn-mail{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:clamp(10px,1.7dvh,16px)}
 .btn-primary.btn-danger{background:linear-gradient(135deg,#F87171,#E53E3E);color:#fff;box-shadow:0 8px 22px rgba(229,62,62,.28)}
 .btn-primary.btn-danger:hover:not(:disabled){box-shadow:0 12px 28px rgba(229,62,62,.36)}
@@ -397,7 +398,7 @@ const S = {
   screen:"loading", user:null, rooms:[], room:null, myId:null, shareUrl:"",
   loadingId:null, animTotal:0, polling:null, pendingMarkId:null, mpStatus:null,
   authReady:false, menuOpen:false, names:[], mpConnecting:false,
-  authTab:"login", authEmail:"", remember:true,
+  authTab:"login", authEmail:"", remember:true, authError:"", authBusy:false,
 };
 
 const urlParams   = new URLSearchParams(location.search);
@@ -409,10 +410,23 @@ async function initFirebase(){
     const cfg = await fetch("/api/config").then(r=>r.json());
     if(!cfg.apiKey){ S.authReady=true; startApp(); return; }
     firebase.initializeApp(cfg);
+
+    // Al volver de un login por redirección (el que usa el celular) acá
+    // aparece el error, si Google lo rechazó.
+    firebase.auth().getRedirectResult().catch(e=>{
+      if(e && e.code) S.authError = authErrMsg(e.code);
+    });
+
     firebase.auth().onAuthStateChanged(async user=>{
+      const entroRecien = !S.user && !!user;
       S.user = user;
       if(user) await loadAdminData();
-      if(!S.authReady){ S.authReady=true; startApp(); } else render();
+      if(!S.authReady){ S.authReady=true; startApp(); return; }
+      // Si acaba de autenticarse y seguía parado en el login, lo llevamos
+      // al inicio. Antes esto lo hacía cada función de login por su cuenta.
+      if(entroRecien && S.screen==="login"){ closeEmailModal(); S.screen="home"; }
+      S.authBusy=false;
+      render();
     });
   }catch{ S.authReady=true; startApp(); }
 }
@@ -431,8 +445,31 @@ async function authFetch(url,opts={}){
 async function signInGoogle(){
   setAuthErr("");
   await applyPersistence();
-  try{ await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); await loadAdminData(); closeEmailModal(); S.screen="home"; render(); }
-  catch(e){ setAuthErr(authErrMsg(e.code)); }
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  // En el celular el popup lo bloquean casi todos los navegadores (y siempre
+  // los que vienen dentro de Instagram o WhatsApp), así que vamos derecho por
+  // redirección: la página se va a Google y vuelve ya autenticada.
+  if(isMobileLayout()){
+    setAuthBusy(true,"Llevándote a Google…");
+    try{ await firebase.auth().signInWithRedirect(provider); }
+    catch(e){ setAuthBusy(false); setAuthErr(authErrMsg(e.code)); }
+    return;
+  }
+
+  setAuthBusy(true,"Esperando a Google…");
+  try{
+    await firebase.auth().signInWithPopup(provider);
+    setAuthInfo("Entrando…"); // onAuthStateChanged termina el viaje
+  }catch(e){
+    const sinPopup = e.code==="auth/popup-blocked"
+      || e.code==="auth/operation-not-supported-in-this-environment";
+    if(sinPopup){
+      try{ await firebase.auth().signInWithRedirect(provider); return; }catch{}
+    }
+    setAuthBusy(false);
+    setAuthErr(authErrMsg(e.code));
+  }
 }
 async function signInEmail(isSignup){
   setAuthErr("");
@@ -440,11 +477,12 @@ async function signInEmail(isSignup){
   const email=document.getElementById("inp-email")?.value.trim();
   const pass=document.getElementById("inp-pass")?.value;
   if(!email||!pass) return setAuthErr("Completá email y contraseña");
+  setAuthBusy(true, isSignup?"Creando tu cuenta…":"Entrando…");
   try{
     if(isSignup) await firebase.auth().createUserWithEmailAndPassword(email,pass);
     else         await firebase.auth().signInWithEmailAndPassword(email,pass);
-    await loadAdminData(); closeEmailModal(); S.screen="home"; render();
-  }catch(e){ setAuthErr(authErrMsg(e.code)); }
+    // De acá en adelante sigue onAuthStateChanged: carga las salas y navega.
+  }catch(e){ setAuthBusy(false); setAuthErr(authErrMsg(e.code)); }
 }
 function signOut(){
   firebase.auth().signOut();
@@ -454,18 +492,47 @@ function signOut(){
 function authErrMsg(code){
   const m={"auth/user-not-found":"No existe una cuenta con ese email","auth/wrong-password":"Contraseña incorrecta",
     "auth/invalid-credential":"Email o contraseña incorrectos","auth/email-already-in-use":"Ya existe una cuenta con ese email",
-    "auth/weak-password":"La contraseña debe tener al menos 6 caracteres","auth/invalid-email":"Email inválido","auth/popup-closed-by-user":""};
-  return m[code]||"Ocurrió un error. Intentá de nuevo.";
+    "auth/weak-password":"La contraseña debe tener al menos 6 caracteres","auth/invalid-email":"Email inválido",
+    "auth/popup-closed-by-user":"","auth/cancelled-popup-request":"","auth/user-cancelled":"",
+    "auth/popup-blocked":"Tu navegador bloqueó la ventana de Google. Probá de nuevo.",
+    "auth/network-request-failed":"Sin conexión. Revisá internet y probá de nuevo.",
+    "auth/too-many-requests":"Demasiados intentos. Esperá un momento.",
+    "auth/unauthorized-domain":"Este dominio no está autorizado en Firebase.",
+    "auth/account-exists-with-different-credential":"Ya existe una cuenta con ese email, entrá con el otro método."};
+  // Ojo: algunos códigos mapean a cadena vacía a propósito (cerrar el popup
+  // no es un error que haya que mostrar), así que no se puede usar ||.
+  return code in m ? m[code] : "Ocurrió un error. Intentá de nuevo.";
 }
-function setAuthErr(msg){ const el=document.getElementById("auth-err"); if(el){ el.style.color=""; el.textContent=msg; } }
-function setAuthOk(msg){ const el=document.getElementById("auth-err"); if(el){ el.style.color="var(--green)"; el.textContent=msg; } }
+// El renglón de mensajes existe en dos lugares distintos (en línea en
+// escritorio, dentro del modal en celular). Escribimos en todos los que haya:
+// antes se buscaba un id único y en celular no existía, así que los errores
+// del login con Google se perdían y el botón parecía no hacer nada.
+function authMsgEls(){ return Array.from(document.querySelectorAll(".auth-msg")); }
+function setAuthErr(msg){ authMsgEls().forEach(el=>{ el.style.color=""; el.textContent=msg; }); }
+function setAuthOk(msg){ authMsgEls().forEach(el=>{ el.style.color="var(--green)"; el.textContent=msg; }); }
+function setAuthInfo(msg){ authMsgEls().forEach(el=>{ el.style.color="var(--accent)"; el.textContent=msg; }); }
 
+// Deja los botones fuera de servicio y avisa que está trabajando, para que no
+// parezca colgado mientras el servidor responde.
+function setAuthBusy(on,texto){
+  S.authBusy=!!on;
+  document.querySelectorAll(".btn-google,.btn-mail,.btn-cta").forEach(b=>{ b.disabled=!!on; });
+  if(on) setAuthInfo(texto||"Conectando…"); else setAuthErr("");
+}
+
+// Si dos flujos la piden a la vez (onAuthStateChanged y el botón de login),
+// comparten la misma petición en lugar de duplicar la ida al servidor.
+let adminDataEnCurso=null;
 async function loadAdminData(){
+  if(adminDataEnCurso) return adminDataEnCurso;
+  adminDataEnCurso=(async()=>{
   try{
     const [roomsRes,mpRes]=await Promise.all([authFetch("/api/rooms"),authFetch("/api/mp-oauth/status")]);
     if(roomsRes.ok) S.rooms=await roomsRes.json();
     if(mpRes.ok)    S.mpStatus=await mpRes.json();
   }catch{}
+  })();
+  try{ return await adminDataEnCurso; } finally { adminDataEnCurso=null; }
 }
 
 async function connectMercadoPago(){
@@ -569,7 +636,7 @@ function authFieldsHTML(isSignup){
         <span class="remember-box">${ICON_CHECK}</span>
         Recordar mi sesión en este dispositivo
       </label>
-      <p class="err" id="auth-err"></p>
+      <p class="err auth-msg"></p>
       <button class="btn-primary btn-cta" onclick="signInEmail(${isSignup})">
         ${isSignup?"Crear mi cuenta":"Ingresar"}<span>→</span>
       </button>
@@ -594,7 +661,12 @@ function wireAuthFields(){
 function renderLogin(){
   const isSignup = S.authTab === "signup";
   const movil = isMobileLayout();
-  if(!movil) setTimeout(wireAuthFields,0);
+  setTimeout(()=>{
+    if(!movil) wireAuthFields();
+    // Un error traído desde la redirección de Google se muestra recién ahora,
+    // cuando ya existe el renglón donde escribirlo.
+    if(S.authError){ setAuthErr(S.authError); S.authError=""; }
+  },0);
   return `
     <div class="login-split">
       <section class="login-art">
@@ -623,7 +695,8 @@ function renderLogin(){
           <button class="btn-ghost btn-mail" onclick="openEmailModal(${isSignup})">
             ${ICON_MAIL}
             ${isSignup?"Registrarme con correo electrónico":"Ingresar con correo electrónico"}
-          </button>` : `
+          </button>
+          <p class="err auth-msg" style="margin-top:10px"></p>` : `
           <div class="divider"><span>o con tu email</span></div>
           ${authFieldsHTML(isSignup)}`}
           ${switchLineHTML(isSignup, movil)}
