@@ -6,34 +6,38 @@
 <title>Pagá Ratón</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet"/>
 <style>
 /* ── Tokens de diseño ─────────────────────────────────────────────────── */
 :root{
-  --bg:#080B12;
-  --surface:#121822;
-  --surface-2:#0C111A;
-  --elevated:#1A2331;
-  --border:#222C3C;
-  --border-hi:#313F55;
-  --text:#F2F5FA;
-  --muted:#8D97A8;
-  --dim:#5B6678;
-  --accent:#FFA23A;
-  --accent-2:#FF6B00;
+  --bg:#0B0B0F;
+  --surface:#16161C;
+  --surface-2:#131319;
+  --elevated:#1A1A22;
+  --border:#22222A;
+  --border-hi:#33333D;
+  --text:#F5F3EE;
+  --muted:#9E9EA8;
+  --dim:#60606C;
+  --accent:#FFB547;
+  --accent-2:#FF6B18;
   --green:#4ADE80;
   --red:#F87171;
   --mp:#009EE3;
+  --celeste:#75AADB;
+  --success:#00C982;
+  --danger:#E53E3E;
+  --font-display:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --r-sm:10px;--r-md:14px;--r-lg:18px;--r-xl:24px;
   --shadow:0 12px 32px rgba(0,0,0,.45);
-  --glow:0 8px 22px rgba(255,107,0,.22);
+  --glow:0 8px 22px rgba(255,107,24,.22);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   background:var(--bg);
   background-image:
-    radial-gradient(900px 520px at 50% -12%,rgba(255,162,58,.08),transparent 70%),
+    radial-gradient(900px 520px at 50% -12%,rgba(255,181,71,.08),transparent 70%),
     radial-gradient(700px 420px at 115% 105%,rgba(0,158,227,.07),transparent 70%);
   background-attachment:fixed;
   color:var(--text);min-height:100vh;display:flex;justify-content:center;
@@ -57,12 +61,12 @@ body{
 /* ── Formularios ──────────────────────────────────────────────────────── */
 input,button{font-family:inherit}
 input{background:rgba(255,255,255,.035);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:16px;padding:15px 14px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s,background .2s}
-input:focus{border-color:var(--accent);background:rgba(255,255,255,.055);box-shadow:0 0 0 3px rgba(255,162,58,.15)}
+input:focus{border-color:var(--accent);background:rgba(255,255,255,.055);box-shadow:0 0 0 3px rgba(255,181,71,.15)}
 input::placeholder{color:var(--dim)}
 
 /* ── Botones ──────────────────────────────────────────────────────────── */
 .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#1A1206;border:none;border-radius:var(--r-md);padding:16px;font-weight:700;font-size:15px;letter-spacing:.2px;cursor:pointer;width:100%;box-shadow:var(--glow);transition:transform .15s,box-shadow .2s,filter .2s}
-.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 28px rgba(255,107,0,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 28px rgba(255,107,24,.3)}
 .btn-primary:active:not(:disabled){transform:translateY(0)}
 .btn-primary:disabled{background:var(--elevated);color:var(--dim);box-shadow:none;cursor:default}
 .btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r-md);padding:15px;color:var(--text);font-size:14.5px;font-weight:500;cursor:pointer;width:100%;transition:background .2s,border-color .2s}
@@ -80,7 +84,7 @@ input::placeholder{color:var(--dim)}
 .add-btn:disabled{background:var(--elevated);color:var(--dim);cursor:default}
 
 /* ── Login / registro ─────────────────────────────────────────────────── */
-.logo-img{display:block;margin:0 auto 16px;width:92px;height:92px;border-radius:26px;object-fit:cover;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,162,58,.18)}
+.logo-img{display:block;margin:0 auto 16px;width:92px;height:92px;border-radius:26px;object-fit:cover;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,181,71,.18)}
 .auth-card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:var(--r-xl);padding:22px;box-shadow:var(--shadow)}
 .seg{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:4px;gap:4px}
 .seg button{flex:1;background:none;border:none;border-radius:10px;padding:11px 8px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:.22s}
@@ -115,8 +119,8 @@ input::placeholder{color:var(--dim)}
 .dot.unpaid{background:var(--red)}
 .badge{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.2px}
 .badge.paid{color:var(--green);background:rgba(74,222,128,.14)}
-.badge.me{color:var(--accent);background:rgba(255,162,58,.14)}
-.badge.open{color:var(--accent);background:rgba(255,162,58,.14)}
+.badge.me{color:var(--accent);background:rgba(255,181,71,.14)}
+.badge.open{color:var(--accent);background:rgba(255,181,71,.14)}
 .badge.closed{color:var(--green);background:rgba(74,222,128,.14)}
 .progress-bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden;margin:11px 0}
 .progress-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1)}
@@ -128,8 +132,8 @@ input::placeholder{color:var(--dim)}
 .all-paid{background:linear-gradient(180deg,rgba(74,222,128,.14),rgba(74,222,128,.04));border-radius:var(--r-md);padding:15px;text-align:center;border:1px solid rgba(74,222,128,.3)}
 .link-box{background:var(--surface-2);border-radius:var(--r-sm);padding:11px 12px;border:1px solid var(--border);overflow:hidden;flex:1}
 .link-text{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.copy-btn{background:rgba(255,162,58,.14);color:var(--accent);border:none;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:.2s}
-.copy-btn:hover{background:rgba(255,162,58,.22)}
+.copy-btn{background:rgba(255,181,71,.14);color:var(--accent);border:none;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:.2s}
+.copy-btn:hover{background:rgba(255,181,71,.22)}
 .copy-btn.done{background:rgba(74,222,128,.16);color:var(--green)}
 
 /* ── Modal / navegación ───────────────────────────────────────────────── */
@@ -147,8 +151,8 @@ input::placeholder{color:var(--dim)}
 /* ── Hero de la portada + marca ───────────────────────────────────────── */
 .hero{position:relative;margin:0 -20px 22px;aspect-ratio:1/1;max-height:58vh;overflow:hidden}
 .hero img{width:100%;height:100%;object-fit:cover;object-position:50% 35%;display:block}
-.hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,11,18,.22) 0%,rgba(8,11,18,0) 14%,rgba(8,11,18,0) 74%,rgba(8,11,18,.86) 93%,var(--bg) 100%)}
-.hero-pill{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:8px;background:rgba(8,11,18,.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:8px 14px;font-size:12.5px;font-weight:600;color:#E6EBF4}
+.hero-fade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,15,.22) 0%,rgba(11,11,15,0) 14%,rgba(11,11,15,0) 74%,rgba(11,11,15,.86) 93%,var(--bg) 100%)}
+.hero-pill{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:8px;background:rgba(11,11,15,.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:8px 14px;font-size:12.5px;font-weight:600;color:#E6EBF4}
 .hero-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green);flex-shrink:0}
 
 /* ── Campos con ícono ─────────────────────────────────────────────────── */
@@ -184,24 +188,52 @@ input::placeholder{color:var(--dim)}
 
 /* ── Escritorio: 60% portada + bienvenida · 40% ingreso ───────────────── */
 @media (min-width:1000px){
-  /* Pantalla partida a sangre: 60% portada, 40% ingreso */
+  /* Pantalla partida a sangre: 60% portada + features, 40% ingreso */
   #app[data-screen="login"]{max-width:none;padding:0}
   .login-split{display:grid;grid-template-columns:60% 40%;min-height:100vh}
-  .login-art{display:flex;flex-direction:column;justify-content:center;gap:28px;padding:44px clamp(32px,4vw,64px);min-width:0;background:radial-gradient(900px 520px at 32% 0%,rgba(255,162,58,.07),transparent 66%)}
-  /* Cuadrada y centrada: la portada se ve entera, sin recorte */
-  .login-art .hero{margin:0 auto;align-self:center;height:min(52vh,540px);width:auto;aspect-ratio:1/1;max-width:100%;max-height:none;border-radius:var(--r-xl);border:1px solid var(--border);box-shadow:0 26px 64px rgba(0,0,0,.55);animation:heroZoom 1.1s cubic-bezier(.22,1,.36,1) both}
-  .login-art .hero img{object-position:50% 50%}
-  .login-art .hero-fade{background:linear-gradient(180deg,rgba(8,11,18,.22) 0%,rgba(8,11,18,0) 32%,rgba(8,11,18,.42) 100%)}
-  .welcome{display:block;width:min(100%,560px);margin:0 auto;animation:slideIn .7s .2s cubic-bezier(.22,1,.36,1) both}
-  .bubble{animation:slideRight .65s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(.35s + var(--i) * .13s)}
-  .login-form{display:flex;flex-direction:column;justify-content:center;padding:44px clamp(28px,3vw,52px);border-left:1px solid var(--border);background:rgba(255,255,255,.012);animation:slideIn .7s .1s cubic-bezier(.22,1,.36,1) both}
-  .login-form .auth-card{width:100%;max-width:420px;margin:0 auto}
-  .login-form .dev-credit{width:100%;max-width:420px;margin:26px auto 0}
+
+  /* Columna izquierda: la portada ocupa el alto libre, las tarjetas abajo */
+  .login-art{display:flex;flex-direction:column;padding:0;min-width:0;background:radial-gradient(900px 520px at 32% 0%,rgba(255,181,71,.06),transparent 66%)}
+  .login-art .hero{flex:1 1 0;min-height:200px;width:100%;height:auto;max-height:none;margin:0;aspect-ratio:auto;border-radius:0;animation:heroZoom 1.1s cubic-bezier(.22,1,.36,1) both}
+  .login-art .hero img{object-position:50% 42%}
+  .login-art .hero-fade{background:linear-gradient(180deg,rgba(11,11,15,.25) 0%,rgba(11,11,15,0) 30%,rgba(11,11,15,.55) 100%)}
+  .login-art .features{display:grid;flex:0 0 auto;padding:18px clamp(18px,2.2vw,26px) 26px}
+  .feature{animation:slideIn .6s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(.3s + var(--i) * .1s)}
+
+  /* Columna derecha: bienvenida + formulario, sin tarjeta contenedora */
+  .login-form{display:flex;flex-direction:column;justify-content:center;padding:44px clamp(28px,3.4vw,56px);border-left:1px solid var(--border);animation:slideIn .7s .1s cubic-bezier(.22,1,.36,1) both}
+  .login-form .welcome{display:block;width:100%;max-width:430px;margin:0 auto 26px}
+  .login-form .auth-card{width:100%;max-width:430px;margin:0 auto;background:none;border:none;border-radius:0;padding:0;box-shadow:none}
+  .login-form .dev-credit{width:100%;max-width:430px;margin:30px auto 0}
+
+  /* Retoques del mockup, solo en escritorio */
+  .login-form .seg{border-radius:12px;margin-bottom:16px}
+  .login-form .seg button{text-transform:uppercase;letter-spacing:.06em;font-size:12px;font-weight:700}
+  .login-form .seg button.on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0B0B0F;box-shadow:0 6px 16px rgba(255,107,24,.3)}
+  .login-form .btn-google{background:rgba(255,255,255,.045);color:var(--text);border:1px solid var(--border)}
+  .login-form .btn-google:hover{background:rgba(255,255,255,.08);transform:none;box-shadow:none}
+  .login-form .divider{margin:18px 0}
 }
-@media (min-width:1000px) and (max-width:1240px){
-  .welcome-title{font-size:29px;margin-bottom:16px}
-  .bubble{padding:13px 16px}
-  .bubble p{font-size:14px}
+@media (min-width:1000px) and (max-width:1280px){
+  .welcome-title{font-size:32px}
+  .welcome-sub{font-size:14px}
+  .feature{padding:12px 14px}
+  .feature p{font-size:12px}
+  .login-form{padding:32px 28px}
+}
+@media (min-width:1000px) and (max-height:860px){
+  /* Pantallas bajas: todo se comprime para evitar el scroll */
+  .login-art .features{padding:14px 20px 18px;gap:10px}
+  .feature{padding:11px 13px}
+  .feature p{display:none}
+  .login-form{padding-top:20px;padding-bottom:20px}
+  .login-form .welcome{margin-bottom:16px}
+  .welcome-title{font-size:26px;margin-bottom:6px}
+  .welcome-sub{font-size:13px}
+  .login-form .divider{margin:13px 0}
+  .login-form .seg{margin-bottom:13px}
+  .login-form .dev-credit{margin-top:12px;padding-top:12px;gap:6px}
+  .login-form .dev-logo img{height:24px}
 }
 
 /* Respeta a quien pidió menos movimiento en su sistema */
@@ -223,10 +255,35 @@ input::placeholder{color:var(--dim)}
 .legal-body ul{margin:0 0 12px;padding-left:18px}
 .legal-body li{margin-bottom:7px}
 .legal-body strong{color:var(--text);font-weight:600}
-.legal-alert{background:linear-gradient(180deg,rgba(255,162,58,.11),rgba(255,162,58,.03));border:1px solid rgba(255,162,58,.3);border-radius:var(--r-md);padding:15px 17px;margin-bottom:20px;color:var(--muted);font-size:13px}
+.legal-alert{background:linear-gradient(180deg,rgba(255,181,71,.11),rgba(255,181,71,.03));border:1px solid rgba(255,181,71,.3);border-radius:var(--r-md);padding:15px 17px;margin-bottom:20px;color:var(--muted);font-size:13px}
 .legal-date{font-size:11.5px;color:var(--dim);margin-top:20px}
 .legal-foot{padding:16px 22px 20px;border-top:1px solid var(--border);flex-shrink:0}
 .legal-foot .btn-primary{padding:13px}
+
+/* ── Bienvenida y tarjetas de features (solo escritorio) ──────────────── */
+.welcome,.features{display:none}
+.welcome-title{font-family:var(--font-display);font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0 0 10px;color:var(--text)}
+.welcome-sub{font-size:15px;line-height:1.55;color:var(--muted);margin:0}
+.features{grid-template-columns:1fr 1fr;gap:12px}
+.feature{background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:16px;padding:14px 16px;min-width:0;transition:transform .25s cubic-bezier(.22,1,.36,1),border-color .25s,background .25s}
+.feature:hover{transform:translateY(-3px);border-color:var(--border-hi);background:rgba(255,255,255,.06)}
+.feature-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.feature-ico{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(255,255,255,.06);border:1px solid var(--border);flex-shrink:0}
+.feature-head h3{font-family:var(--font-display);font-size:13.5px;font-weight:700;margin:0;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feature p{margin:0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.chip{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;border-radius:99px;flex-shrink:0;white-space:nowrap}
+.chip-amber{background:rgba(255,138,61,.13);color:#FF8A3D;border:1px solid rgba(255,138,61,.32)}
+.chip-green{background:rgba(0,201,130,.13);color:var(--success);border:1px solid rgba(0,201,130,.32);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:none;letter-spacing:0}
+.chip-red{background:rgba(229,62,62,.15);color:#FF8080;border:1px solid rgba(229,62,62,.36)}
+.chip-celeste{background:rgba(117,170,219,.13);color:var(--celeste);border:1px solid rgba(117,170,219,.32)}
+
+/* ── Recordar sesión ──────────────────────────────────────────────────── */
+.remember{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none;padding:2px 0}
+.remember input{position:absolute;opacity:0;width:0;height:0}
+.remember-box{width:19px;height:19px;border-radius:6px;border:1.5px solid var(--border-hi);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:transparent;flex-shrink:0;transition:.2s}
+.remember:hover .remember-box{border-color:var(--accent)}
+.remember input:checked + .remember-box{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;color:#0B0B0F}
+.remember input:focus-visible + .remember-box{box-shadow:0 0 0 3px rgba(255,181,71,.25)}
 
 /* ── Crédito de desarrollo (Infinity Solutions) ───────────────────────── */
 .dev-credit{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center}
@@ -245,9 +302,9 @@ svg{overflow:visible}
 <div id="modal">
   <div class="modal-box">
     <div style="font-size:32px;margin-bottom:12px">💵</div>
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#F2F5FA">Pago en efectivo</h3>
-    <p style="color:#8D97A8;font-size:14px;line-height:1.5;margin-bottom:24px">
-      ¿Confirmás que <strong style="color:#F2F5FA" id="modal-name"></strong> pagó su parte en efectivo?
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;color:#F5F3EE">Pago en efectivo</h3>
+    <p style="color:#9E9EA8;font-size:14px;line-height:1.5;margin-bottom:24px">
+      ¿Confirmás que <strong style="color:#F5F3EE" id="modal-name"></strong> pagó su parte en efectivo?
     </p>
     <div style="display:flex;gap:10px">
       <button onclick="closeModal()" class="btn-ghost" style="flex:1;padding:14px">No</button>
@@ -283,7 +340,7 @@ const S = {
   screen:"loading", user:null, rooms:[], room:null, myId:null, shareUrl:"",
   loadingId:null, animTotal:0, polling:null, pendingMarkId:null, mpStatus:null,
   authReady:false, menuOpen:false, names:[], mpConnecting:false,
-  authTab:"login", authEmail:"",
+  authTab:"login", authEmail:"", remember:true,
 };
 
 const urlParams   = new URLSearchParams(location.search);
@@ -316,11 +373,13 @@ async function authFetch(url,opts={}){
 }
 async function signInGoogle(){
   setAuthErr("");
+  await applyPersistence();
   try{ await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); await loadAdminData(); S.screen="home"; render(); }
   catch(e){ setAuthErr(authErrMsg(e.code)); }
 }
 async function signInEmail(isSignup){
   setAuthErr("");
+  await applyPersistence();
   const email=document.getElementById("inp-email")?.value.trim();
   const pass=document.getElementById("inp-pass")?.value;
   if(!email||!pass) return setAuthErr("Completá email y contraseña");
@@ -376,17 +435,17 @@ function buildWheel(participants,myId,isAdmin){
     const sa=i*step,ea=sa+step,ma=sa+step/2;
     const[lx,ly]=polar(cx,cy,(r+ri)/2,ma);
     const isMe=p.id===myId,busy=S.loadingId===p.id;
-    const fill=p.paid?"#4ADE80":busy?"#5B6678":"#F87171";
+    const fill=p.paid?"#4ADE80":busy?"#60606C":"#F87171";
     const canTap=(isMe||isAdmin)&&!p.paid&&!S.loadingId;
     const short=p.name.length>7?p.name.slice(0,6)+"…":p.name;
     svg+=`<g ${canTap?`onclick="doPay('${p.id}','${isAdmin}')"`:""} style="cursor:${canTap?"pointer":"default"}">`;
-    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+7,ri-5,sa,ea)}" fill="#FFA23A" opacity="0.2"/>`;
+    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+7,ri-5,sa,ea)}" fill="#FFB547" opacity="0.2"/>`;
     svg+=`<path d="${slicePath(cx,cy,r,ri,sa,ea)}" fill="${fill}" ${p.paid?'filter="url(#gp)"':""} opacity="${p.paid?1:.84}" style="transition:fill .5s"/>`;
     if(step>28)svg+=`<text x="${lx}" y="${ly-(step>50?7:0)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${step>60?12:step>40?11:9}" font-weight="600" style="pointer-events:none">${short}</text>`;
     if(step>50)svg+=`<text x="${lx}" y="${ly+8}" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,.6)" font-size="9" style="pointer-events:none">${p.paid?"✓":busy?"…":isMe?"tocame":"—"}</text>`;
     svg+=`</g>`;
   });
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="#0C111A"/><circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="none" stroke="#222C3C" stroke-width="1"/></svg>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="#131319"/><circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="none" stroke="#22222A" stroke-width="1"/></svg>`;
   return svg;
 }
 function mpLogo(sz,onBlue){return `<img src="${onBlue?'./mp-logo-badge.png':'./mp-logo.png'}" alt="MP" style="height:${sz}px;width:auto;display:block;flex-shrink:0"/>`;}
@@ -414,13 +473,19 @@ const ICON_AT   = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" s
 const ICON_LOCK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>`;
 const ICON_EYE  = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.9"/></svg>`;
 const ICON_EYE_OFF = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12s3.6-6.6 10-6.6S22 12 22 12s-3.6 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.9"/><path d="M3.5 3.5l17 17"/></svg>`;
+const ICON_CHECK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg>`;
 
-// Lo que la app hace, contado en burbujas. Solo se ven en escritorio:
-// en el celular la portada tiene que respirar sola.
-const BURBUJAS = [
-  ["⚽", "Dividí la cancha, el asado, o lo que pinte"],
-  ["🐭", "Todos ven quién puso la cash y quién no"],
-  ["💸", "Cobrás directo en tu Mercado Pago, sin vueltas"],
+// Lo que la app hace, en tarjetas. Solo se ven en escritorio: en el celular
+// la portada tiene que respirar sola.
+const FEATURES = [
+  ["🥩", "Asado & Tercer Tiempo", "Auto-split",   "chip-amber",
+   "Dividí los gastos exactos al toque sin calcular a mano ni pelear por el vuelto."],
+  ["⚽", "División de Cancha",    "9/10 saldaron", "chip-green",
+   "Fútbol 5, 8 o 11: cada jugador paga su cuota exacta con link automático."],
+  ["🐭", "Detector de Ratones",   "En vivo",       "chip-red",
+   "La rueda marca al instante quién puso la plata y quién quedó colgado."],
+  ["⚡", "Cobro sin vueltas",     "Instantáneo",   "chip-celeste",
+   "Cada uno paga con su link y la plata se acredita directo en tu Mercado Pago."],
 ];
 
 function renderLogin(){
@@ -429,6 +494,8 @@ function renderLogin(){
   setTimeout(()=>{
     const e=document.getElementById("inp-email");
     if(e){ e.value=S.authEmail||""; e.oninput=()=>{ S.authEmail=e.value; }; }
+    const r=document.getElementById("inp-remember");
+    if(r){ r.onchange=()=>{ S.remember=r.checked; }; }
   },0);
   return `
     <div class="login-split">
@@ -438,21 +505,26 @@ function renderLogin(){
           <div class="hero-fade"></div>
           <div class="hero-pill"><span class="hero-dot"></span>Directo a Mercado Pago</div>
         </div>
-        <div class="welcome">
-          <h2 class="welcome-title">Bienvenido a <span>Pagá Ratón</span></h2>
-          <div class="bubbles">
-            ${BURBUJAS.map(([emo,txt],i)=>`
-            <div class="bubble" style="--i:${i}">
-              <span class="emo">${emo}</span>
-              <p>${txt}</p>
-            </div>`).join("")}
-          </div>
+        <div class="features">
+          ${FEATURES.map(([emo,titulo,chip,chipClase,texto],i)=>`
+          <article class="feature" style="--i:${i}">
+            <div class="feature-head">
+              <span class="feature-ico">${emo}</span>
+              <h3>${titulo}</h3>
+              <span class="chip ${chipClase}">${chip}</span>
+            </div>
+            <p>${texto}</p>
+          </article>`).join("")}
         </div>
       </section>
 
       <section class="login-form">
+        <div class="welcome">
+          <h2 class="welcome-title">Bienvenido a Pagá Ratón</h2>
+          <p class="welcome-sub">La mejor app para dividir el asado o la cancha y que todos vean quién es el ratón que no quiere pagar.</p>
+        </div>
         <div class="auth-card">
-          <div class="seg" style="margin-bottom:20px">
+          <div class="seg">
             <button class="${isSignup?"":"on"}" onclick="setAuthTab('login')">Ingresar</button>
             <button class="${isSignup?"on":""}" onclick="setAuthTab('signup')">Crear cuenta</button>
           </div>
@@ -460,13 +532,13 @@ function renderLogin(){
             <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
             ${isSignup?"Registrarme con Google":"Continuar con Google"}
           </button>
-          <div class="divider" style="margin:20px 0"><span>o con tu email</span></div>
+          <div class="divider"><span>o con tu email</span></div>
           <div class="gap10">
             <div>
-              <span class="label">Email</span>
+              <span class="label">Email del jugador</span>
               <div class="field">
                 <span class="field-icon">${ICON_AT}</span>
-                <input id="inp-email" type="email" placeholder="tu@email.com" autocomplete="email"/>
+                <input id="inp-email" type="email" placeholder="messi@futbol.com" autocomplete="email"/>
               </div>
             </div>
             <div>
@@ -481,6 +553,11 @@ function renderLogin(){
               </div>
               ${isSignup?`<p class="muted" style="margin-top:8px">Mínimo 6 caracteres</p>`:""}
             </div>
+            <label class="remember">
+              <input type="checkbox" id="inp-remember" ${S.remember?"checked":""}/>
+              <span class="remember-box">${ICON_CHECK}</span>
+              Recordar mi sesión en este dispositivo
+            </label>
             <p class="err" id="auth-err"></p>
             <button class="btn-primary btn-cta" onclick="signInEmail(${isSignup})">
               ${isSignup?"Crear mi cuenta":"Ingresar a la cancha"}<span>→</span>
@@ -506,6 +583,8 @@ function renderLogin(){
 function setAuthTab(tab){
   const e=document.getElementById("inp-email");
   if(e) S.authEmail=e.value;
+  const r=document.getElementById("inp-remember");
+  if(r) S.remember=r.checked;
   S.authTab=tab;
   render();
 }
@@ -517,6 +596,17 @@ function togglePass(){
   i.type = ver ? "text" : "password";
   b.innerHTML = ver ? ICON_EYE_OFF : ICON_EYE;
   b.setAttribute("aria-label", ver ? "Ocultar contraseña" : "Mostrar contraseña");
+}
+// "Recordar mi sesión": con el tilde la sesión sobrevive al cierre del navegador;
+// sin el tilde se corta al cerrar la pestaña. Hay que fijarlo ANTES de loguear.
+async function applyPersistence(){
+  const chk=document.getElementById("inp-remember");
+  if(chk) S.remember=chk.checked;
+  try{
+    await firebase.auth().setPersistence(S.remember
+      ? firebase.auth.Auth.Persistence.LOCAL
+      : firebase.auth.Auth.Persistence.SESSION);
+  }catch(e){ /* si el navegador no lo soporta, queda la persistencia por defecto */ }
 }
 // Recuperación de clave: Firebase manda el mail con el link para restablecerla.
 async function resetPassword(){
@@ -532,10 +622,10 @@ function hamburgerHTML(){
   return `<div style="position:relative;flex-shrink:0">
     <div class="hamb" onclick="toggleMenu(event)"><span></span><span></span><span></span></div>
     ${S.menuOpen?`<div class="menu">
-      <button style="color:#F2F5FA" onclick="menuGo('mis-salas')">📋 Salas</button>
-      <div style="height:1px;background:#222C3C;margin:4px 6px"></div>
-      <button style="color:#F2F5FA" onclick="menuGo('home')">🏠 Inicio</button>
-      <div style="height:1px;background:#222C3C;margin:4px 6px"></div>
+      <button style="color:#F5F3EE" onclick="menuGo('mis-salas')">📋 Salas</button>
+      <div style="height:1px;background:#22222A;margin:4px 6px"></div>
+      <button style="color:#F5F3EE" onclick="menuGo('home')">🏠 Inicio</button>
+      <div style="height:1px;background:#22222A;margin:4px 6px"></div>
       <button style="color:#F87171" onclick="menuLogout()">🚪 Salir de la sesión</button>
     </div>`:""}
   </div>`;
@@ -551,7 +641,7 @@ function userPillHTML(withMenu){
   return `<div class="user-pill">
     <div class="av">${ini}</div>
     <span class="sub" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
-    ${withMenu?hamburgerHTML():`<button onclick="signOut()" style="background:none;border:none;color:#5B6678;font-size:12px;cursor:pointer">Salir</button>`}
+    ${withMenu?hamburgerHTML():`<button onclick="signOut()" style="background:none;border:none;color:#60606C;font-size:12px;cursor:pointer">Salir</button>`}
   </div>`;
 }
 
@@ -567,17 +657,17 @@ function renderHome(){
       <p class="sub">Creá una sala nueva o revisá las que ya tenés</p>
     </div>
     <div class="gap10" style="gap:12px">
-      <button class="big-btn" style="background:linear-gradient(135deg,#FFA23A,#FF6B00);box-shadow:0 10px 26px rgba(255,107,0,.22)" onclick="S.screen='setup';render()">
+      <button class="big-btn" style="background:linear-gradient(135deg,#FFB547,#FF6B18);box-shadow:0 10px 26px rgba(255,107,24,.22)" onclick="S.screen='setup';render()">
         <div style="width:40px;height:40px;border-radius:11px;background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">➕</div>
         <div style="flex:1"><p style="color:#000;font-size:15px;font-weight:700;margin:0 0 2px">Crear sala</p><p style="color:rgba(0,0,0,.6);font-size:12px;margin:0">Armá un nuevo gasto para dividir</p></div>
         <span style="color:rgba(0,0,0,.5);font-size:18px">→</span>
       </button>
-      <button class="big-btn" style="background:${hasRooms?'#121822':'#1A2331'};border:1px solid #222C3C;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
-        <div style="width:40px;height:40px;border-radius:11px;background:#0C111A;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
+      <button class="big-btn" style="background:${hasRooms?'#16161C':'#1A1A22'};border:1px solid #22222A;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
+        <div style="width:40px;height:40px;border-radius:11px;background:#131319;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
         <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px">Ver salas</p><p class="sub" style="font-size:12px;margin:0">
           ${hasRooms?`${openCount>0?`<span class="accent">${openCount} abierta${openCount!==1?"s":""}</span>`:""}${openCount>0&&closedCount>0?" · ":""}${closedCount>0?`<span class="green">${closedCount} cerrada${closedCount!==1?"s":""}</span>`:""}`:"Todavía no creaste ninguna sala"}
         </p></div>
-        ${hasRooms?`<span style="color:#5B6678;font-size:18px">→</span>`:""}
+        ${hasRooms?`<span style="color:#60606C;font-size:18px">→</span>`:""}
       </button>
     </div>`;
 }
@@ -613,7 +703,7 @@ function renderSetup(){
         </button>
         <p class="muted" style="margin-top:8px;text-align:center">Necesitás conectar tu cuenta para recibir los pagos</p>`}
       </div>
-      <div style="height:1px;background:#222C3C"></div>
+      <div style="height:1px;background:#22222A"></div>
       <div><span class="label">¿Qué están dividiendo?</span><input id="inp-title" placeholder="La cena, El asado, El viaje…"/></div>
       <div><span class="label">Total a dividir ($)</span><input id="inp-total" type="number" placeholder="60000"/><p id="amount-hint" class="muted" style="margin-top:6px"></p></div>
       <div>
@@ -627,7 +717,7 @@ function renderSetup(){
       <button class="btn-primary" onclick="createRoom()" id="btn-create" disabled>Completá todos los campos</button>
     </div>`;
 }
-function updateAddBtn(){const v=document.getElementById("inp-name")?.value.trim();const b=document.getElementById("btn-add");if(b){b.disabled=!v;b.style.background=v?"#FFA23A":"#121822";b.style.color=v?"#000":"#5B6678";}}
+function updateAddBtn(){const v=document.getElementById("inp-name")?.value.trim();const b=document.getElementById("btn-add");if(b){b.disabled=!v;b.style.background=v?"#FFB547":"#16161C";b.style.color=v?"#000":"#60606C";}}
 function updateSetupBtn(){
   const t=document.getElementById("inp-title")?.value.trim();
   const tot=parseInt(document.getElementById("inp-total")?.value||"0",10);
@@ -643,7 +733,7 @@ function renderNamesList(){
   const el=document.getElementById("names-list");if(!el)return;
   if(!S.names.length){el.innerHTML=`<p class="muted">Agregá al menos 2 participantes</p>`;el.className="dashed";return;}
   el.className="gap8";
-  el.innerHTML=S.names.map((n,i)=>`<div class="card row"><div class="row" style="gap:10px"><span class="muted">${i+1}</span><span>${n}</span></div><button onclick="removeName('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#5B6678;cursor:pointer;font-size:18px;padding:0 4px">×</button></div>`).join("");
+  el.innerHTML=S.names.map((n,i)=>`<div class="card row"><div class="row" style="gap:10px"><span class="muted">${i+1}</span><span>${n}</span></div><button onclick="removeName('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#60606C;cursor:pointer;font-size:18px;padding:0 4px">×</button></div>`).join("");
 }
 async function createRoom(){
   const title=document.getElementById("inp-title")?.value.trim();
@@ -667,10 +757,10 @@ function renderMisSalas(){
     const paidCount=r.participants.filter(p=>p.paid).length,total=r.participants.length,allPaid=paidCount===total;
     const pct=Math.round((paidCount/total)*100),amount=Math.round(r.total/total);
     const date=new Date(r.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
-    return `<button class="room-card" onclick="openRoom('${r.id}')" style="border-color:${allPaid?'#14331F':'#222C3C'}">
-      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F2F5FA">${r.title}</p><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span></div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#4ADE80":"#FFA23A"}"></div></div>
-      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F2F5FA"};font-weight:600">${paidCount}</span>/${total} pagaron · $${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
+    return `<button class="room-card" onclick="openRoom('${r.id}')" style="border-color:${allPaid?'#14331F':'#22222A'}">
+      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F5F3EE">${r.title}</p><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#4ADE80":"#FFB547"}"></div></div>
+      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F5F3EE"};font-weight:600">${paidCount}</span>/${total} pagaron · $${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
     </button>`;
   }
   return `
@@ -679,8 +769,8 @@ function renderMisSalas(){
       <button onclick="S.screen='home';render()" class="btn-back" style="flex-shrink:0">← Volver</button>
       <div><h1 style="font-size:22px;font-weight:700;margin:0">Mis salas</h1><p class="sub" style="margin:0">${S.rooms.length} sala${S.rooms.length!==1?"s":""} creada${S.rooms.length!==1?"s":""}</p></div>
     </div>
-    ${!S.rooms.length?`<div class="dashed" style="padding:40px 24px"><div style="font-size:36px;margin-bottom:12px">📋</div><p style="color:#8D97A8;font-size:15px;font-weight:500;margin:0 0 6px">Todavía no creaste ninguna sala</p><p class="muted" style="margin:0">Volvé al inicio para crear tu primera sala</p></div>`:``}
-    ${openRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#FFA23A"></div><p class="label" style="margin:0">Salas abiertas (${openRooms.length})</p></div><div class="gap8" style="margin-bottom:20px">${openRooms.map(card).join("")}</div>`:``}
+    ${!S.rooms.length?`<div class="dashed" style="padding:40px 24px"><div style="font-size:36px;margin-bottom:12px">📋</div><p style="color:#9E9EA8;font-size:15px;font-weight:500;margin:0 0 6px">Todavía no creaste ninguna sala</p><p class="muted" style="margin:0">Volvé al inicio para crear tu primera sala</p></div>`:``}
+    ${openRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#FFB547"></div><p class="label" style="margin:0">Salas abiertas (${openRooms.length})</p></div><div class="gap8" style="margin-bottom:20px">${openRooms.map(card).join("")}</div>`:``}
     ${closedRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#4ADE80"></div><p class="label" style="margin:0">Salas cerradas (${closedRooms.length})</p></div><div class="gap8">${closedRooms.map(card).join("")}</div>`:``}`;
 }
 function openRoom(id){const r=S.rooms.find(x=>x.id===id);if(r){S.room=r;S.shareUrl=`${location.origin}/?room=${r.id}`;S.screen="adminRoom";startPolling();render();}}
@@ -698,7 +788,7 @@ function renderCreated(){
     ${r.mpAlias?`<div style="background:#0A1C2B;border:1px solid rgba(0,158,227,.25);border-radius:14px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${mpLogo(20)}<div><p class="mp-color" style="font-size:11px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.5px">Mercado Pago conectado</p><p class="sub" style="font-size:13px;margin:0">${r.mpAlias}</p></div></div>`:""}
     <div class="gap10">
       <button class="btn-primary" onclick="S.screen='adminRoom';startPolling();render()">Ver sala →</button>
-      <button onclick="S.screen='setup';render()" style="background:none;border:none;color:#5B6678;font-size:13px;padding:8px;cursor:pointer">+ Crear otra sala</button>
+      <button onclick="S.screen='setup';render()" style="background:none;border:none;color:#60606C;font-size:13px;padding:8px;cursor:pointer">+ Crear otra sala</button>
     </div>`;
 }
 function copyLink(){navigator.clipboard.writeText(S.shareUrl).catch(()=>{});const b=document.getElementById("btn-copy");if(b){b.textContent="✓ Copiado";b.className="copy-btn done";setTimeout(()=>{b.textContent="Copiar";b.className="copy-btn";},2000);}}
@@ -712,7 +802,7 @@ async function renderJoin(app){
   const r=S.room,amount=Math.round(r.total/r.participants.length);
   app.innerHTML=`
     <div style="padding-top:16px;display:flex;justify-content:flex-end;margin-bottom:8px">
-      <button onclick="goToLogin()" style="background:#121822;border:1px solid #222C3C;border-radius:10px;color:#FFA23A;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer">Iniciar sesión / Registrarse</button>
+      <button onclick="goToLogin()" style="background:#16161C;border:1px solid #22222A;border-radius:10px;color:#FFB547;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer">Iniciar sesión / Registrarse</button>
     </div>
     <div style="text-align:center;margin-bottom:24px">
       <img src="${LOGO}" style="display:block;margin:0 auto 14px;width:88px;height:88px;border-radius:20px;object-fit:cover;box-shadow:0 6px 20px rgba(0,0,0,.4)"/>
@@ -720,10 +810,10 @@ async function renderJoin(app){
       <p class="label" style="margin-bottom:3px">${r.title}</p>
       <p class="sub">$${amount.toLocaleString("es-AR")} por persona · ${r.participants.length} personas</p>
     </div>
-    <p style="color:#8D97A8;font-size:14px;font-weight:500;margin-bottom:14px">¿Cuál es tu nombre?</p>
+    <p style="color:#9E9EA8;font-size:14px;font-weight:500;margin-bottom:14px">¿Cuál es tu nombre?</p>
     <div class="gap8">
-      ${r.participants.map(p=>`<button class="join-btn" onclick="joinAs('${p.id}')"><div class="row" style="gap:12px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:15px;font-weight:500;color:#F2F5FA">${p.name}</span>${p.paid?`<span class="badge paid">Ya pagó</span>`:""}</div><span style="color:#5B6678">→</span></button>`).join("")}
-      <button onclick="joinAs(null)" style="background:none;border:none;color:#5B6678;font-size:13px;padding:10px;cursor:pointer;margin-top:4px">Solo quiero ver el estado →</button>
+      ${r.participants.map(p=>`<button class="join-btn" onclick="joinAs('${p.id}')"><div class="row" style="gap:12px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:15px;font-weight:500;color:#F5F3EE">${p.name}</span>${p.paid?`<span class="badge paid">Ya pagó</span>`:""}</div><span style="color:#60606C">→</span></button>`).join("")}
+      <button onclick="joinAs(null)" style="background:none;border:none;color:#60606C;font-size:13px;padding:10px;cursor:pointer;margin-top:4px">Solo quiero ver el estado →</button>
     </div>`;
 }
 function joinAs(id){S.myId=id;S.screen="room";startPolling();render();}
@@ -743,17 +833,17 @@ function renderRoom(isAdmin){
   h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:${isAdmin?10:6}px;flex-wrap:wrap"><h1 style="font-size:21px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${r.title}</h1>${isAdmin?`<span class="badge me">Admin</span><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span>`:""}</div>`;
   if(isAdmin){
     h+=`<div class="card row" style="gap:8px;margin-bottom:10px"><div class="link-box"><p class="link-text">${S.shareUrl}</p></div><button class="copy-btn" id="btn-copy" onclick="copyLink()">Copiar link</button></div>`;
-    h+=`<div style="background:#101820;border:1px solid rgba(0,158,227,.2);border-radius:14px;padding:14px 16px;margin-bottom:10px"><div class="row" style="margin-bottom:8px"><span class="label" style="margin:0">💳 Cuenta Mercado Pago</span></div><p style="font-size:15px;font-weight:700;color:#F2F5FA;margin:0">${r.mpAlias||"Sin alias configurado"}</p></div>`;
+    h+=`<div style="background:#101820;border:1px solid rgba(0,158,227,.2);border-radius:14px;padding:14px 16px;margin-bottom:10px"><div class="row" style="margin-bottom:8px"><span class="label" style="margin:0">💳 Cuenta Mercado Pago</span></div><p style="font-size:15px;font-weight:700;color:#F5F3EE;margin:0">${r.mpAlias||"Sin alias configurado"}</p></div>`;
   }
-  h+=`<div style="display:flex;justify-content:center;position:relative;margin-top:4px">${buildWheel(r.participants,S.myId,isAdmin)}<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none"><p style="color:#8D97A8;font-size:9px;margin:0;letter-spacing:1px;text-transform:uppercase">cobrado</p><p style="font-size:15px;font-weight:700;margin:1px 0 0" id="anim-total">$${S.animTotal.toLocaleString("es-AR")}</p><p style="color:${allPaid?"#4ADE80":"#8D97A8"};font-size:10px;margin:1px 0 0">${paidCount}/${r.participants.length}</p></div></div>`;
-  if(!isAdmin&&me&&!me.paid)h+=`<div class="pay-box" style="margin-top:14px"><p class="mp-color" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px">Tu parte — ${me.name}</p><div class="row"><p style="font-size:24px;font-weight:700;margin:0">$${amount.toLocaleString("es-AR")}</p><button onclick="doPay('${me.id}','false')" id="btn-pay" ${S.loadingId?"disabled":""} style="background:${S.loadingId===me.id?"#121822":"#009EE3"};color:${S.loadingId===me.id?"#5B6678":"#fff"};border:none;border-radius:12px;padding:13px 16px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">${mpLogo(18,true)}${S.loadingId===me.id?"Abriendo…":"Pagar ahora"}</button></div></div>`;
+  h+=`<div style="display:flex;justify-content:center;position:relative;margin-top:4px">${buildWheel(r.participants,S.myId,isAdmin)}<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none"><p style="color:#9E9EA8;font-size:9px;margin:0;letter-spacing:1px;text-transform:uppercase">cobrado</p><p style="font-size:15px;font-weight:700;margin:1px 0 0" id="anim-total">$${S.animTotal.toLocaleString("es-AR")}</p><p style="color:${allPaid?"#4ADE80":"#9E9EA8"};font-size:10px;margin:1px 0 0">${paidCount}/${r.participants.length}</p></div></div>`;
+  if(!isAdmin&&me&&!me.paid)h+=`<div class="pay-box" style="margin-top:14px"><p class="mp-color" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px">Tu parte — ${me.name}</p><div class="row"><p style="font-size:24px;font-weight:700;margin:0">$${amount.toLocaleString("es-AR")}</p><button onclick="doPay('${me.id}','false')" id="btn-pay" ${S.loadingId?"disabled":""} style="background:${S.loadingId===me.id?"#16161C":"#009EE3"};color:${S.loadingId===me.id?"#60606C":"#fff"};border:none;border-radius:12px;padding:13px 16px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">${mpLogo(18,true)}${S.loadingId===me.id?"Abriendo…":"Pagar ahora"}</button></div></div>`;
   if(!isAdmin&&me?.paid)h+=`<div class="paid-box" style="margin-top:14px"><span style="font-size:22px">✅</span><div><p class="green" style="font-size:13px;font-weight:600;margin:0">¡Ya pagaste tu parte!</p><p class="sub" style="font-size:11px;margin-top:2px">Gracias, ${me.name} · $${amount.toLocaleString("es-AR")}</p></div></div>`;
   if(!isAdmin&&!me)h+=`<div class="card" style="margin-top:14px;text-align:center"><p class="sub" style="font-size:13px">Estás viendo el estado de la sala</p></div>`;
   if(allPaid)h+=`<div class="all-paid" style="margin-top:12px"><p class="green" style="font-size:15px;font-weight:600">🎉 ¡Todos pagaron! La sala está cerrada.</p></div>`;
   h+=`<div class="summary" style="margin-top:14px"><div><p class="sub" style="font-size:11px;margin:0">Total</p><p style="font-size:18px;font-weight:700;margin:2px 0 0">$${r.total.toLocaleString("es-AR")}</p></div><div style="text-align:right"><p class="sub" style="font-size:11px;margin:0">Por persona</p><p class="accent" style="font-size:18px;font-weight:700;margin:2px 0 0">$${amount.toLocaleString("es-AR")}</p></div></div>`;
   h+=`<div style="margin-top:16px"><p class="label" style="margin-bottom:10px">Participantes</p><div class="gap8">${r.participants.map(p=>{
     const isMe=p.id===S.myId,busy=S.loadingId===p.id;
-    return `<div class="card row" style="border-color:${p.paid?"#14331F":isMe&&!isAdmin?"rgba(255,162,58,.25)":"#222C3C"};background:${isMe&&!isAdmin?"#1A2331":"#121822"}"><div class="row" style="gap:10px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:14px;font-weight:${isMe?600:400}">${p.name}</span>${isMe&&!isAdmin?`<span class="badge me">(vos)</span>`:""}${p.paid?`<span class="badge paid">Pagado</span>`:""}</div><div class="row" style="gap:8px"><span class="sub" style="font-size:13px">$${amount.toLocaleString("es-AR")}</span>${isAdmin&&!p.paid?`<button class="btn-small" onclick="askMarkPaid('${p.id}','${p.name.replace(/'/g,"\\'")}')">${busy?"…":"💵 Efectivo"}</button>`:""}</div></div>`;
+    return `<div class="card row" style="border-color:${p.paid?"#14331F":isMe&&!isAdmin?"rgba(255,181,71,.25)":"#22222A"};background:${isMe&&!isAdmin?"#1A1A22":"#16161C"}"><div class="row" style="gap:10px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:14px;font-weight:${isMe?600:400}">${p.name}</span>${isMe&&!isAdmin?`<span class="badge me">(vos)</span>`:""}${p.paid?`<span class="badge paid">Pagado</span>`:""}</div><div class="row" style="gap:8px"><span class="sub" style="font-size:13px">$${amount.toLocaleString("es-AR")}</span>${isAdmin&&!p.paid?`<button class="btn-small" onclick="askMarkPaid('${p.id}','${p.name.replace(/'/g,"\\'")}')">${busy?"…":"💵 Efectivo"}</button>`:""}</div></div>`;
   }).join("")}</div></div>`;
   return h;
 }
