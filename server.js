@@ -278,6 +278,14 @@ app.post("/api/rooms", requireAdmin, async (req, res) => {
     const mpToken  = tokenDoc.exists ? tokenDoc.data().accessToken : null;
     const mpAlias  = tokenDoc.exists ? tokenDoc.data().nickname    : "";
 
+    // Una sala sin token quedaría sin forma de cobrar (y antes se colaba al
+    // token del servidor). Se corta acá, que es donde se puede explicar.
+    if (!mpToken) {
+      return res.status(409).json({
+        error: "Conectá tu cuenta de Mercado Pago antes de crear una sala: los pagos se acreditan directo en tu cuenta.",
+      });
+    }
+
     const room = {
       id, title, total,
       mpAlias,
@@ -376,9 +384,18 @@ app.post("/api/rooms/:roomId/pay/:participantId", async (req, res) => {
     if (!p)     return res.status(404).json({ error: "Participante no encontrado" });
     if (p.paid) return res.status(400).json({ error: "Ya pagó" });
 
-    const amount     = Math.round(room.total / room.participants.length);
-    const tokenToUse = room.mpAccessToken || process.env.MP_ACCESS_TOKEN || "";
-    const mpClient   = new MercadoPagoConfig({ accessToken: tokenToUse });
+    const amount = Math.round(room.total / room.participants.length);
+
+    // ⚠️  Sin respaldo al token del servidor A PROPÓSITO. Si esta sala no tiene
+    //     el token de su propio admin, cobrar con el del servidor mandaría la
+    //     plata de estos invitados a la cuenta equivocada. Mejor fallar.
+    const tokenToUse = room.mpAccessToken || "";
+    if (!tokenToUse) {
+      return res.status(409).json({
+        error: "El organizador de esta sala todavía no conectó su Mercado Pago. Pedile que lo haga y volvé a intentar.",
+      });
+    }
+    const mpClient = new MercadoPagoConfig({ accessToken: tokenToUse });
 
     const preference = new Preference(mpClient);
     const result     = await preference.create({
