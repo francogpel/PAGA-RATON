@@ -16,6 +16,51 @@ const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
 
 const app = express();
 app.use(cors());
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BLOQUE 0: PROXY DEL MANEJADOR DE AUTENTICACIÓN
+//
+// Firebase resuelve el login con Google en <proyecto>.firebaseapp.com. Como la
+// app vive en otro dominio, ese intercambio es "de terceros", y los navegadores
+// móviles (Safari siempre, Chrome cada vez más) particionan ese almacenamiento:
+// la persona elige la cuenta, vuelve, y la credencial nunca llega. Falla igual
+// con popup que con redirección.
+//
+// Reenviando /__/auth y /__/firebase desde nuestro propio dominio, todo el
+// intercambio queda en un solo origen y el navegador deja de bloquearlo.
+// El /api/config de más abajo informa nuestro dominio como authDomain para que
+// el SDK apunte acá.
+//
+// 🔧 FIREBASE_AUTH_DOMAIN sigue siendo el dominio real de Firebase: es el
+//    destino del reenvío, no lo que se le informa al navegador.
+// ═══════════════════════════════════════════════════════════════════════════════
+app.use(["/__/auth", "/__/firebase"], async (req, res) => {
+  const upstream = process.env.FIREBASE_AUTH_DOMAIN || "";
+  if (!upstream) return res.status(500).send("Falta FIREBASE_AUTH_DOMAIN");
+  try {
+    const cabeceras = {};
+    for (const [k, v] of Object.entries(req.headers)) {
+      if (["host", "connection", "content-length", "accept-encoding"].includes(k)) continue;
+      cabeceras[k] = v;
+    }
+    const respuesta = await fetch(`https://${upstream}${req.originalUrl}`, {
+      method: req.method,
+      headers: cabeceras,
+      redirect: "manual",
+    });
+    res.status(respuesta.status);
+    for (const [k, v] of Object.entries(respuesta.headers.raw())) {
+      if (["content-encoding", "transfer-encoding", "content-length", "connection"].includes(k.toLowerCase())) continue;
+      res.setHeader(k, v.length === 1 ? v[0] : v);
+    }
+    const cuerpo = await respuesta.buffer();
+    res.send(cuerpo);
+  } catch (err) {
+    console.error("Error reenviando el manejador de auth:", err);
+    res.status(502).send("No se pudo contactar a Firebase Auth");
+  }
+});
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -95,8 +140,12 @@ function safeRoom(room) {
 // Config pública de Firebase para el frontend (login)
 app.get("/api/config", (req, res) => {
   res.json({
-    apiKey:     process.env.FIREBASE_API_KEY     || "",
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN || "",
+    apiKey: process.env.FIREBASE_API_KEY || "",
+    // Nuestro propio dominio, no el de firebaseapp.com: el manejador lo
+    // servimos nosotros con el proxy de arriba, así el login con Google queda
+    // en un solo origen y los navegadores móviles no lo bloquean.
+    // req.get("host") sirve igual en localhost, en Render o en Hosting.
+    authDomain: req.get("host") || process.env.FIREBASE_AUTH_DOMAIN || "",
     projectId:  process.env.FIREBASE_PROJECT_ID  || "",
   });
 });
