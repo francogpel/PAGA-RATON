@@ -447,16 +447,17 @@ async function signInGoogle(){
   await applyPersistence();
   const provider = new firebase.auth.GoogleAuthProvider();
 
-  // En el celular el popup lo bloquean casi todos los navegadores (y siempre
-  // los que vienen dentro de Instagram o WhatsApp), así que vamos derecho por
-  // redirección: la página se va a Google y vuelve ya autenticada.
-  if(isMobileLayout()){
-    setAuthBusy(true,"Llevándote a Google…");
-    try{ await firebase.auth().signInWithRedirect(provider); }
-    catch(e){ setAuthBusy(false); setAuthErr(authErrMsg(e.code)); }
-    return;
-  }
-
+  // Popup en todos lados, también en el celular.
+  //
+  // La alternativa (signInWithRedirect) parece más robusta para móvil, pero acá
+  // NO sirve: el intercambio pasa por <proyecto>.firebaseapp.com, que es otro
+  // dominio, y los navegadores móviles particionan ese almacenamiento de
+  // terceros, así que la credencial vuelve de Google y no puede entrar. El
+  // popup no tiene ese problema porque le habla a la ventana que lo abrió.
+  //
+  // (Servir el manejador desde nuestro dominio arregla la redirección, pero
+  //  exige registrar el URI en el cliente OAuth de Google — ver el proxy de
+  //  /__/auth en server.js y la variable AUTH_HANDLER_PROPIO.)
   setAuthBusy(true,"Esperando a Google…");
   try{
     await firebase.auth().signInWithPopup(provider);
@@ -464,10 +465,15 @@ async function signInGoogle(){
   }catch(e){
     const sinPopup = e.code==="auth/popup-blocked"
       || e.code==="auth/operation-not-supported-in-this-environment";
-    if(sinPopup){
+    setAuthBusy(false);
+    if(sinPopup && !isMobileLayout()){
+      // En escritorio la redirección sí funciona como respaldo.
       try{ await firebase.auth().signInWithRedirect(provider); return; }catch{}
     }
-    setAuthBusy(false);
+    if(sinPopup){
+      setAuthErr("Tu navegador bloqueó la ventana de Google. Permití las ventanas emergentes para este sitio, o entrá con tu email.");
+      return;
+    }
     setAuthErr(authErrMsg(e.code));
   }
 }
