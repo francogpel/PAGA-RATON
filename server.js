@@ -141,11 +141,17 @@ function safeRoom(room) {
 app.get("/api/config", (req, res) => {
   res.json({
     apiKey: process.env.FIREBASE_API_KEY || "",
-    // Nuestro propio dominio, no el de firebaseapp.com: el manejador lo
-    // servimos nosotros con el proxy de arriba, así el login con Google queda
-    // en un solo origen y los navegadores móviles no lo bloquean.
-    // req.get("host") sirve igual en localhost, en Render o en Hosting.
-    authDomain: req.get("host") || process.env.FIREBASE_AUTH_DOMAIN || "",
+    // Con AUTH_HANDLER_PROPIO=true informamos NUESTRO dominio y el login con
+    // Google queda en un solo origen (lo sirve el proxy de más arriba), que es
+    // lo que necesitan los navegadores móviles.
+    //
+    // ⚠️  Requiere haber agregado antes, en Google Cloud → Credenciales →
+    //     el cliente OAuth web del proyecto, este URI de redirección:
+    //         https://<nuestro-dominio>/__/auth/handler
+    //     Sin eso Google responde 400 redirect_uri_mismatch y NADIE entra.
+    authDomain: process.env.AUTH_HANDLER_PROPIO === "true"
+      ? (req.get("host") || process.env.FIREBASE_AUTH_DOMAIN || "")
+      : (process.env.FIREBASE_AUTH_DOMAIN || ""),
     projectId:  process.env.FIREBASE_PROJECT_ID  || "",
   });
 });
