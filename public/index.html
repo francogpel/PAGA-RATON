@@ -410,6 +410,7 @@ async function initFirebase(){
     const cfg = await fetch("/api/config").then(r=>r.json());
     if(!cfg.apiKey){ S.authReady=true; startApp(); return; }
     firebase.initializeApp(cfg);
+    applyPersistence(); // dejarla lista de entrada, para no esperarla en el clic
 
     // Al volver de un login por redirección (el que usa el celular) acá
     // aparece el error, si Google lo rechazó.
@@ -444,7 +445,6 @@ async function authFetch(url,opts={}){
 }
 async function signInGoogle(){
   setAuthErr("");
-  await applyPersistence();
   const provider = new firebase.auth.GoogleAuthProvider();
 
   // Popup en todos lados, también en el celular.
@@ -459,8 +459,13 @@ async function signInGoogle(){
   //  exige registrar el URI en el cliente OAuth de Google — ver el proxy de
   //  /__/auth en server.js y la variable AUTH_HANDLER_PROPIO.)
   setAuthBusy(true,"Esperando a Google…");
+
+  // ⚠️  Esta línea tiene que ser la PRIMERA operación asincrónica del clic.
+  //     No meter ningún await por delante (ver applyPersistence).
+  const entrada = firebase.auth().signInWithPopup(provider);
+
   try{
-    await firebase.auth().signInWithPopup(provider);
+    await entrada;
     setAuthInfo("Entrando…"); // onAuthStateChanged termina el viaje
   }catch(e){
     const sinPopup = e.code==="auth/popup-blocked"
@@ -479,7 +484,8 @@ async function signInGoogle(){
 }
 async function signInEmail(isSignup){
   setAuthErr("");
-  await applyPersistence();
+  syncRemember();
+  await applyPersistence(); // acá el await no molesta: no se abre ninguna ventana
   const email=document.getElementById("inp-email")?.value.trim();
   const pass=document.getElementById("inp-pass")?.value;
   if(!email||!pass) return setAuthErr("Completá email y contraseña");
@@ -661,7 +667,7 @@ function wireAuthFields(){
   const e=document.getElementById("inp-email");
   if(e){ e.value=S.authEmail||""; e.oninput=()=>{ S.authEmail=e.value; }; }
   const r=document.getElementById("inp-remember");
-  if(r){ r.onchange=()=>{ S.remember=r.checked; }; }
+  if(r){ r.onchange=()=>{ S.remember=r.checked; applyPersistence(); }; }
 }
 
 function renderLogin(){
@@ -752,16 +758,24 @@ function togglePass(){
   b.innerHTML = ver ? ICON_EYE_OFF : ICON_EYE;
   b.setAttribute("aria-label", ver ? "Ocultar contraseña" : "Mostrar contraseña");
 }
-// "Recordar mi sesión": con el tilde la sesión sobrevive al cierre del navegador;
-// sin el tilde se corta al cerrar la pestaña. Hay que fijarlo ANTES de loguear.
-async function applyPersistence(){
+// "Recordar mi sesión": con el tilde la sesión sobrevive al cierre del
+// navegador; sin el tilde se corta al cerrar la pestaña.
+//
+// ⚠️  Se aplica al arrancar y cada vez que se toca el tilde — NUNCA justo antes
+//     de abrir el popup de Google. setPersistence es asincrónico, y esperarlo
+//     dentro del clic consume el gesto del usuario: el navegador deja de
+//     considerar que la ventana la pidió una persona y la bloquea. En el
+//     celular eso es tajante; en escritorio pasa desapercibido.
+function syncRemember(){
   const chk=document.getElementById("inp-remember");
   if(chk) S.remember=chk.checked;
+}
+function applyPersistence(){
   try{
-    await firebase.auth().setPersistence(S.remember
+    return firebase.auth().setPersistence(S.remember
       ? firebase.auth.Auth.Persistence.LOCAL
       : firebase.auth.Auth.Persistence.SESSION);
-  }catch(e){ /* si el navegador no lo soporta, queda la persistencia por defecto */ }
+  }catch(e){ return Promise.resolve(); } // si no lo soporta, queda la de por defecto
 }
 // Recuperación de clave: Firebase manda el mail con el link para restablecerla.
 async function resetPassword(){
