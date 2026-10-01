@@ -97,6 +97,52 @@ try {
   console.warn("    Detalle:", e.message);
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// BLOQUE 1b: CUENTA DE ADMINISTRADOR (panel de usuarios)
+//
+// 🔧 ESTE REPOSITORIO ES PÚBLICO. Nunca hardcodear acá la contraseña real.
+//    ADMIN_SEED_PASSWORD solo se usa UNA VEZ, para crear la cuenta si todavía
+//    no existe — después de eso Firebase ya tiene su propia contraseña y esta
+//    variable no vuelve a tocarla. Cambiala por una fuerte con "¿Olvidaste la
+//    clave?" apenas entres la primera vez. Si falta la variable, la cuenta
+//    simplemente no se crea sola (ver el aviso en los logs).
+// ═══════════════════════════════════════════════════════════════════════════════
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "infinitysolutions.arg@gmail.com").toLowerCase();
+// Sin valor por defecto A PROPÓSITO: este repo es público, así que ninguna
+// contraseña real puede vivir en el código. Se configura UNA SOLA VEZ como
+// variable de entorno en Render (o en .env local) antes del primer arranque;
+// si no está seteada, directamente no se crea la cuenta sola.
+const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "";
+
+async function ensureAdminAccount() {
+  if (!db) return;
+  if (!ADMIN_SEED_PASSWORD) {
+    console.warn("⚠️  Falta ADMIN_SEED_PASSWORD: no se crea la cuenta admin sola. Configurala como variable de entorno y reiniciá.");
+    return;
+  }
+  try {
+    await admin.auth().getUserByEmail(ADMIN_EMAIL);
+    // Ya existe: no tocamos nada, así nunca pisamos una contraseña que ya
+    // hayan cambiado a mano.
+  } catch (err) {
+    if (err.code !== "auth/user-not-found") {
+      console.warn("⚠️  No se pudo verificar la cuenta admin:", err.message);
+      return;
+    }
+    try {
+      await admin.auth().createUser({
+        email: ADMIN_EMAIL,
+        password: ADMIN_SEED_PASSWORD,
+        emailVerified: true,
+      });
+      console.log(`✅ Cuenta admin creada (${ADMIN_EMAIL}) — cambiá la contraseña apenas entres`);
+    } catch (createErr) {
+      console.warn("⚠️  No se pudo crear la cuenta admin:", createErr.message);
+    }
+  }
+}
+ensureAdminAccount();
+
 // Colecciones de Firestore
 //   rooms/{roomId}     → cada sala (con su adminUid, participantes, etc.)
 //   mpTokens/{uid}     → el token de Mercado Pago conectado por cada admin
@@ -124,6 +170,15 @@ async function requireAdmin(req, res, next) {
   } catch {
     res.status(401).json({ error: "Token inválido o expirado" });
   }
+}
+
+// Como requireAdmin, pero además exige que el email coincida con ADMIN_EMAIL.
+// Se usa SOLO para el panel de usuarios: tener sesión no alcanza, hay que ser
+// el admin del panel.
+function requireSuperAdmin(req, res, next) {
+  const email = (req.user?.email || "").toLowerCase();
+  if (email !== ADMIN_EMAIL) return res.status(403).json({ error: "No tenés permiso para ver esto" });
+  next();
 }
 
 // Quita el token de MP antes de mandar la sala al cliente (seguridad)
@@ -251,6 +306,57 @@ app.post("/api/mp-oauth/disconnect", requireAdmin, async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // Listar TODAS las salas del admin autenticado (persisten para siempre en Firestore)
+// ═══════════════════════════════════════════════════════════════════════════════
+// PANEL ADMIN: todas las personas que se registraron en la app.
+// Junta Firebase Auth (identidad) con Firestore (cuántas salas armó cada una
+// y si conectó su Mercado Pago), para que el panel diga algo útil y no solo
+// una lista de emails.
+// ═══════════════════════════════════════════════════════════════════════════════
+app.get("/api/admin/users", requireAdmin, requireSuperAdmin, async (req, res) => {
+  try {
+    // listUsers pagina de a 1000; juntamos varias páginas por si hiciera falta.
+    let users = [], pageToken;
+    for (let i = 0; i < 10; i++) {
+      const page = await admin.auth().listUsers(1000, pageToken);
+      users = users.concat(page.users);
+      pageToken = page.pageToken;
+      if (!pageToken) break;
+    }
+
+    const [roomsSnap, tokensSnap] = await Promise.all([roomsCol().get(), tokensCol().get()]);
+    const roomsByUid = {};
+    roomsSnap.forEach(doc => {
+      const uid = doc.data().adminUid;
+      if (uid) roomsByUid[uid] = (roomsByUid[uid] || 0) + 1;
+    });
+    const mpByUid = {};
+    tokensSnap.forEach(doc => { mpByUid[doc.id] = doc.data().nickname || ""; });
+
+    const data = users
+      .map(u => ({
+        uid: u.uid,
+        email: u.email || "",
+        displayName: u.displayName || "",
+        photoURL: u.photoURL || "",
+        provider: u.providerData.map(p =>
+          p.providerId === "google.com" ? "Google" : p.providerId === "password" ? "Email" : p.providerId
+        ).join(" + ") || "—",
+        createdAt: u.metadata.creationTime,
+        lastSignIn: u.metadata.lastSignInTime || null,
+        disabled: !!u.disabled,
+        roomsCreated: roomsByUid[u.uid] || 0,
+        mpConnected: Object.prototype.hasOwnProperty.call(mpByUid, u.uid),
+        mpNickname: mpByUid[u.uid] || "",
+      }))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json(data);
+  } catch (err) {
+    console.error("Error listando usuarios:", err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
 app.get("/api/rooms", requireAdmin, async (req, res) => {
   try {
     const snap = await roomsCol().where("adminUid", "==", req.user.uid).get();

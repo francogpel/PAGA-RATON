@@ -321,6 +321,15 @@ input::placeholder{color:var(--dim)}
 .remember input:checked + .remember-box{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;color:#0B0B0F}
 .remember input:focus-visible + .remember-box{box-shadow:0 0 0 3px rgba(255,181,71,.25)}
 
+/* ── Panel admin ──────────────────────────────────────────────────────── */
+.admin-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
+.admin-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px}
+.admin-row-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+@media (min-width:640px){
+  .admin-stats{grid-template-columns:repeat(4,1fr)}
+  .admin-row-meta{grid-template-columns:repeat(4,1fr)}
+}
+
 /* ── Crédito de desarrollo (Infinity Solutions) ───────────────────────── */
 .dev-credit{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center}
 .dev-credit p{font-size:12px;color:var(--dim);margin:0}
@@ -394,11 +403,15 @@ svg{overflow:visible}
 
 <script>
 const LOGO = "./paga-raton-logo.jpeg";
+// Solo para mostrar u ocultar el botón del panel: la autorización real la
+// hace el servidor en /api/admin/users comparando el email del token.
+const ADMIN_EMAIL = "infinitysolutions.arg@gmail.com";
 const S = {
   screen:"loading", user:null, rooms:[], room:null, myId:null, shareUrl:"",
   loadingId:null, animTotal:0, polling:null, pendingMarkId:null, mpStatus:null,
   authReady:false, menuOpen:false, names:[], mpConnecting:false,
   authTab:"login", authEmail:"", remember:true, authError:"", authBusy:false,
+  adminUsers:null, adminUsersLoading:false, adminUsersError:"", adminSearch:"",
 };
 
 const urlParams   = new URLSearchParams(location.search);
@@ -597,6 +610,7 @@ function render(){
   if(S.screen==="join")      return renderJoin(app);
   if(S.screen==="adminRoom") return app.innerHTML=renderRoom(true),tickTotal();
   if(S.screen==="room")      return app.innerHTML=renderRoom(false),tickTotal();
+  if(S.screen==="admin")     return renderAdminUsers(app);
 }
 function tickTotal(){
   if(!S.room)return;
@@ -788,12 +802,15 @@ async function resetPassword(){
 }
 
 function hamburgerHTML(){
+  const esAdmin = isSuperAdmin();
   return `<div style="position:relative;flex-shrink:0">
     <div class="hamb" onclick="toggleMenu(event)"><span></span><span></span><span></span></div>
     ${S.menuOpen?`<div class="menu">
       <button style="color:#F5F3EE" onclick="menuGo('mis-salas')">📋 Salas</button>
       <div style="height:1px;background:#22222A;margin:4px 6px"></div>
       <button style="color:#F5F3EE" onclick="menuGo('home')">🏠 Inicio</button>
+      ${esAdmin?`<div style="height:1px;background:#22222A;margin:4px 6px"></div>
+      <button style="color:#F5F3EE" onclick="menuGo('admin')">🛠️ Panel admin</button>`:""}
       <div style="height:1px;background:#22222A;margin:4px 6px"></div>
       <button style="color:#F87171" onclick="menuLogout()">🚪 Salir de la sesión</button>
     </div>`:""}
@@ -1262,6 +1279,133 @@ document.getElementById("confirm-modal").addEventListener("click",e=>{if(e.targe
 document.getElementById("legal-modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeLegal();});
 document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
 document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".hamb")&&!e.target.closest(".menu")){S.menuOpen=false;render();}});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PANEL ADMIN — lista de todas las personas registradas en la app.
+// Solo lo ve quien entró con ADMIN_EMAIL; el servidor lo vuelve a exigir en
+// /api/admin/users, así que ocultar el botón acá es comodidad, no seguridad.
+// ═══════════════════════════════════════════════════════════════════════════════
+function isSuperAdmin(){ return (S.user?.email||"").toLowerCase()===ADMIN_EMAIL; }
+
+async function renderAdminUsers(app){
+  if(!isSuperAdmin()){
+    app.innerHTML=`${userPillHTML(true)}<div class="dashed" style="padding:40px 24px;margin-top:20px"><p style="color:#F87171;font-size:14px;margin:0">No tenés permiso para ver esta pantalla.</p></div>`;
+    return;
+  }
+  if(S.adminUsers===null && !S.adminUsersLoading) loadAdminUsers();
+  app.innerHTML=adminUsersHTML();
+  setTimeout(()=>{
+    const s=document.getElementById("admin-search");
+    if(s){ s.value=S.adminSearch; s.oninput=()=>{ S.adminSearch=s.value; renderAdminList(); }; }
+  },0);
+}
+
+async function loadAdminUsers(){
+  S.adminUsersLoading=true; S.adminUsersError="";
+  render();
+  try{
+    const res=await authFetch("/api/admin/users");
+    if(res.status===403){ S.adminUsersError="No tenés permiso para ver esta lista."; }
+    else if(!res.ok){ S.adminUsersError="No se pudo cargar la lista de usuarios."; }
+    else{ S.adminUsers=await res.json(); }
+  }catch{ S.adminUsersError="Error de conexión al pedir los usuarios."; }
+  S.adminUsersLoading=false;
+  render();
+}
+
+function fmtFecha(iso){
+  if(!iso) return "—";
+  return new Date(iso).toLocaleDateString("es-AR",{day:"2-digit",month:"short",year:"numeric"});
+}
+function fmtFechaHora(iso){
+  if(!iso) return "Nunca";
+  return new Date(iso).toLocaleDateString("es-AR",{day:"2-digit",month:"short",year:"numeric"})
+    +" · "+new Date(iso).toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+}
+
+function adminUsersHTML(){
+  const cargando=S.adminUsersLoading && !S.adminUsers;
+  const lista=S.adminUsers||[];
+  const totales = lista.length
+    ? `<div class="admin-stats">
+        <div class="admin-stat"><p class="label" style="margin:0 0 4px">Total</p><p style="font-size:22px;font-weight:800;margin:0">${lista.length}</p></div>
+        <div class="admin-stat"><p class="label" style="margin:0 0 4px">Con Google</p><p style="font-size:22px;font-weight:800;margin:0">${lista.filter(u=>u.provider.includes("Google")).length}</p></div>
+        <div class="admin-stat"><p class="label" style="margin:0 0 4px">MP conectado</p><p class="green" style="font-size:22px;font-weight:800;margin:0">${lista.filter(u=>u.mpConnected).length}</p></div>
+        <div class="admin-stat"><p class="label" style="margin:0 0 4px">Salas creadas</p><p style="font-size:22px;font-weight:800;margin:0">${lista.reduce((n,u)=>n+u.roomsCreated,0)}</p></div>
+      </div>`
+    : "";
+  return `
+    ${userPillHTML(true)}
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <button onclick="S.screen='home';render()" class="btn-back" style="flex-shrink:0">← Volver</button>
+      <div style="flex:1;min-width:0"><h1 style="font-size:22px;font-weight:700;margin:0">Panel admin</h1><p class="sub" style="margin:0">Personas registradas en Pagá Ratón</p></div>
+      ${lista.length?`<button class="btn-small" onclick="exportAdminUsersCSV()">⬇ CSV</button>`:""}
+    </div>
+    ${totales}
+    ${lista.length?`
+    <div class="field" style="margin:16px 0">
+      <span class="field-icon">🔍</span>
+      <input id="admin-search" placeholder="Buscar por nombre o email…"/>
+    </div>`:""}
+    ${cargando?`<div class="dashed" style="padding:40px 24px"><p class="muted">Cargando usuarios…</p></div>`:""}
+    ${S.adminUsersError?`<div class="dashed" style="padding:40px 24px"><p style="color:#F87171;font-size:14px;margin:0">${S.adminUsersError}</p></div>`:""}
+    <div id="admin-list" class="gap8">${!cargando&&!S.adminUsersError?adminListHTML():""}</div>`;
+}
+
+function adminListHTML(){
+  const q=(S.adminSearch||"").trim().toLowerCase();
+  const lista=(S.adminUsers||[]).filter(u =>
+    !q || u.email.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q)
+  );
+  if(!lista.length){
+    return `<div class="dashed" style="padding:32px 24px"><p class="muted" style="margin:0">${q?"Nadie coincide con esa búsqueda.":"Todavía no se registró nadie."}</p></div>`;
+  }
+  return lista.map(u=>{
+    const nombre=u.displayName||u.email||"(sin nombre)";
+    const ini=nombre.split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()||"?";
+    const esEsteAdmin=u.email.toLowerCase()===ADMIN_EMAIL;
+    return `<div class="card admin-row">
+      <div class="row" style="align-items:flex-start;gap:12px">
+        ${u.photoURL?`<img src="${u.photoURL}" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`:`<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:13px;color:#1A1206;font-weight:800;flex-shrink:0">${ini}</div>`}
+        <div style="flex:1;min-width:0">
+          <div class="row" style="gap:8px">
+            <p style="font-size:14.5px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nombre}${esEsteAdmin?` <span class="badge me" style="margin-left:4px">Admin</span>`:""}</p>
+          </div>
+          <p class="sub" style="margin:2px 0 0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email}</p>
+        </div>
+        <span class="badge ${u.provider.includes('Google')?'closed':'open'}" style="flex-shrink:0">${u.provider}</span>
+      </div>
+      <div class="admin-row-meta">
+        <div><span class="muted">Alta</span><p style="margin:2px 0 0;font-size:12.5px">${fmtFecha(u.createdAt)}</p></div>
+        <div><span class="muted">Último ingreso</span><p style="margin:2px 0 0;font-size:12.5px">${fmtFechaHora(u.lastSignIn)}</p></div>
+        <div><span class="muted">Salas</span><p style="margin:2px 0 0;font-size:12.5px">${u.roomsCreated}</p></div>
+        <div><span class="muted">Mercado Pago</span><p style="margin:2px 0 0;font-size:12.5px" class="${u.mpConnected?'green':''}">${u.mpConnected?(u.mpNickname||"Conectado"):"Sin conectar"}</p></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderAdminList(){
+  const el=document.getElementById("admin-list");
+  if(el) el.innerHTML=adminListHTML();
+}
+
+function exportAdminUsersCSV(){
+  const lista=S.adminUsers||[];
+  if(!lista.length) return;
+  const filas=[["Nombre","Email","Proveedor","Alta","Último ingreso","Salas creadas","Mercado Pago"]];
+  lista.forEach(u=>filas.push([
+    u.displayName, u.email, u.provider, fmtFecha(u.createdAt), fmtFechaHora(u.lastSignIn),
+    String(u.roomsCreated), u.mpConnected?(u.mpNickname||"Conectado"):"Sin conectar",
+  ]));
+  const csv="﻿"+filas.map(f=>f.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`paga-raton-usuarios-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
 initFirebase();
 </script>
