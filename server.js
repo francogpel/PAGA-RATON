@@ -141,7 +141,7 @@ async function ensureAdminAccount() {
     catch (err) { if (err.code !== "auth/user-not-found") throw err; }
 
     if (user) {
-      await admin.auth().updateUser(user.uid, { password: ADMIN_SEED_PASSWORD, disabled: false });
+      await admin.auth().updateUser(user.uid, { password: ADMIN_SEED_PASSWORD, disabled: false, emailVerified: true });
       adminBootstrap = "contraseña-actualizada";
       console.log(`✅ Cuenta admin existente (${ADMIN_EMAIL}): contraseña puesta desde ADMIN_SEED_PASSWORD`);
     } else {
@@ -190,7 +190,14 @@ async function requireAdmin(req, res, next) {
 // el admin del panel.
 function requireSuperAdmin(req, res, next) {
   const email = (req.user?.email || "").toLowerCase();
-  if (email !== ADMIN_EMAIL) return res.status(403).json({ error: "No tenés permiso para ver esto" });
+  // El email solo prueba identidad si está VERIFICADO. El registro con email y
+  // contraseña no verifica nada: sin este chequeo, cualquiera podría crear una
+  // cuenta con ADMIN_EMAIL (que es público, está en este repo) y ver todo.
+  // Entrar con Google lo da por verificado; la cuenta que crea el servidor
+  // también.
+  if (email !== ADMIN_EMAIL || req.user?.email_verified !== true) {
+    return res.status(403).json({ error: "No tenés permiso para ver esto" });
+  }
   next();
 }
 

@@ -1291,7 +1291,7 @@ document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".hamb")&
 // Solo lo ve quien entró con ADMIN_EMAIL; el servidor lo vuelve a exigir en
 // /api/admin/users, así que ocultar el botón acá es comodidad, no seguridad.
 // ═══════════════════════════════════════════════════════════════════════════════
-function isSuperAdmin(){ return (S.user?.email||"").toLowerCase()===ADMIN_EMAIL; }
+function isSuperAdmin(){ return (S.user?.email||"").toLowerCase()===ADMIN_EMAIL && S.user?.emailVerified===true; }
 
 async function renderAdminUsers(app){
   if(!isSuperAdmin()){
