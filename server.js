@@ -114,31 +114,41 @@ const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "infinitysolutions.arg@gmail.com
 // si no está seteada, directamente no se crea la cuenta sola.
 const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "";
 
+// Resultado del último arranque, consultable en /api/admin/bootstrap-status.
+// No contiene ningún secreto: solo dice qué pasó con la cuenta.
+let adminBootstrap = "pendiente";
+
+// Mientras ADMIN_SEED_PASSWORD esté cargada, la cuenta admin queda con ESA
+// contraseña en cada arranque: si no existe la crea, y si ya existía (por
+// ejemplo porque alguna vez se registró ese email desde la app) le pisa la
+// contraseña. Así el resultado es siempre predecible.
+//
+// ⚠️  Por eso, una vez que entres: cambiá la contraseña y BORRÁ la variable
+//     de Render. Si la dejás, cada reinicio vuelve a ponerle la de la variable.
 async function ensureAdminAccount() {
-  if (!db) return;
+  if (!db) { adminBootstrap = "sin-firebase"; return; }
   if (!ADMIN_SEED_PASSWORD) {
-    console.warn("⚠️  Falta ADMIN_SEED_PASSWORD: no se crea la cuenta admin sola. Configurala como variable de entorno y reiniciá.");
+    adminBootstrap = "sin-variable";
+    console.warn("⚠️  Falta ADMIN_SEED_PASSWORD: no se toca la cuenta admin.");
     return;
   }
   try {
-    await admin.auth().getUserByEmail(ADMIN_EMAIL);
-    // Ya existe: no tocamos nada, así nunca pisamos una contraseña que ya
-    // hayan cambiado a mano.
+    let user = null;
+    try { user = await admin.auth().getUserByEmail(ADMIN_EMAIL); }
+    catch (err) { if (err.code !== "auth/user-not-found") throw err; }
+
+    if (user) {
+      await admin.auth().updateUser(user.uid, { password: ADMIN_SEED_PASSWORD, disabled: false });
+      adminBootstrap = "contraseña-actualizada";
+      console.log(`✅ Cuenta admin existente (${ADMIN_EMAIL}): contraseña puesta desde ADMIN_SEED_PASSWORD`);
+    } else {
+      await admin.auth().createUser({ email: ADMIN_EMAIL, password: ADMIN_SEED_PASSWORD, emailVerified: true });
+      adminBootstrap = "creada";
+      console.log(`✅ Cuenta admin creada (${ADMIN_EMAIL})`);
+    }
   } catch (err) {
-    if (err.code !== "auth/user-not-found") {
-      console.warn("⚠️  No se pudo verificar la cuenta admin:", err.message);
-      return;
-    }
-    try {
-      await admin.auth().createUser({
-        email: ADMIN_EMAIL,
-        password: ADMIN_SEED_PASSWORD,
-        emailVerified: true,
-      });
-      console.log(`✅ Cuenta admin creada (${ADMIN_EMAIL}) — cambiá la contraseña apenas entres`);
-    } catch (createErr) {
-      console.warn("⚠️  No se pudo crear la cuenta admin:", createErr.message);
-    }
+    adminBootstrap = "error: " + (err.code || err.message);
+    console.warn("⚠️  No se pudo preparar la cuenta admin:", err.message);
   }
 }
 ensureAdminAccount();
@@ -312,6 +322,11 @@ app.post("/api/mp-oauth/disconnect", requireAdmin, async (req, res) => {
 // y si conectó su Mercado Pago), para que el panel diga algo útil y no solo
 // una lista de emails.
 // ═══════════════════════════════════════════════════════════════════════════════
+// Diagnóstico público y sin secretos: qué pasó con la cuenta admin al arrancar.
+app.get("/api/admin/bootstrap-status", (req, res) => {
+  res.json({ estado: adminBootstrap });
+});
+
 app.get("/api/admin/users", requireAdmin, requireSuperAdmin, async (req, res) => {
   try {
     // listUsers pagina de a 1000; juntamos varias páginas por si hiciera falta.

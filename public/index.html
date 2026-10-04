@@ -850,11 +850,17 @@ function renderHome(){
       </button>
       <button class="big-btn" style="background:${hasRooms?'#16161C':'#1A1A22'};border:1px solid #22222A;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
         <div style="width:40px;height:40px;border-radius:11px;background:#131319;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
-        <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px">Ver salas</p><p class="sub" style="font-size:12px;margin:0">
+        <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px;color:var(--text)">Ver salas</p><p class="sub" style="font-size:12px;margin:0">
           ${hasRooms?`${openCount>0?`<span class="accent">${openCount} abierta${openCount!==1?"s":""}</span>`:""}${openCount>0&&closedCount>0?" · ":""}${closedCount>0?`<span class="green">${closedCount} cerrada${closedCount!==1?"s":""}</span>`:""}`:"Todavía no creaste ninguna sala"}
         </p></div>
         ${hasRooms?`<span style="color:#60606C;font-size:18px">→</span>`:""}
       </button>
+      ${isSuperAdmin()?`
+      <button class="big-btn" style="background:#16161C;border:1px solid rgba(117,170,219,.35)" onclick="S.screen='admin';render()">
+        <div style="width:40px;height:40px;border-radius:11px;background:rgba(117,170,219,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🛠️</div>
+        <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px;color:var(--text)">Panel admin</p><p class="sub" style="font-size:12px;margin:0">Usuarios registrados en la app</p></div>
+        <span style="color:#60606C;font-size:18px">→</span>
+      </button>`:""}
     </div>`;
 }
 
