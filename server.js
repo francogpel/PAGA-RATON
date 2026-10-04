@@ -117,6 +117,9 @@ const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "";
 // Resultado del último arranque, consultable en /api/admin/bootstrap-status.
 // No contiene ningún secreto: solo dice qué pasó con la cuenta.
 let adminBootstrap = "pendiente";
+// Hora en que arrancó este proceso: permite saber si un cambio de variables
+// de entorno ya tomó efecto (Render solo las lee al reiniciar).
+const arrancoEn = new Date().toISOString();
 
 // Mientras ADMIN_SEED_PASSWORD esté cargada, la cuenta admin queda con ESA
 // contraseña en cada arranque: si no existe la crea, y si ya existía (por
@@ -324,7 +327,7 @@ app.post("/api/mp-oauth/disconnect", requireAdmin, async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 // Diagnóstico público y sin secretos: qué pasó con la cuenta admin al arrancar.
 app.get("/api/admin/bootstrap-status", (req, res) => {
-  res.json({ estado: adminBootstrap });
+  res.json({ estado: adminBootstrap, arrancoEn });
 });
 
 app.get("/api/admin/users", requireAdmin, requireSuperAdmin, async (req, res) => {
