@@ -56,7 +56,6 @@ body{
 .sub{color:var(--muted);font-size:13.5px;line-height:1.5}
 .accent{color:var(--accent)}
 .green{color:var(--green)}
-.mp-color{color:var(--mp)}
 
 /* ── Formularios ──────────────────────────────────────────────────────── */
 input,button{font-family:inherit}
@@ -73,15 +72,6 @@ input::placeholder{color:var(--dim)}
 .btn-ghost:hover{background:rgba(255,255,255,.07);border-color:var(--border-hi)}
 .btn-google{background:#fff;color:#111;border:none;border-radius:var(--r-md);padding:15px;font-weight:600;font-size:14.5px;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s,box-shadow .2s}
 .btn-google:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.35)}
-.btn-mp{background:linear-gradient(135deg,#00A9F0,#0080C4);color:#fff;border:none;border-radius:var(--r-md);padding:15px 18px;font-weight:700;font-size:14px;cursor:pointer;width:100%;display:flex;align-items:center;gap:12px;box-shadow:0 8px 20px rgba(0,158,227,.2);transition:transform .15s}
-.btn-mp:hover:not(:disabled){transform:translateY(-1px)}
-.btn-mp:disabled{opacity:.5;cursor:default;box-shadow:none}
-.btn-small{font-size:11px;padding:6px 11px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;transition:.2s}
-.btn-small:hover{border-color:var(--border-hi);color:var(--text)}
-.btn-back{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;font-weight:500;padding:8px 13px;cursor:pointer;transition:.2s}
-.btn-back:hover{border-color:var(--border-hi);color:var(--text)}
-.add-btn{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#1A1206;border:none;border-radius:var(--r-md);padding:0 20px;font-weight:800;font-size:20px;cursor:pointer;flex-shrink:0;transition:.2s}
-.add-btn:disabled{background:var(--elevated);color:var(--dim);cursor:default}
 
 /* ── Login / registro ─────────────────────────────────────────────────── */
 .logo-img{display:block;margin:0 auto 16px;width:92px;height:92px;border-radius:26px;object-fit:cover;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,181,71,.18)}
@@ -99,42 +89,14 @@ input::placeholder{color:var(--dim)}
 .spinner{width:26px;height:26px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 
 /* ── Superficies ──────────────────────────────────────────────────────── */
-.card{background:var(--surface);border-radius:var(--r-md);border:1px solid var(--border);padding:14px 16px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.dashed{border:1.5px dashed var(--border);border-radius:var(--r-md);padding:24px;text-align:center}
-.gap8{display:flex;flex-direction:column;gap:8px}
 .gap10{display:flex;flex-direction:column;gap:10px}
-.gap18{display:flex;flex-direction:column;gap:18px}
-.summary{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border-radius:var(--r-lg);padding:16px;border:1px solid var(--border);display:flex;justify-content:space-between}
-.big-btn{border-radius:var(--r-lg);padding:20px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;width:100%;text-align:left;border:none;transition:transform .15s,box-shadow .2s,border-color .2s}
-.big-btn:hover:not(:disabled){transform:translateY(-2px)}
-.room-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;width:100%;text-align:left;cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
-.room-card:hover{transform:translateY(-2px);border-color:var(--border-hi);background:var(--elevated)}
-.join-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;width:100%;transition:transform .15s,border-color .2s,background .2s}
-.join-btn:hover{transform:translateY(-1px);border-color:var(--border-hi);background:var(--elevated)}
 
 /* ── Indicadores ──────────────────────────────────────────────────────── */
-.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;transition:background .4s,box-shadow .4s}
-.dot.paid{background:var(--green);box-shadow:0 0 10px rgba(74,222,128,.7)}
-.dot.unpaid{background:var(--red)}
-.badge{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.2px}
-.badge.paid{color:var(--green);background:rgba(74,222,128,.14)}
-.badge.me{color:var(--accent);background:rgba(255,181,71,.14)}
-.badge.open{color:var(--accent);background:rgba(255,181,71,.14)}
-.badge.closed{color:var(--green);background:rgba(74,222,128,.14)}
 .progress-bar{height:5px;background:var(--border);border-radius:99px;overflow:hidden;margin:11px 0}
 .progress-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1)}
 
 /* ── Mercado Pago / estados ───────────────────────────────────────────── */
-.mp-connected{background:linear-gradient(180deg,rgba(0,158,227,.12),rgba(0,158,227,.04));border:1px solid rgba(0,158,227,.3);border-radius:var(--r-md);padding:14px 16px}
-.pay-box{background:linear-gradient(180deg,rgba(0,158,227,.14),rgba(0,158,227,.04));border-radius:var(--r-lg);padding:18px;border:1px solid rgba(0,158,227,.28)}
-.paid-box{background:linear-gradient(180deg,rgba(74,222,128,.14),rgba(74,222,128,.04));border-radius:var(--r-lg);padding:16px;border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;gap:12px}
-.all-paid{background:linear-gradient(180deg,rgba(74,222,128,.14),rgba(74,222,128,.04));border-radius:var(--r-md);padding:15px;text-align:center;border:1px solid rgba(74,222,128,.3)}
-.link-box{background:var(--surface-2);border-radius:var(--r-sm);padding:11px 12px;border:1px solid var(--border);overflow:hidden;flex:1}
-.link-text{color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.copy-btn{background:rgba(255,181,71,.14);color:var(--accent);border:none;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;transition:.2s}
-.copy-btn:hover{background:rgba(255,181,71,.22)}
-.copy-btn.done{background:rgba(74,222,128,.16);color:var(--green)}
 
 /* ── Modal / navegación ───────────────────────────────────────────────── */
 #modal,#confirm-modal,#email-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
@@ -147,17 +109,7 @@ input::placeholder{color:var(--dim)}
 .btn-mail{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:clamp(10px,1.7dvh,16px)}
 .btn-primary.btn-danger{background:linear-gradient(135deg,#F87171,#E53E3E);color:#fff;box-shadow:0 8px 22px rgba(229,62,62,.28)}
 .btn-primary.btn-danger:hover:not(:disabled){box-shadow:0 12px 28px rgba(229,62,62,.36)}
-.room-del{background:none;border:1px solid var(--border);border-radius:8px;color:var(--dim);width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;flex-shrink:0;transition:.2s;padding:0}
-.room-del:hover{color:#FF8080;border-color:rgba(229,62,62,.5);background:rgba(229,62,62,.1)}
 .modal-box{background:var(--surface);border-radius:var(--r-xl);padding:28px 24px;width:100%;max-width:330px;border:1px solid var(--border);text-align:center;box-shadow:var(--shadow)}
-.user-pill{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r-md);padding:8px 12px;margin-top:18px;margin-bottom:16px}
-.user-pill .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#1A1206;font-weight:800;flex-shrink:0}
-.menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--elevated);border:1px solid var(--border-hi);border-radius:var(--r-md);padding:6px;min-width:196px;z-index:151;box-shadow:0 12px 32px rgba(0,0,0,.6);animation:rise .18s ease}
-.menu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-radius:9px;padding:11px 12px;font-size:14px;cursor:pointer;text-align:left;transition:background .15s}
-.menu button:hover{background:rgba(255,255,255,.06)}
-.hamb{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;flex-shrink:0;transition:.2s}
-.hamb:hover{border-color:var(--border-hi)}
-.hamb span{width:14px;height:2px;background:var(--muted);border-radius:1px}
 /* ── Hero de la portada + marca ───────────────────────────────────────── */
 .hero{position:relative;margin:0 -20px 22px;aspect-ratio:1/1;max-height:58vh;overflow:hidden}
 .hero img{width:100%;height:100%;object-fit:cover;object-position:50% 35%;display:block}
@@ -322,13 +274,6 @@ input::placeholder{color:var(--dim)}
 .remember input:focus-visible + .remember-box{box-shadow:0 0 0 3px rgba(255,181,71,.25)}
 
 /* ── Panel admin ──────────────────────────────────────────────────────── */
-.admin-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
-.admin-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px}
-.admin-row-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-@media (min-width:640px){
-  .admin-stats{grid-template-columns:repeat(4,1fr)}
-  .admin-row-meta{grid-template-columns:repeat(4,1fr)}
-}
 
 /* ── Crédito de desarrollo (Infinity Solutions) ───────────────────────── */
 .dev-credit{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);text-align:center}
@@ -340,6 +285,182 @@ input::placeholder{color:var(--dim)}
 .dev-logo img{height:34px;width:auto;max-width:170px;object-fit:contain}
 .dev-privacy{color:var(--dim);font-size:11px;text-decoration:underline;margin-top:2px}
 svg{overflow:visible}
+/* ══════════════════════════════════════════════════════════════════════════
+   UI DE LA APP — todas las pantallas menos el login (prefijo u-)
+   ══════════════════════════════════════════════════════════════════════════ */
+#app:not([data-screen="login"]){max-width:560px}
+#app[data-screen="admin"]{max-width:1080px}
+
+.u-top{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;margin:0 -20px 6px;padding:14px 20px;background:linear-gradient(180deg,rgba(11,11,15,.94) 0%,rgba(11,11,15,.8) 70%,rgba(11,11,15,0) 100%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.u-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.u-brand img{width:34px;height:34px;border-radius:10px;object-fit:cover;box-shadow:0 0 0 1px rgba(255,181,71,.28)}
+.u-brand span{font-family:var(--font-display);font-weight:800;font-size:16px;letter-spacing:-.2px}
+.u-top-title{flex:1;min-width:0;margin:0;font-family:var(--font-display);font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.u-icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.2s}
+.u-icon-btn:hover{background:rgba(255,255,255,.08);border-color:var(--border-hi)}
+.u-avatar{width:40px;height:40px;border-radius:50%;border:none;padding:0;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#1A1206;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 0 3px rgba(255,181,71,.16);transition:box-shadow .2s}
+.u-avatar:hover{box-shadow:0 0 0 4px rgba(255,181,71,.3)}
+.u-avatar img,.u-av img{width:100%;height:100%;object-fit:cover}
+.u-menu-wrap{position:relative;flex-shrink:0}
+.u-menu{position:absolute;right:0;top:calc(100% + 10px);min-width:236px;background:rgba(26,26,34,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border-hi);border-radius:16px;padding:8px;box-shadow:0 22px 54px rgba(0,0,0,.6);animation:rise .18s ease;z-index:70}
+.u-menu-head{padding:10px 12px 12px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.u-menu-head p{margin:0}
+.u-menu button{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s}
+.u-menu button:hover{background:rgba(255,255,255,.06)}
+.u-menu button.danger{color:var(--red)}
+.u-menu hr{border:none;height:1px;background:var(--border);margin:6px 4px}
+
+.u-h1{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.15;margin:0}
+.u-h2{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.2px;margin:0}
+.u-kicker{font-size:10.5px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);margin:0}
+.u-big{font-family:var(--font-display);font-size:38px;font-weight:800;letter-spacing:-1px;margin:10px 0 2px}
+.u-section{margin-top:28px}
+.u-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.u-link{background:none;border:none;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;padding:0;font-family:inherit}
+.u-link:hover{text-decoration:underline}
+
+.u-card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:22px;padding:18px;position:relative}
+.u-card + .u-card{margin-top:12px}
+.u-glow{box-shadow:0 22px 54px rgba(0,0,0,.35)}
+
+.u-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.u-stats.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.u-stat{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:16px;padding:13px 14px;min-width:0}
+.u-stat p{margin:0}
+.u-card .u-stat{padding:11px 10px;border-radius:14px}
+.u-card .u-stat .v{font-size:clamp(14px,4.1vw,19px)}
+.u-stat .u-kicker{letter-spacing:.7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-stat .v{font-family:var(--font-display);font-size:clamp(15px,4.6vw,21px);font-weight:800;letter-spacing:-.4px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.u-cta{display:flex;align-items:center;gap:16px;width:100%;padding:20px;border:none;border-radius:22px;cursor:pointer;text-align:left;font-family:inherit;color:#1A1206;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 18px 40px rgba(255,107,24,.28);position:relative;overflow:hidden;transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s}
+.u-cta:hover{transform:translateY(-2px);box-shadow:0 24px 50px rgba(255,107,24,.36)}
+.u-cta::after{content:"";position:absolute;right:-34px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.17);pointer-events:none}
+.u-cta .ico{width:48px;height:48px;border-radius:14px;background:rgba(0,0,0,.13);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1}
+.u-cta .t{font-family:var(--font-display);font-size:18px;font-weight:800;margin:0}
+.u-cta .s{font-size:13px;opacity:.72;margin:2px 0 0}
+
+.u-tile{display:flex;align-items:center;gap:14px;width:100%;padding:16px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;text-align:left;color:var(--text);font-family:inherit;transition:.2s}
+.u-tile:hover{background:rgba(255,255,255,.06);border-color:var(--border-hi);transform:translateY(-1px)}
+.u-tile .ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.u-tile p{margin:0}
+.u-banner{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,rgba(0,158,227,.16),rgba(0,158,227,.05));border:1px solid rgba(0,158,227,.32)}
+
+.u-room{display:flex;align-items:center;gap:14px;padding:14px 14px 14px 16px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer;transition:.2s}
+.u-room:hover{background:rgba(255,255,255,.06);border-color:var(--border-hi);transform:translateY(-1px)}
+.u-room + .u-room{margin-top:10px}
+.u-ring{--p:0;--c:var(--accent);width:48px;height:48px;border-radius:50%;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--c) calc(var(--p) * 1%),rgba(255,255,255,.08) 0)}
+.u-ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:#18181F}
+.u-ring span{position:relative;font-size:11.5px;font-weight:800}
+.u-room-main{flex:1;min-width:0}
+.u-room-main p{margin:0}
+.u-room-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-room-side{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+
+.u-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.u-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.u-chip.plain::before{display:none}
+.u-chip.open{color:var(--accent);background:rgba(255,181,71,.12);border:1px solid rgba(255,181,71,.28)}
+.u-chip.closed{color:var(--green);background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.28)}
+.u-chip.info{color:var(--celeste);background:rgba(117,170,219,.12);border:1px solid rgba(117,170,219,.28)}
+
+.u-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:13px 18px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-family:inherit;transition:.2s;white-space:nowrap}
+.u-btn:hover:not(:disabled){background:rgba(255,255,255,.09);border-color:var(--border-hi)}
+.u-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;color:#1A1206;box-shadow:var(--glow)}
+.u-btn.primary:hover:not(:disabled){transform:translateY(-1px);background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+.u-btn.mp{background:linear-gradient(135deg,#00A9F0,#0080C4);border:none;color:#fff;box-shadow:0 10px 24px rgba(0,158,227,.25)}
+.u-btn.mp:hover:not(:disabled){background:linear-gradient(135deg,#00B4FF,#0088D1)}
+.u-btn.u-wa{background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.35);color:#4BE08A}
+.u-btn.u-wa:hover:not(:disabled){background:rgba(37,211,102,.2);border-color:rgba(37,211,102,.5)}
+.u-btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.u-btn.ghost:hover:not(:disabled){background:rgba(255,255,255,.04);color:var(--text)}
+.u-btn.block{width:100%}
+.u-btn.sm{padding:8px 12px;font-size:12.5px;border-radius:10px}
+.u-btn:disabled{opacity:.45;cursor:default;box-shadow:none;transform:none}
+.u-btn.done{color:var(--green);border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.1)}
+.u-del{width:30px;height:30px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;padding:0}
+.u-del:hover{color:var(--red);border-color:rgba(229,62,62,.45);background:rgba(229,62,62,.1)}
+
+.u-empty{text-align:center;padding:36px 24px;border:1.5px dashed var(--border);border-radius:22px}
+.u-empty img{width:80px;height:80px;border-radius:22px;object-fit:cover;margin:0 auto 14px;display:block}
+.u-seg{display:flex;gap:4px;padding:4px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px}
+.u-seg button{flex:1;padding:9px 6px;border:none;border-radius:10px;background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap}
+.u-seg button.on{background:var(--elevated);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+
+.u-step{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.u-step-n{width:24px;height:24px;border-radius:50%;background:rgba(255,181,71,.14);color:var(--accent);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.u-step-n.ok{background:rgba(74,222,128,.15);color:var(--green)}
+.u-quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.u-quick button{padding:8px 12px;border-radius:99px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;transition:.2s}
+.u-quick button:hover{border-color:rgba(255,181,71,.5);background:rgba(255,181,71,.08)}
+.u-money{display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:16px;padding:4px 16px;background:rgba(255,255,255,.03);transition:.2s}
+.u-money:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,181,71,.15)}
+.u-money span{font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--muted)}
+.u-money input,.u-money input:focus{border:none;background:none;box-shadow:none;font-family:var(--font-display);font-size:30px;font-weight:800;padding:8px 0;letter-spacing:-.5px}
+.u-add{display:flex;gap:8px}
+.u-add input{flex:1}
+.u-add button{width:54px;flex-shrink:0;border-radius:14px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#1A1206;font-size:24px;font-weight:800;cursor:pointer;transition:.2s}
+.u-add button:disabled{background:var(--elevated);color:var(--dim);cursor:default}
+.u-people{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.u-person{display:inline-flex;align-items:center;gap:8px;padding:5px 5px 5px 5px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid var(--border);font-size:13.5px;animation:rise .2s ease}
+.u-person .a{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:#1A1206;flex-shrink:0}
+.u-person button{width:24px;height:24px;border-radius:50%;border:none;background:rgba(255,255,255,.07);color:var(--muted);cursor:pointer;font-size:15px;line-height:1;padding:0}
+.u-person button:hover{background:rgba(229,62,62,.2);color:var(--red)}
+.u-sticky{position:sticky;bottom:14px;margin-top:20px;z-index:20;display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;border-radius:20px;background:rgba(26,26,34,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border-hi);box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.u-sticky .info{flex:1;min-width:0}
+.u-sticky .info p{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.u-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#1A1206;flex-shrink:0;overflow:hidden}
+.u-wheel{display:flex;justify-content:center;position:relative;padding:6px 0}
+.u-wheel svg{width:100%;max-width:290px;height:auto;display:block}
+.u-wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.u-wheel-center p{margin:0}
+.u-wheel-total{font-family:var(--font-display);font-size:20px;font-weight:800;margin-top:2px!important;letter-spacing:-.4px}
+.u-share{display:flex;gap:8px;align-items:center}
+.u-share .link{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-mp-line{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.u-pay{background:linear-gradient(135deg,rgba(0,158,227,.2),rgba(0,158,227,.06));border:1px solid rgba(0,158,227,.35);border-radius:22px;padding:18px}
+.u-pay-amount{margin:0;font-family:var(--font-display);font-size:26px;font-weight:800;letter-spacing:-.5px}
+.u-paid{background:linear-gradient(135deg,rgba(74,222,128,.17),rgba(74,222,128,.05));border:1px solid rgba(74,222,128,.35);border-radius:20px;padding:16px;display:flex;align-items:center;gap:14px}
+.u-person-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.025)}
+.u-person-row + .u-person-row{margin-top:8px}
+.u-person-row.me{border-color:rgba(255,181,71,.38);background:rgba(255,181,71,.05)}
+.u-person-row.paid{border-color:rgba(74,222,128,.22)}
+
+.u-invite{text-align:center;padding:26px 20px 22px;border-radius:26px;background:radial-gradient(420px 220px at 50% 0%,rgba(255,181,71,.14),transparent 70%),linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--border)}
+.u-invite img{width:96px;height:96px;border-radius:26px;object-fit:cover;display:block;margin:0 auto 16px;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,181,71,.22)}
+.u-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.u-pick button{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;transition:.2s;min-width:0}
+.u-pick button:hover{border-color:rgba(255,181,71,.5);background:rgba(255,181,71,.06);transform:translateY(-2px)}
+.u-pick .u-av{width:46px;height:46px;font-size:15px}
+.u-pick .nm{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.u-success{width:84px;height:84px;border-radius:50%;margin:8px auto 18px;background:linear-gradient(135deg,#5BE38E,#00C982);display:flex;align-items:center;justify-content:center;color:#05301A;box-shadow:0 0 0 10px rgba(74,222,128,.1),0 18px 40px rgba(0,201,130,.3);animation:pop .5s cubic-bezier(.22,1.4,.36,1) both}
+.u-success.sm{width:44px;height:44px;margin:0;flex-shrink:0;box-shadow:none;animation:none}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+.u-table{border:1px solid var(--border);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.02)}
+.u-tr{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,.9fr) minmax(0,1.1fr) minmax(0,1.4fr) minmax(0,.5fr) minmax(0,1.2fr);gap:12px;align-items:center;padding:14px 18px;border-top:1px solid var(--border)}
+.u-tr.head{border-top:none;background:rgba(255,255,255,.03);font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding-top:12px;padding-bottom:12px}
+.u-tr p{margin:0}
+.u-tr .lbl{display:none}
+
+/* Modales de la app (efectivo y confirmaciones) */
+#modal .modal-box,#confirm-modal .modal-box{border-radius:26px;padding:30px 24px 22px;background:linear-gradient(180deg,#1C1C25,#15151B);border:1px solid var(--border-hi);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+#modal .modal-box > div:first-child,#confirm-emoji{width:64px;height:64px;border-radius:20px;margin:0 auto 16px !important;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+#modal h3,#confirm-title{font-family:var(--font-display)}
+
+@media (max-width:760px){
+  .u-tr.head{display:none}
+  .u-tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;align-items:start}
+  .u-tr > :first-child{grid-column:1/-1}
+  .u-tr .lbl{display:block;font-size:11px;color:var(--dim);margin-bottom:3px}
+  #admin-list .u-tr:first-child{border-top:none}
+  .u-stats.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:380px){
+  .u-h1{font-size:24px}
+  
+}
 </style>
 </head>
 <body>
@@ -578,25 +699,29 @@ function slicePath(cx,cy,r,ri,s,e){
   return`M${ix1} ${iy1}L${x1} ${y1}A${r} ${r} 0 ${la} 1 ${x2} ${y2}L${ix2} ${iy2}A${ri} ${ri} 0 ${la} 0 ${ix1} ${iy1}Z`;
 }
 function buildWheel(participants,myId,isAdmin){
-  const cx=155,cy=155,r=132,ri=52,n=participants.length,step=360/n;
-  let svg=`<svg width="310" height="310" viewBox="0 0 310 310"><defs><filter id="gp"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  const cx=155,cy=155,r=140,ri=78,n=participants.length,step=360/n;
+  let svg=`<svg viewBox="0 0 310 310" role="img" aria-label="Estado de los pagos"><defs>
+    <linearGradient id="wPaid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BE38E"/><stop offset="1" stop-color="#00C982"/></linearGradient>
+    <linearGradient id="wDue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A80"/><stop offset="1" stop-color="#E53E3E"/></linearGradient>
+    <filter id="gp" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
   participants.forEach((p,i)=>{
     const sa=i*step,ea=sa+step,ma=sa+step/2;
     const[lx,ly]=polar(cx,cy,(r+ri)/2,ma);
     const isMe=p.id===myId,busy=S.loadingId===p.id;
-    const fill=p.paid?"#4ADE80":busy?"#60606C":"#F87171";
+    const fill=p.paid?"url(#wPaid)":busy?"#60606C":"url(#wDue)";
     const canTap=(isMe||isAdmin)&&!p.paid&&!S.loadingId;
-    const short=p.name.length>7?p.name.slice(0,6)+"…":p.name;
-    svg+=`<g ${canTap?`onclick="doPay('${p.id}','${isAdmin}')"`:""} style="cursor:${canTap?"pointer":"default"}">`;
-    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+7,ri-5,sa,ea)}" fill="#FFB547" opacity="0.2"/>`;
-    svg+=`<path d="${slicePath(cx,cy,r,ri,sa,ea)}" fill="${fill}" ${p.paid?'filter="url(#gp)"':""} opacity="${p.paid?1:.84}" style="transition:fill .5s"/>`;
-    if(step>28)svg+=`<text x="${lx}" y="${ly-(step>50?7:0)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${step>60?12:step>40?11:9}" font-weight="600" style="pointer-events:none">${short}</text>`;
-    if(step>50)svg+=`<text x="${lx}" y="${ly+8}" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,.6)" font-size="9" style="pointer-events:none">${p.paid?"✓":busy?"…":isMe?"tocame":"—"}</text>`;
+    const nombre=esc(p.name.length>8?p.name.slice(0,7)+"…":p.name);
+    svg+=`<g ${canTap?`onclick="doPay('${esc(p.id)}','${isAdmin}')"`:""} style="cursor:${canTap?"pointer":"default"}">`;
+    if(isMe&&!p.paid)svg+=`<path d="${slicePath(cx,cy,r+8,ri-6,sa,ea)}" fill="#FFB547" opacity="0.25"/>`;
+    svg+=`<path d="${slicePath(cx,cy,r,ri,sa,ea)}" fill="${fill}" ${p.paid?'filter="url(#gp)"':""} opacity="${p.paid?1:.92}" style="transition:fill .5s"/>`;
+    if(step>26)svg+=`<text x="${lx}" y="${ly-(step>50?7:0)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Inter,sans-serif" font-size="${step>60?12.5:step>40?11:9.5}" font-weight="700" style="pointer-events:none">${nombre}</text>`;
+    if(step>50)svg+=`<text x="${lx}" y="${ly+9}" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,.75)" font-family="Inter,sans-serif" font-size="9.5" style="pointer-events:none">${p.paid?"✓ pagó":busy?"…":isMe?"tocame":"debe"}</text>`;
     svg+=`</g>`;
   });
-  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="#131319"/><circle cx="${cx}" cy="${cy}" r="${ri-1}" fill="none" stroke="#22222A" stroke-width="1"/></svg>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${ri-3}" fill="#14141A" stroke="rgba(255,255,255,.07)" stroke-width="1"/></svg>`;
   return svg;
 }
+
 function mpLogo(sz,onBlue){return `<img src="${onBlue?'./mp-logo-badge.png':'./mp-logo.png'}" alt="MP" style="height:${sz}px;width:auto;display:block;flex-shrink:0"/>`;}
 
 function render(){
@@ -801,66 +926,136 @@ async function resetPassword(){
   }catch(e){ setAuthErr(authErrMsg(e.code)); }
 }
 
-function hamburgerHTML(){
-  const esAdmin = isSuperAdmin();
-  return `<div style="position:relative;flex-shrink:0">
-    <div class="hamb" onclick="toggleMenu(event)"><span></span><span></span><span></span></div>
-    ${S.menuOpen?`<div class="menu">
-      <button style="color:#F5F3EE" onclick="menuGo('mis-salas')">📋 Salas</button>
-      <div style="height:1px;background:#22222A;margin:4px 6px"></div>
-      <button style="color:#F5F3EE" onclick="menuGo('home')">🏠 Inicio</button>
-      ${esAdmin?`<div style="height:1px;background:#22222A;margin:4px 6px"></div>
-      <button style="color:#F5F3EE" onclick="menuGo('admin')">🛠️ Panel admin</button>`:""}
-      <div style="height:1px;background:#22222A;margin:4px 6px"></div>
-      <button style="color:#F87171" onclick="menuLogout()">🚪 Salir de la sesión</button>
+// ═══════════════════════════════════════════════════════════════════════════════
+// UI DE LA APP (todas las pantallas menos el login)
+// Componentes con prefijo u- para no pisar ningún estilo del login.
+// ═══════════════════════════════════════════════════════════════════════════════
+const IC = {
+  back:'<path d="M15 18l-6-6 6-6"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  list:'<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  logout:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>',
+  copy:'<rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+  chevron:'<path d="M9 6l6 6-6 6"/>',
+  cash:'<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/>',
+  download:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+};
+function ic(name,size=18,w=2){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[name]}</svg>`;
+}
+// Todo texto que venga de un usuario (nombres, títulos, emails) pasa por acá
+// antes de entrar al HTML: sin esto, un nombre con etiquetas ejecutaría código
+// en la pantalla de quien lo mire — incluido el panel admin.
+function esc(s){
+  return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function money(n){ return "$"+Math.round(n||0).toLocaleString("es-AR"); }
+function initials(s){
+  return String(s||"?").split(/[\s@._-]+/).filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()||"?";
+}
+const AV_COLORS=[["#FFB547","#FF6B18"],["#8EC5F0","#3D7CC9"],["#5BE38E","#00C982"],["#F9A8D4","#DB2777"],["#C4B5FD","#7C3AED"],["#FDE68A","#F59E0B"]];
+function avStyle(s){
+  let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))>>>0;
+  const [a,b]=AV_COLORS[h%AV_COLORS.length];
+  return `background:linear-gradient(135deg,${a},${b})`;
+}
+function avatarHTML(name,photo){
+  return `<div class="u-av" style="${avStyle(name)}">${photo?`<img src="${esc(photo)}" alt="" referrerpolicy="no-referrer"/>`:esc(initials(name))}</div>`;
+}
+function roomStats(r){
+  const n=r.participants.length, paid=r.participants.filter(p=>p.paid).length, amount=Math.round(r.total/n);
+  return { n, paid, amount, allPaid:paid===n, collected:paid*amount, pending:(n-paid)*amount, pct:Math.round(paid/n*100) };
+}
+function firstName(){
+  const d=(S.user?.displayName||"").trim();
+  if(d) return d.split(/\s+/)[0];
+  const local=(S.user?.email||"").split("@")[0].split(/[._-]/)[0];
+  return local ? local[0].toUpperCase()+local.slice(1) : "";
+}
+function saludo(){ const h=new Date().getHours(); return h<12?"Buen día":h<20?"Buenas tardes":"Buenas noches"; }
+
+function avatarMenuHTML(){
+  if(!S.user) return "";
+  const name=S.user.displayName||S.user.email||"";
+  return `<div class="u-menu-wrap">
+    <button class="u-avatar" onclick="toggleMenu(event)" aria-label="Abrir menú">${S.user.photoURL?`<img src="${esc(S.user.photoURL)}" alt="" referrerpolicy="no-referrer"/>`:esc(initials(name))}</button>
+    ${S.menuOpen?`<div class="u-menu">
+      <div class="u-menu-head"><p style="font-weight:700;font-size:14px">${esc(S.user.displayName||firstName())}</p><p class="muted" style="margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(S.user.email||"")}</p></div>
+      <button onclick="menuGo('home')">${ic("home")} Inicio</button>
+      <button onclick="menuGo('mis-salas')">${ic("list")} Mis salas</button>
+      <button onclick="menuGo('setup')">${ic("plus")} Nueva sala</button>
+      ${isSuperAdmin()?`<button onclick="menuGo('admin')">${ic("shield")} Panel admin</button>`:""}
+      <hr/>
+      <button class="danger" onclick="menuLogout()">${ic("logout")} Cerrar sesión</button>
     </div>`:""}
   </div>`;
+}
+// Barra superior de todas las pantallas. o.back: código a ejecutar al volver;
+// o.title: título en lugar de la marca; o.right: contenido derecho (por
+// defecto, el avatar con el menú).
+function topbarHTML(o={}){
+  const izq=o.back?`<button class="u-icon-btn" onclick="${o.back}" aria-label="Volver">${ic("back",20)}</button>`:"";
+  const centro=o.title?`<p class="u-top-title">${esc(o.title)}</p>`:`<div class="u-brand"><img src="${LOGO}" alt=""/><span>Pagá Ratón</span></div>`;
+  const der=o.right!==undefined?o.right:avatarMenuHTML();
+  return `<header class="u-top">${izq}${centro}${der}</header>`;
 }
 function toggleMenu(e){ e.stopPropagation(); S.menuOpen=!S.menuOpen; render(); }
 function menuGo(screen){ S.menuOpen=false; stopPolling(); S.screen=screen; render(); }
 function menuLogout(){ S.menuOpen=false; render(); askSignOut(); }
+function askDeleteRoomById(id){ const r=S.rooms.find(x=>x.id===id); askDeleteRoom(id, esc(r?.title||"")); }
+function askMarkPaidById(id){ const p=S.room?.participants.find(x=>x.id===id); askMarkPaid(id, p?.name||""); }
 
-function userPillHTML(withMenu){
-  if(!S.user) return "";
-  const name=S.user.displayName||S.user.email||"Admin";
-  const ini=name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
-  return `<div class="user-pill">
-    <div class="av">${ini}</div>
-    <span class="sub" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span>
-    ${withMenu?hamburgerHTML():`<button onclick="askSignOut()" style="background:none;border:none;color:#60606C;font-size:12px;cursor:pointer">Salir</button>`}
+function roomCardHTML(r){
+  const s=roomStats(r);
+  const fecha=new Date(r.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
+  const abrir=`openRoom('${esc(r.id)}')`;
+  return `<div class="u-room" role="button" tabindex="0" onclick="${abrir}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${abrir}}">
+    <div class="u-ring" style="--p:${s.pct};--c:${s.allPaid?"var(--green)":"var(--accent)"}"><span>${s.paid}/${s.n}</span></div>
+    <div class="u-room-main"><p class="u-room-title">${esc(r.title)}</p><p class="sub" style="font-size:12.5px;margin-top:3px"><b style="color:var(--text)">${money(s.collected)}</b> de ${money(r.total)} · ${fecha}</p></div>
+    <div class="u-room-side"><span class="u-chip ${s.allPaid?"closed":"open"}">${s.allPaid?"Cerrada":"Abierta"}</span>${s.allPaid?"":`<button class="u-del" title="Eliminar sala" aria-label="Eliminar sala" onclick="event.stopPropagation();askDeleteRoomById('${esc(r.id)}')">${ic("trash",15)}</button>`}</div>
   </div>`;
+}
+function emptyRoomsHTML(){
+  return `<div class="u-empty"><img src="${LOGO}" alt=""/><p style="font-weight:700;font-size:15px;margin:0">Todavía no hay salas</p><p class="sub" style="margin:6px 0 16px;font-size:13px">Creá la primera y compartí el link con tu grupo.</p><button class="u-btn primary" onclick="S.screen='setup';render()">${ic("plus",16,2.4)} Crear sala</button></div>`;
 }
 
 function renderHome(){
-  const hasRooms=S.rooms.length>0;
-  const openCount=S.rooms.filter(r=>r.participants.some(p=>!p.paid)).length;
-  const closedCount=S.rooms.filter(r=>r.participants.every(p=>p.paid)).length;
+  const st=S.rooms.map(roomStats);
+  const abiertas=st.filter(s=>!s.allPaid).length;
+  const porCobrar=st.reduce((a,s)=>a+(s.allPaid?0:s.pending),0);
+  const cobrado=st.reduce((a,s)=>a+s.collected,0);
+  const sinMP=S.mpStatus && !S.mpStatus.connected;
   return `
-    ${userPillHTML(false)}
-    <div style="text-align:center;margin-top:24px;margin-bottom:36px">
-      <img src="${LOGO}" style="display:block;margin:0 auto 12px;width:60px;height:60px;border-radius:15px;object-fit:cover"/>
-      <h1 style="font-size:22px;font-weight:700;margin-bottom:6px">¿Qué querés hacer?</h1>
-      <p class="sub">Creá una sala nueva o revisá las que ya tenés</p>
+    ${topbarHTML()}
+    <div style="margin-top:10px">
+      <p class="u-kicker">${saludo()}</p>
+      <h1 class="u-h1" style="margin-top:6px">Hola${firstName()?", "+esc(firstName()):""} 👋</h1>
+      <p class="sub" style="margin-top:6px">${abiertas?`Tenés ${abiertas} sala${abiertas!==1?"s":""} esperando que paguen.`:"Armá una sala y que nadie se haga el ratón."}</p>
     </div>
-    <div class="gap10" style="gap:12px">
-      <button class="big-btn" style="background:linear-gradient(135deg,#FFB547,#FF6B18);box-shadow:0 10px 26px rgba(255,107,24,.22)" onclick="S.screen='setup';render()">
-        <div style="width:40px;height:40px;border-radius:11px;background:rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">➕</div>
-        <div style="flex:1"><p style="color:#000;font-size:15px;font-weight:700;margin:0 0 2px">Crear sala</p><p style="color:rgba(0,0,0,.6);font-size:12px;margin:0">Armá un nuevo gasto para dividir</p></div>
-        <span style="color:rgba(0,0,0,.5);font-size:18px">→</span>
-      </button>
-      <button class="big-btn" style="background:${hasRooms?'#16161C':'#1A1A22'};border:1px solid #22222A;opacity:${hasRooms?1:.5}" ${hasRooms?"onclick=\"S.screen='mis-salas';render()\"":"disabled"}>
-        <div style="width:40px;height:40px;border-radius:11px;background:#131319;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div>
-        <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px;color:var(--text)">Ver salas</p><p class="sub" style="font-size:12px;margin:0">
-          ${hasRooms?`${openCount>0?`<span class="accent">${openCount} abierta${openCount!==1?"s":""}</span>`:""}${openCount>0&&closedCount>0?" · ":""}${closedCount>0?`<span class="green">${closedCount} cerrada${closedCount!==1?"s":""}</span>`:""}`:"Todavía no creaste ninguna sala"}
-        </p></div>
-        ${hasRooms?`<span style="color:#60606C;font-size:18px">→</span>`:""}
-      </button>
-      ${isSuperAdmin()?`
-      <button class="big-btn" style="background:#16161C;border:1px solid rgba(117,170,219,.35)" onclick="S.screen='admin';render()">
-        <div style="width:40px;height:40px;border-radius:11px;background:rgba(117,170,219,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🛠️</div>
-        <div style="flex:1"><p style="font-size:15px;font-weight:700;margin:0 0 2px;color:var(--text)">Panel admin</p><p class="sub" style="font-size:12px;margin:0">Usuarios registrados en la app</p></div>
-        <span style="color:#60606C;font-size:18px">→</span>
-      </button>`:""}
+    <div class="u-stats" style="margin-top:20px">
+      <div class="u-stat"><p class="u-kicker">Por cobrar</p><p class="v accent">${money(porCobrar)}</p></div>
+      <div class="u-stat"><p class="u-kicker">Cobrado</p><p class="v green">${money(cobrado)}</p></div>
+      <div class="u-stat"><p class="u-kicker">Abiertas</p><p class="v">${abiertas}</p></div>
+    </div>
+    ${sinMP?`<div class="u-banner" style="margin-top:14px">${mpLogo(22)}<div style="flex:1;min-width:0"><p style="margin:0;font-weight:700;font-size:14px">Conectá tu Mercado Pago</p><p class="sub" style="margin:2px 0 0;font-size:12.5px">Lo necesitás para crear salas y cobrar.</p></div><button class="u-btn mp sm" onclick="connectMercadoPago()">Conectar</button></div>`:""}
+    <button class="u-cta" style="margin-top:16px" onclick="S.screen='setup';render()">
+      <div class="ico">${ic("plus",24,2.4)}</div>
+      <div style="flex:1;position:relative;z-index:1"><p class="t">Crear sala</p><p class="s">Dividí la cancha, el asado o lo que pinte</p></div>
+      <span style="position:relative;z-index:1">${ic("chevron",22,2.4)}</span>
+    </button>
+    ${isSuperAdmin()?`<button class="u-tile" style="margin-top:10px" onclick="S.screen='admin';render()">
+      <div class="ico" style="background:rgba(117,170,219,.14);color:var(--celeste)">${ic("shield",20)}</div>
+      <div style="flex:1"><p style="font-weight:700;font-size:15px">Panel admin</p><p class="sub" style="font-size:12.5px">Usuarios registrados en la app</p></div>
+      <span style="color:var(--dim)">${ic("chevron",20)}</span></button>`:""}
+    <div class="u-section">
+      <div class="u-section-head"><p class="u-h2">Tus salas</p>${S.rooms.length?`<button class="u-link" onclick="S.screen='mis-salas';render()">Ver todas (${S.rooms.length})</button>`:""}</div>
+      ${S.rooms.length?S.rooms.slice(0,3).map(roomCardHTML).join(""):emptyRoomsHTML()}
     </div>`;
 }
 
@@ -868,145 +1063,162 @@ function renderSetup(){
   const connected=S.mpStatus?.connected, nickname=S.mpStatus?.nickname||"";
   setTimeout(()=>{
     const t=document.getElementById("inp-title"), to=document.getElementById("inp-total"), n=document.getElementById("inp-name");
-    if(t)t.oninput=updateSetupBtn; if(to)to.oninput=updateSetupBtn;
-    if(n){n.oninput=updateAddBtn;n.onkeydown=e=>{if(e.key==="Enter")addName();}}
+    if(t){ t.value=S.draftTitle||""; t.oninput=()=>{ S.draftTitle=t.value; updateSetupBtn(); }; }
+    if(to){ to.value=S.draftTotal||""; to.oninput=()=>{ S.draftTotal=to.value; updateSetupBtn(); }; }
+    if(n){ n.oninput=updateAddBtn; n.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); addName(); } }; }
+    updateSetupBtn();
   },0);
   return `
-    ${userPillHTML(false)}
-    <button onclick="S.screen='home';render()" class="btn-back" style="margin-bottom:18px;align-self:flex-start">← Volver</button>
-    <div style="margin-bottom:20px">
-      <p class="label">Nuevo gasto compartido</p>
-      <h1 style="font-size:24px;font-weight:700">Configurá la sala</h1>
+    ${topbarHTML({back:"S.screen='home';render()"})}
+    <div style="margin-top:6px"><p class="u-kicker">Nuevo gasto compartido</p><h1 class="u-h1" style="margin-top:6px">Armá la sala</h1></div>
+
+    <div class="u-card" style="margin-top:18px">
+      <div class="u-step"><span class="u-step-n ${connected?"ok":""}">${connected?ic("check",13,3):"1"}</span><p class="u-h2" style="font-size:15px">¿Dónde cobrás?</p></div>
+      ${connected
+        ? `<div class="row"><div style="display:flex;align-items:center;gap:12px;min-width:0">${mpLogo(26)}<div style="min-width:0"><p style="margin:0;font-weight:700;font-size:14px">Mercado Pago conectado</p><p class="sub" style="margin:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nickname)}</p></div></div><button class="u-btn sm" onclick="disconnectMP()">Desconectar</button></div>`
+        : `<button class="u-btn mp block" onclick="connectMercadoPago()">${mpLogo(20,true)} Conectar Mercado Pago</button><p class="muted" style="margin-top:10px;text-align:center">Los pagos de tus invitados van directo a tu cuenta.</p>`}
     </div>
-    <div class="gap18">
-      <div>
-        <span class="label">Tu cuenta de Mercado Pago</span>
-        ${connected?`
-        <div class="mp-connected">
-          <div class="row"><div style="display:flex;align-items:center;gap:10px">${mpLogo(22)}
-            <div><p class="mp-color" style="font-size:12px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.5px">Mercado Pago conectado</p><p class="sub" style="font-size:13px;margin:0">${nickname}</p></div></div>
-            <button onclick="disconnectMP()" class="btn-small">Desconectar</button></div>
-          <p style="color:rgba(0,158,227,.7);font-size:11px;margin-top:10px">✓ Los pagos se acreditarán directamente en tu cuenta</p>
-        </div>`:`
-        <button class="btn-mp" onclick="connectMercadoPago()">
-          ${mpLogo(22,true)}
-          <div style="text-align:left;flex:1"><p style="color:#fff;font-size:14px;font-weight:700;margin:0 0 2px">Conectar con Mercado Pago</p><p style="color:rgba(255,255,255,.65);font-size:12px;margin:0">Los pagos se acreditan directo en tu cuenta</p></div>
-          <span style="color:rgba(255,255,255,.7);font-size:18px">→</span>
-        </button>
-        <p class="muted" style="margin-top:8px;text-align:center">Necesitás conectar tu cuenta para recibir los pagos</p>`}
-      </div>
-      <div style="height:1px;background:#22222A"></div>
-      <div><span class="label">¿Qué están dividiendo?</span><input id="inp-title" placeholder="La cena, El asado, El viaje…"/></div>
-      <div><span class="label">Total a dividir ($)</span><input id="inp-total" type="number" placeholder="60000"/><p id="amount-hint" class="muted" style="margin-top:6px"></p></div>
-      <div>
-        <span class="label">Participantes</span>
-        <div class="row" style="gap:8px;margin-bottom:10px">
-          <input id="inp-name" placeholder="Nombre del participante" style="flex:1"/>
-          <button class="add-btn" onclick="addName()" id="btn-add" disabled>+</button>
-        </div>
-        <div id="names-list" class="dashed"><p class="muted">Agregá al menos 2 participantes</p></div>
-      </div>
-      <button class="btn-primary" onclick="createRoom()" id="btn-create" disabled>Completá todos los campos</button>
+
+    <div class="u-card">
+      <div class="u-step"><span class="u-step-n">2</span><p class="u-h2" style="font-size:15px">¿Qué dividen?</p></div>
+      <input id="inp-title" placeholder="Ej: Cancha del jueves" maxlength="60" autocomplete="off"/>
+      <div class="u-quick">${["⚽ Cancha","🥩 Asado","🍕 Cena","✈️ Viaje","🎁 Regalo","🎂 Cumple"].map(q=>`<button onclick="quickTitle('${q}')">${q}</button>`).join("")}</div>
+    </div>
+
+    <div class="u-card">
+      <div class="u-step"><span class="u-step-n">3</span><p class="u-h2" style="font-size:15px">¿Cuánto salió en total?</p></div>
+      <div class="u-money"><span>$</span><input id="inp-total" type="number" inputmode="numeric" min="1" placeholder="0"/></div>
+      <p id="amount-hint" class="sub" style="margin-top:10px;font-size:13px"></p>
+    </div>
+
+    <div class="u-card">
+      <div class="u-step"><span class="u-step-n">4</span><p class="u-h2" style="font-size:15px">¿Quiénes participan?</p><span id="people-count" class="u-chip info plain" style="margin-left:auto">${S.names.length}</span></div>
+      <div class="u-add"><input id="inp-name" placeholder="Nombre" maxlength="30" autocomplete="off"/><button id="btn-add" onclick="addName()" disabled aria-label="Agregar">+</button></div>
+      <div id="names-list" class="u-people">${namesHTML()}</div>
+    </div>
+
+    <div class="u-sticky">
+      <div class="info"><p id="setup-summary" style="font-weight:700;font-size:14px">Completá los datos</p><p id="setup-sub" class="muted" style="margin-top:1px">Mínimo 2 personas</p></div>
+      <button class="u-btn primary" onclick="createRoom()" id="btn-create" disabled>Crear sala</button>
     </div>`;
 }
-function updateAddBtn(){const v=document.getElementById("inp-name")?.value.trim();const b=document.getElementById("btn-add");if(b){b.disabled=!v;b.style.background=v?"#FFB547":"#16161C";b.style.color=v?"#000":"#60606C";}}
+function quickTitle(q){ const t=document.getElementById("inp-title"); if(!t) return; t.value=q; S.draftTitle=q; updateSetupBtn(); t.focus(); }
+function namesHTML(){
+  if(!S.names.length) return `<p class="muted" style="margin:2px 0 0">Agregá al menos 2 personas (vos incluido si ponés plata).</p>`;
+  return S.names.map((n,i)=>`<span class="u-person"><span class="a" style="${avStyle(n)}">${esc(initials(n))}</span>${esc(n)}<button onclick="removeNameAt(${i})" aria-label="Quitar a ${esc(n)}">×</button></span>`).join("");
+}
+function renderNamesList(){
+  const el=document.getElementById("names-list"); if(el) el.innerHTML=namesHTML();
+  const c=document.getElementById("people-count"); if(c) c.textContent=S.names.length;
+}
+function updateAddBtn(){ const v=document.getElementById("inp-name")?.value.trim(); const b=document.getElementById("btn-add"); if(b) b.disabled=!v; }
 function updateSetupBtn(){
   const t=document.getElementById("inp-title")?.value.trim();
   const tot=parseInt(document.getElementById("inp-total")?.value||"0",10);
   const n=S.names.length, mp=S.mpStatus?.connected, ok=!!t&&tot>0&&n>=2&&mp;
-  const b=document.getElementById("btn-create");
-  if(b){b.disabled=!ok;b.textContent=!mp?"Conectá tu Mercado Pago primero":!t||!tot?"Completá todos los campos":n<2?"Agregá al menos 2 participantes":`Crear sala con ${n} persona${n!==1?"s":""} →`;}
+  const b=document.getElementById("btn-create"); if(b) b.disabled=!ok;
+  const per=n>=2&&tot>0?money(tot/n):null;
+  const sum=document.getElementById("setup-summary"), sub=document.getElementById("setup-sub");
+  if(sum) sum.textContent = per && mp && t ? `${per} cada uno` : !mp?"Conectá Mercado Pago":!t?"Poné un nombre":!tot?"Falta el total":"Faltan personas";
+  if(sub) sub.textContent = per ? `${n} personas · total ${money(tot)}` : `${n}/2 personas como mínimo`;
   const hint=document.getElementById("amount-hint");
-  if(hint)hint.textContent=n>=2&&tot>0?`$${Math.round(tot/n).toLocaleString("es-AR")} por persona`:"";
+  if(hint) hint.innerHTML = per ? `Cada uno paga <b class="accent">${per}</b>` : "";
 }
-function addName(){const inp=document.getElementById("inp-name");const n=inp.value.trim();if(!n||S.names.includes(n))return;S.names.push(n);inp.value="";inp.focus();updateAddBtn();renderNamesList();updateSetupBtn();}
-function removeName(name){S.names=S.names.filter(x=>x!==name);renderNamesList();updateSetupBtn();}
-function renderNamesList(){
-  const el=document.getElementById("names-list");if(!el)return;
-  if(!S.names.length){el.innerHTML=`<p class="muted">Agregá al menos 2 participantes</p>`;el.className="dashed";return;}
-  el.className="gap8";
-  el.innerHTML=S.names.map((n,i)=>`<div class="card row"><div class="row" style="gap:10px"><span class="muted">${i+1}</span><span>${n}</span></div><button onclick="removeName('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#60606C;cursor:pointer;font-size:18px;padding:0 4px">×</button></div>`).join("");
+function addName(){
+  const inp=document.getElementById("inp-name"); const n=inp.value.trim();
+  if(!n||S.names.includes(n)) return;
+  S.names.push(n); inp.value=""; inp.focus(); updateAddBtn(); renderNamesList(); updateSetupBtn();
 }
+function removeNameAt(i){ S.names.splice(i,1); renderNamesList(); updateSetupBtn(); }
+function removeName(name){ S.names=S.names.filter(x=>x!==name); renderNamesList(); updateSetupBtn(); }
 async function createRoom(){
   const title=document.getElementById("inp-title")?.value.trim();
   const total=parseInt(document.getElementById("inp-total")?.value,10);
-  if(!title||!total||S.names.length<2)return;
-  const b=document.getElementById("btn-create");b.disabled=true;b.textContent="Creando sala…";
+  if(!title||!total||S.names.length<2) return;
+  const b=document.getElementById("btn-create"); b.disabled=true; b.textContent="Creando…";
   try{
     const res=await authFetch("/api/rooms",{method:"POST",body:JSON.stringify({title,total,participants:S.names})});
-    if(res.status===401){alert("Sesión expirada. Volvé a ingresar.");S.screen="login";render();return;}
+    if(res.status===401){ alert("Sesión expirada. Volvé a ingresar."); S.screen="login"; render(); return; }
     const data=await res.json();
-    S.room=data;S.shareUrl=data.shareUrl||`${location.origin}/?room=${data.id}`;
-    S.rooms=[data,...S.rooms];S.names=[];
-    S.screen="created";render();
-  }catch{alert("Error al crear la sala.");b.disabled=false;updateSetupBtn();}
+    // Antes cualquier error del servidor (por ejemplo, sin Mercado Pago
+    // conectado) se tomaba como si fuera la sala creada.
+    if(!res.ok){ alert(data.error||"No se pudo crear la sala."); b.textContent="Crear sala"; updateSetupBtn(); return; }
+    S.room=data; S.shareUrl=data.shareUrl||`${location.origin}/?room=${data.id}`;
+    S.rooms=[data,...S.rooms]; S.names=[]; S.draftTitle=""; S.draftTotal="";
+    S.screen="created"; render();
+  }catch{ alert("Error al crear la sala."); b.textContent="Crear sala"; updateSetupBtn(); }
 }
 
 function renderMisSalas(){
-  const openRooms=S.rooms.filter(r=>r.participants.some(p=>!p.paid));
-  const closedRooms=S.rooms.filter(r=>r.participants.every(p=>p.paid));
-  function card(r){
-    const paidCount=r.participants.filter(p=>p.paid).length,total=r.participants.length,allPaid=paidCount===total;
-    const pct=Math.round((paidCount/total)*100),amount=Math.round(r.total/total);
-    const date=new Date(r.createdAt).toLocaleDateString("es-AR",{day:"numeric",month:"short"});
-    const abrir=`openRoom('${r.id}')`;
-    return `<div class="room-card" role="button" tabindex="0" onclick="${abrir}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${abrir}}" style="border-color:${allPaid?'#14331F':'#22222A'}">
-      <div class="row" style="margin-bottom:10px"><p style="font-size:15px;font-weight:700;margin:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#F5F3EE">${r.title}</p><div class="row" style="gap:8px;flex-shrink:0"><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span>${allPaid?"":`<button class="room-del" title="Eliminar sala" aria-label="Eliminar sala" onclick="event.stopPropagation();askDeleteRoom('${r.id}','${r.title.replace(/'/g,"\\'")}')">🗑</button>`}</div></div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${allPaid?"#4ADE80":"#FFB547"}"></div></div>
-      <div class="row"><span class="sub" style="font-size:12px"><span style="color:${allPaid?"#4ADE80":"#F5F3EE"};font-weight:600">${paidCount}</span>/${total} pagaron · ${amount.toLocaleString("es-AR")} c/u</span><span class="muted" style="font-size:11px">${date}</span></div>
-    </div>`;
-  }
+  const f=S.roomsFilter||"todas";
+  const cerrada=r=>roomStats(r).allPaid;
+  const lista=S.rooms.filter(r=>f==="todas"||(f==="abiertas"?!cerrada(r):cerrada(r)));
+  const nA=S.rooms.filter(r=>!cerrada(r)).length, nC=S.rooms.length-nA;
   return `
-    ${userPillHTML(true)}
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
-      <button onclick="S.screen='home';render()" class="btn-back" style="flex-shrink:0">← Volver</button>
-      <div><h1 style="font-size:22px;font-weight:700;margin:0">Mis salas</h1><p class="sub" style="margin:0">${S.rooms.length} sala${S.rooms.length!==1?"s":""} creada${S.rooms.length!==1?"s":""}</p></div>
-    </div>
-    ${!S.rooms.length?`<div class="dashed" style="padding:40px 24px"><div style="font-size:36px;margin-bottom:12px">📋</div><p style="color:#9E9EA8;font-size:15px;font-weight:500;margin:0 0 6px">Todavía no creaste ninguna sala</p><p class="muted" style="margin:0">Volvé al inicio para crear tu primera sala</p></div>`:``}
-    ${openRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#FFB547"></div><p class="label" style="margin:0">Salas abiertas (${openRooms.length})</p></div><div class="gap8" style="margin-bottom:20px">${openRooms.map(card).join("")}</div>`:``}
-    ${closedRooms.length?`<div class="row" style="justify-content:flex-start;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:#4ADE80"></div><p class="label" style="margin:0">Salas cerradas (${closedRooms.length})</p></div><div class="gap8">${closedRooms.map(card).join("")}</div>`:``}`;
+    ${topbarHTML({back:"S.screen='home';render()"})}
+    <div style="margin-top:6px"><h1 class="u-h1">Mis salas</h1><p class="sub" style="margin-top:4px">${S.rooms.length} sala${S.rooms.length!==1?"s":""} · las cerradas quedan como constancia</p></div>
+    ${S.rooms.length?`<div class="u-seg" style="margin:18px 0 14px">${[["todas",`Todas · ${S.rooms.length}`],["abiertas",`Abiertas · ${nA}`],["cerradas",`Cerradas · ${nC}`]].map(([k,t])=>`<button class="${f===k?"on":""}" onclick="S.roomsFilter='${k}';render()">${t}</button>`).join("")}</div>`:""}
+    ${S.rooms.length
+      ? (lista.length?lista.map(roomCardHTML).join(""):`<div class="u-empty"><p class="sub" style="margin:0">No hay salas ${f==="abiertas"?"abiertas":"cerradas"}.</p></div>`)
+      : `<div style="margin-top:18px">${emptyRoomsHTML()}</div>`}`;
 }
 function openRoom(id){const r=S.rooms.find(x=>x.id===id);if(r){S.room=r;S.shareUrl=`${location.origin}/?room=${r.id}`;S.screen="adminRoom";startPolling();render();}}
 
 function renderCreated(){
-  const r=S.room,amount=Math.round(r.total/r.participants.length);
+  const r=S.room, s=roomStats(r);
   return `
-    ${userPillHTML(false)}
-    <div style="text-align:center;margin-bottom:22px"><div style="font-size:44px;margin-bottom:10px">🎉</div><h2 style="font-size:22px;font-weight:700;margin-bottom:6px">${r.title}</h2><p class="sub">$${r.total.toLocaleString("es-AR")} · ${r.participants.length} personas · <span class="accent">$${amount.toLocaleString("es-AR")} c/u</span></p></div>
-    <div class="card" style="margin-bottom:12px">
-      <p class="label" style="margin-bottom:10px">Link para compartir</p>
-      <div class="row" style="margin-bottom:8px"><div class="link-box"><p class="link-text">${S.shareUrl}</p></div><button class="copy-btn" id="btn-copy" onclick="copyLink()">Copiar</button></div>
-      <p class="muted">Cada participante entra al link, elige su nombre y paga directo a tu Mercado Pago</p>
+    ${topbarHTML()}
+    <div style="text-align:center;margin-top:14px">
+      <div class="u-success">${ic("check",40,3)}</div>
+      <p class="u-kicker">Sala creada</p>
+      <h1 class="u-h1" style="margin-top:6px;word-break:break-word">${esc(r.title)}</h1>
+      <p class="sub" style="margin-top:6px">${s.n} personas · cada uno paga <b class="accent">${money(s.amount)}</b></p>
     </div>
-    ${r.mpAlias?`<div style="background:#0A1C2B;border:1px solid rgba(0,158,227,.25);border-radius:14px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px">${mpLogo(20)}<div><p class="mp-color" style="font-size:11px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.5px">Mercado Pago conectado</p><p class="sub" style="font-size:13px;margin:0">${r.mpAlias}</p></div></div>`:""}
-    <div class="gap10">
-      <button class="btn-primary" onclick="S.screen='adminRoom';startPolling();render()">Ver sala →</button>
-      <button onclick="S.screen='setup';render()" style="background:none;border:none;color:#60606C;font-size:13px;padding:8px;cursor:pointer">+ Crear otra sala</button>
-    </div>`;
+    <div class="u-card u-glow" style="margin-top:22px">
+      <p class="u-kicker" style="margin-bottom:10px">Compartí el link con el grupo</p>
+      <div class="u-share"><div class="link">${esc(S.shareUrl)}</div><button class="u-btn sm" id="btn-copy" onclick="copyLink()">${ic("copy",15)} Copiar</button></div>
+      <button class="u-btn block u-wa" style="margin-top:10px" onclick="shareRoom()">${ic("share",16)} Compartir con el grupo</button>
+      <p class="muted" style="margin-top:12px;line-height:1.5">Cada uno entra, elige su nombre y paga directo a tu Mercado Pago${r.mpAlias?` (${esc(r.mpAlias)})`:""}.</p>
+    </div>
+    <button class="u-btn primary block" style="margin-top:16px;padding:15px" onclick="S.screen='adminRoom';startPolling();render()">Ir a la sala ${ic("chevron",18,2.4)}</button>
+    <button class="u-btn ghost block" style="margin-top:8px" onclick="S.screen='setup';render()">${ic("plus",16)} Crear otra sala</button>`;
 }
-function copyLink(){navigator.clipboard.writeText(S.shareUrl).catch(()=>{});const b=document.getElementById("btn-copy");if(b){b.textContent="✓ Copiado";b.className="copy-btn done";setTimeout(()=>{b.textContent="Copiar";b.className="copy-btn";},2000);}}
+function copyLink(){
+  navigator.clipboard?.writeText(S.shareUrl).catch(()=>{});
+  const b=document.getElementById("btn-copy"); if(!b||b.classList.contains("done")) return;
+  const antes=b.innerHTML; b.innerHTML=`${ic("check",15,2.6)} Copiado`; b.classList.add("done");
+  setTimeout(()=>{ b.innerHTML=antes; b.classList.remove("done"); },2000);
+}
+// En el celular abre el menú nativo de compartir (WhatsApp incluido);
+// donde no existe, cae a WhatsApp Web.
+function shareRoom(){
+  const r=S.room, s=roomStats(r);
+  const texto=`🐭 ${r.title}: te toca ${money(s.amount)}. Pagalo acá 👉`;
+  if(navigator.share){ navigator.share({title:"Pagá Ratón",text:texto,url:S.shareUrl}).catch(()=>{}); return; }
+  window.open(`https://wa.me/?text=${encodeURIComponent(texto+" "+S.shareUrl)}`,"_blank","noopener");
+}
 
 async function renderJoin(app){
   if(!S.room&&roomParam){
-    app.innerHTML=`<div style="display:flex;justify-content:center;align-items:center;height:80vh"><p class="sub">Cargando sala…</p></div>`;
+    app.innerHTML=`${topbarHTML({right:""})}<div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:28vh"><div class="spinner"></div><p class="sub">Cargando sala…</p></div>`;
     try{const res=await fetch(`/api/rooms/${roomParam}`);if(!res.ok)throw new Error();S.room=await res.json();S.shareUrl=`${location.origin}/?room=${roomParam}`;}
-    catch{app.innerHTML=`<div style="display:flex;justify-content:center;align-items:center;height:80vh"><p style="color:#F87171">Sala no encontrada o link inválido.</p></div>`;return;}
+    catch{app.innerHTML=`${topbarHTML({right:""})}<div class="u-empty" style="margin-top:18vh"><img src="${LOGO}" alt=""/><p style="font-weight:700;margin:0">Sala no encontrada</p><p class="sub" style="margin:6px 0 0">El link es inválido o la sala fue eliminada.</p></div>`;return;}
   }
-  const r=S.room,amount=Math.round(r.total/r.participants.length);
+  const r=S.room, s=roomStats(r);
   app.innerHTML=`
-    <div style="padding-top:16px;display:flex;justify-content:flex-end;margin-bottom:8px">
-      <button onclick="goToLogin()" style="background:#16161C;border:1px solid #22222A;border-radius:10px;color:#FFB547;font-size:12px;font-weight:600;padding:8px 14px;cursor:pointer">Iniciar sesión / Registrarse</button>
+    ${topbarHTML({right:S.user?undefined:`<button class="u-btn sm" onclick="goToLogin()">Ingresar</button>`})}
+    <div class="u-invite" style="margin-top:8px">
+      <img src="${LOGO}" alt=""/>
+      <span class="u-chip open">Te invitaron a pagar</span>
+      <h1 class="u-h1" style="margin-top:12px;word-break:break-word">${esc(r.title)}</h1>
+      <p class="accent u-big">${money(s.amount)}</p>
+      <p class="sub" style="margin:0;font-size:13px">por persona · ${s.paid} de ${s.n} ya pagaron</p>
+      <div class="progress-bar" style="margin:16px auto 0;max-width:240px"><div class="progress-fill" style="width:${s.pct}%;background:linear-gradient(90deg,#5BE38E,#00C982)"></div></div>
     </div>
-    <div style="text-align:center;margin-bottom:24px">
-      <img src="${LOGO}" style="display:block;margin:0 auto 14px;width:88px;height:88px;border-radius:20px;object-fit:cover;box-shadow:0 6px 20px rgba(0,0,0,.4)"/>
-      <h1 style="font-size:19px;font-weight:800;margin:0 0 10px;line-height:1.3">Fuiste invitado a una sala de<br/>PAGÁ RATÓN</h1>
-      <p class="label" style="margin-bottom:3px">${r.title}</p>
-      <p class="sub">$${amount.toLocaleString("es-AR")} por persona · ${r.participants.length} personas</p>
-    </div>
-    <p style="color:#9E9EA8;font-size:14px;font-weight:500;margin-bottom:14px">¿Cuál es tu nombre?</p>
-    <div class="gap8">
-      ${r.participants.map(p=>`<button class="join-btn" onclick="joinAs('${p.id}')"><div class="row" style="gap:12px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:15px;font-weight:500;color:#F5F3EE">${p.name}</span>${p.paid?`<span class="badge paid">Ya pagó</span>`:""}</div><span style="color:#60606C">→</span></button>`).join("")}
-      <button onclick="joinAs(null)" style="background:none;border:none;color:#60606C;font-size:13px;padding:10px;cursor:pointer;margin-top:4px">Solo quiero ver el estado →</button>
+    <div class="u-section">
+      <p class="u-h2" style="margin-bottom:12px">¿Quién sos?</p>
+      <div class="u-pick">${r.participants.map(p=>`<button onclick="joinAs('${esc(p.id)}')">${avatarHTML(p.name)}<span class="nm">${esc(p.name)}</span>${p.paid?`<span class="u-chip closed">Pagó</span>`:`<span class="u-chip open">Debe</span>`}</button>`).join("")}</div>
+      <button class="u-btn ghost block" style="margin-top:12px" onclick="joinAs(null)">Solo quiero ver el estado</button>
     </div>`;
 }
 function joinAs(id){S.myId=id;S.screen="room";startPolling();render();}
@@ -1016,30 +1228,62 @@ function joinAs(id){S.myId=id;S.screen="room";startPolling();render();}
 function goToLogin(){ location.href = location.origin + "/"; }
 
 function renderRoom(isAdmin){
-  const r=S.room,amount=Math.round(r.total/r.participants.length);
-  const paidCount=r.participants.filter(p=>p.paid).length,allPaid=paidCount===r.participants.length;
-  const me=r.participants.find(p=>p.id===S.myId);
-  const today=new Date().toLocaleDateString("es-AR",{weekday:"long",day:"numeric",month:"long"});
-  let h="";
-  if(isAdmin)h+=userPillHTML(true);
-  else h+=`<div style="padding-top:44px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><p class="sub" style="font-size:11px;margin:0;text-transform:capitalize">${today}</p><button onclick="leaveRoom()" class="btn-back">← Salir</button></div>`;
-  h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:${isAdmin?10:6}px;flex-wrap:wrap"><h1 style="font-size:21px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${r.title}</h1>${isAdmin?`<span class="badge me">Admin</span><span class="badge ${allPaid?"closed":"open"}">${allPaid?"✅ Cerrada":"🟡 Abierta"}</span>`:""}</div>`;
-  if(isAdmin){
-    h+=`<div class="card row" style="gap:8px;margin-bottom:10px"><div class="link-box"><p class="link-text">${S.shareUrl}</p></div><button class="copy-btn" id="btn-copy" onclick="copyLink()">Copiar link</button></div>`;
-    h+=`<div style="background:#101820;border:1px solid rgba(0,158,227,.2);border-radius:14px;padding:14px 16px;margin-bottom:10px"><div class="row" style="margin-bottom:8px"><span class="label" style="margin:0">💳 Cuenta Mercado Pago</span></div><p style="font-size:15px;font-weight:700;color:#F5F3EE;margin:0">${r.mpAlias||"Sin alias configurado"}</p></div>`;
+  const r=S.room, s=roomStats(r), me=r.participants.find(p=>p.id===S.myId);
+  const fecha=new Date(r.createdAt||Date.now()).toLocaleDateString("es-AR",{day:"numeric",month:"long"});
+  let h=topbarHTML({ back:isAdmin?"menuGo('mis-salas')":"leaveRoom()", right:(isAdmin||S.user)?undefined:"" });
+
+  h+=`<div style="margin-top:6px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="u-chip ${s.allPaid?"closed":"open"}">${s.allPaid?"Cerrada":"Abierta"}</span>${isAdmin?`<span class="u-chip info plain">Sos el organizador</span>`:""}</div>
+    <h1 class="u-h1" style="margin-top:10px;word-break:break-word">${esc(r.title)}</h1>
+    <p class="sub" style="margin-top:4px">${fecha} · ${s.n} personas</p>
+  </div>`;
+
+  h+=`<div class="u-card u-glow" style="margin-top:16px;padding:14px 14px 16px">
+    <div class="u-wheel">${buildWheel(r.participants,S.myId,isAdmin)}
+      <div class="u-wheel-center"><p class="u-kicker" style="font-size:9.5px">Cobrado</p><p class="u-wheel-total" id="anim-total">${money(S.animTotal)}</p><p style="font-size:11px;margin-top:1px;color:${s.allPaid?"var(--green)":"var(--muted)"}">${s.paid}/${s.n} pagaron</p></div>
+    </div>
+    <div class="u-stats" style="margin-top:6px">
+      <div class="u-stat"><p class="u-kicker">Total</p><p class="v">${money(r.total)}</p></div>
+      <div class="u-stat"><p class="u-kicker">C/u</p><p class="v accent">${money(s.amount)}</p></div>
+      <div class="u-stat"><p class="u-kicker">Falta</p><p class="v ${s.pending?"":"green"}">${money(s.pending)}</p></div>
+    </div>
+    ${isAdmin&&!s.allPaid?`<p class="muted" style="text-align:center;margin-top:12px">Tocá una porción para registrar un pago en efectivo</p>`:""}
+  </div>`;
+
+  if(isAdmin) h+=`<div class="u-card" style="margin-top:12px">
+    <p class="u-kicker" style="margin-bottom:10px">Link de la sala</p>
+    <div class="u-share"><div class="link">${esc(S.shareUrl)}</div><button class="u-btn sm" id="btn-copy" onclick="copyLink()">${ic("copy",15)} Copiar</button></div>
+    <button class="u-btn block u-wa" style="margin-top:10px" onclick="shareRoom()">${ic("share",16)} Compartir con el grupo</button>
+    ${r.mpAlias?`<div class="u-mp-line">${mpLogo(20)}<p class="sub" style="margin:0;font-size:13px">Cobra en <b style="color:var(--text)">${esc(r.mpAlias)}</b></p></div>`:""}
+  </div>`;
+
+  if(!isAdmin&&me&&!me.paid){
+    const busy=S.loadingId===me.id;
+    h+=`<div class="u-pay" style="margin-top:12px">
+      <div style="display:flex;align-items:center;gap:12px">${avatarHTML(me.name)}<div style="flex:1;min-width:0"><p class="u-kicker" style="color:#7CC8F2">Tu parte</p><p style="margin:2px 0 0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(me.name)}</p></div><p class="u-pay-amount">${money(s.amount)}</p></div>
+      <button class="u-btn mp block" style="margin-top:16px;padding:15px" onclick="doPay('${esc(me.id)}','false')" id="btn-pay" ${S.loadingId?"disabled":""}>${mpLogo(18,true)} ${busy?"Abriendo Mercado Pago…":"Pagar con Mercado Pago"}</button>
+    </div>`;
   }
-  h+=`<div style="display:flex;justify-content:center;position:relative;margin-top:4px">${buildWheel(r.participants,S.myId,isAdmin)}<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none"><p style="color:#9E9EA8;font-size:9px;margin:0;letter-spacing:1px;text-transform:uppercase">cobrado</p><p style="font-size:15px;font-weight:700;margin:1px 0 0" id="anim-total">$${S.animTotal.toLocaleString("es-AR")}</p><p style="color:${allPaid?"#4ADE80":"#9E9EA8"};font-size:10px;margin:1px 0 0">${paidCount}/${r.participants.length}</p></div></div>`;
-  if(!isAdmin&&me&&!me.paid)h+=`<div class="pay-box" style="margin-top:14px"><p class="mp-color" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px">Tu parte — ${me.name}</p><div class="row"><p style="font-size:24px;font-weight:700;margin:0">$${amount.toLocaleString("es-AR")}</p><button onclick="doPay('${me.id}','false')" id="btn-pay" ${S.loadingId?"disabled":""} style="background:${S.loadingId===me.id?"#16161C":"#009EE3"};color:${S.loadingId===me.id?"#60606C":"#fff"};border:none;border-radius:12px;padding:13px 16px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">${mpLogo(18,true)}${S.loadingId===me.id?"Abriendo…":"Pagar ahora"}</button></div></div>`;
-  if(!isAdmin&&me?.paid)h+=`<div class="paid-box" style="margin-top:14px"><span style="font-size:22px">✅</span><div><p class="green" style="font-size:13px;font-weight:600;margin:0">¡Ya pagaste tu parte!</p><p class="sub" style="font-size:11px;margin-top:2px">Gracias, ${me.name} · $${amount.toLocaleString("es-AR")}</p></div></div>`;
-  if(!isAdmin&&!me)h+=`<div class="card" style="margin-top:14px;text-align:center"><p class="sub" style="font-size:13px">Estás viendo el estado de la sala</p></div>`;
-  if(allPaid)h+=`<div class="all-paid" style="margin-top:12px"><p class="green" style="font-size:15px;font-weight:600">🎉 ¡Todos pagaron! La sala está cerrada.</p></div>`;
-  h+=`<div class="summary" style="margin-top:14px"><div><p class="sub" style="font-size:11px;margin:0">Total</p><p style="font-size:18px;font-weight:700;margin:2px 0 0">$${r.total.toLocaleString("es-AR")}</p></div><div style="text-align:right"><p class="sub" style="font-size:11px;margin:0">Por persona</p><p class="accent" style="font-size:18px;font-weight:700;margin:2px 0 0">$${amount.toLocaleString("es-AR")}</p></div></div>`;
-  h+=`<div style="margin-top:16px"><p class="label" style="margin-bottom:10px">Participantes</p><div class="gap8">${r.participants.map(p=>{
-    const isMe=p.id===S.myId,busy=S.loadingId===p.id;
-    return `<div class="card row" style="border-color:${p.paid?"#14331F":isMe&&!isAdmin?"rgba(255,181,71,.25)":"#22222A"};background:${isMe&&!isAdmin?"#1A1A22":"#16161C"}"><div class="row" style="gap:10px"><div class="dot ${p.paid?"paid":"unpaid"}"></div><span style="font-size:14px;font-weight:${isMe?600:400}">${p.name}</span>${isMe&&!isAdmin?`<span class="badge me">(vos)</span>`:""}${p.paid?`<span class="badge paid">Pagado</span>`:""}</div><div class="row" style="gap:8px"><span class="sub" style="font-size:13px">$${amount.toLocaleString("es-AR")}</span>${isAdmin&&!p.paid?`<button class="btn-small" onclick="askMarkPaid('${p.id}','${p.name.replace(/'/g,"\\'")}')">${busy?"…":"💵 Efectivo"}</button>`:""}</div></div>`;
-  }).join("")}</div></div>`;
+  if(!isAdmin&&me?.paid) h+=`<div class="u-paid" style="margin-top:12px"><div class="u-success sm">${ic("check",22,3)}</div><div><p style="margin:0;font-weight:700" class="green">¡Ya pagaste tu parte!</p><p class="sub" style="margin:2px 0 0;font-size:12.5px">Gracias, ${esc(me.name)} · ${money(s.amount)}</p></div></div>`;
+  if(!isAdmin&&!me) h+=`<div class="u-card" style="margin-top:12px;text-align:center"><p class="sub" style="margin:0">Estás viendo el estado de la sala</p></div>`;
+  if(s.allPaid) h+=`<div class="u-paid" style="margin-top:12px;justify-content:center;text-align:center"><p style="margin:0;font-weight:700" class="green">🎉 ¡Pagaron todos! La sala quedó cerrada.</p></div>`;
+
+  h+=`<div class="u-section">
+    <div class="u-section-head"><p class="u-h2">Participantes</p><span class="muted">${s.paid}/${s.n} pagaron</span></div>
+    ${r.participants.map(p=>{
+      const esYo=p.id===S.myId&&!isAdmin, busy=S.loadingId===p.id;
+      const accion = p.paid ? `<span class="u-chip closed">Pagó</span>`
+        : isAdmin ? `<button class="u-btn sm" onclick="askMarkPaidById('${esc(p.id)}')" ${busy?"disabled":""}>${busy?"…":`${ic("cash",15)} Efectivo`}</button>`
+        : `<span class="u-chip open">Pendiente</span>`;
+      return `<div class="u-person-row ${esYo?"me":""} ${p.paid?"paid":""}">${avatarHTML(p.name)}
+        <div style="flex:1;min-width:0"><p style="margin:0;font-weight:${esYo?700:600};font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}${esYo?` <span class="muted" style="font-weight:500">(vos)</span>`:""}</p><p style="margin:2px 0 0;font-size:12.5px" class="${p.paid?"green":"muted"}">${p.paid?"Pagó":"Debe"} ${money(s.amount)}</p></div>
+        ${accion}
+      </div>`;
+    }).join("")}
+  </div>`;
   return h;
 }
+
 function leaveRoom(){stopPolling();S.myId=null;S.loadingId=null;S.animTotal=0;if(roomParam)location.href="/";else S.screen="home";render();}
 
 function askMarkPaid(id,name){S.pendingMarkId=id;document.getElementById("modal-name").textContent=name;document.getElementById("modal").classList.add("show");}
@@ -1284,7 +1528,7 @@ MOBILE_Q.addEventListener("change",()=>{ if(S.screen==="login"){ closeEmailModal
 document.getElementById("confirm-modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeConfirm();});
 document.getElementById("legal-modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeLegal();});
 document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
-document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".hamb")&&!e.target.closest(".menu")){S.menuOpen=false;render();}});
+document.addEventListener("click",e=>{if(S.menuOpen&&!e.target.closest(".u-avatar,.u-menu")){S.menuOpen=false;render();}});
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // PANEL ADMIN — lista de todas las personas registradas en la app.
@@ -1295,7 +1539,7 @@ function isSuperAdmin(){ return (S.user?.email||"").toLowerCase()===ADMIN_EMAIL 
 
 async function renderAdminUsers(app){
   if(!isSuperAdmin()){
-    app.innerHTML=`${userPillHTML(true)}<div class="dashed" style="padding:40px 24px;margin-top:20px"><p style="color:#F87171;font-size:14px;margin:0">No tenés permiso para ver esta pantalla.</p></div>`;
+    app.innerHTML=`${topbarHTML({back:"S.screen='home';render()"})}<div class="u-empty" style="margin-top:20px"><p style="color:var(--red);margin:0">No tenés permiso para ver esta pantalla.</p></div>`;
     return;
   }
   if(S.adminUsers===null && !S.adminUsersLoading) loadAdminUsers();
@@ -1332,61 +1576,43 @@ function fmtFechaHora(iso){
 function adminUsersHTML(){
   const cargando=S.adminUsersLoading && !S.adminUsers;
   const lista=S.adminUsers||[];
-  const totales = lista.length
-    ? `<div class="admin-stats">
-        <div class="admin-stat"><p class="label" style="margin:0 0 4px">Total</p><p style="font-size:22px;font-weight:800;margin:0">${lista.length}</p></div>
-        <div class="admin-stat"><p class="label" style="margin:0 0 4px">Con Google</p><p style="font-size:22px;font-weight:800;margin:0">${lista.filter(u=>u.provider.includes("Google")).length}</p></div>
-        <div class="admin-stat"><p class="label" style="margin:0 0 4px">MP conectado</p><p class="green" style="font-size:22px;font-weight:800;margin:0">${lista.filter(u=>u.mpConnected).length}</p></div>
-        <div class="admin-stat"><p class="label" style="margin:0 0 4px">Salas creadas</p><p style="font-size:22px;font-weight:800;margin:0">${lista.reduce((n,u)=>n+u.roomsCreated,0)}</p></div>
-      </div>`
-    : "";
+  const stats=[
+    ["Usuarios", lista.length, ""],
+    ["Con Google", lista.filter(u=>u.provider.includes("Google")).length, ""],
+    ["MP conectado", lista.filter(u=>u.mpConnected).length, "green"],
+    ["Salas creadas", lista.reduce((n,u)=>n+u.roomsCreated,0), "accent"],
+  ];
   return `
-    ${userPillHTML(true)}
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-      <button onclick="S.screen='home';render()" class="btn-back" style="flex-shrink:0">← Volver</button>
-      <div style="flex:1;min-width:0"><h1 style="font-size:22px;font-weight:700;margin:0">Panel admin</h1><p class="sub" style="margin:0">Personas registradas en Pagá Ratón</p></div>
-      ${lista.length?`<button class="btn-small" onclick="exportAdminUsersCSV()">⬇ CSV</button>`:""}
+    ${topbarHTML({back:"S.screen='home';render()"})}
+    <div class="row" style="margin-top:6px;align-items:flex-end;flex-wrap:wrap;gap:14px">
+      <div><p class="u-kicker">Administración</p><h1 class="u-h1" style="margin-top:6px">Usuarios registrados</h1></div>
+      ${lista.length?`<div style="display:flex;gap:8px"><button class="u-btn sm" onclick="S.adminUsers=null;render()">Actualizar</button><button class="u-btn sm" onclick="exportAdminUsersCSV()">${ic("download",15)} CSV</button></div>`:""}
     </div>
-    ${totales}
     ${lista.length?`
-    <div class="field" style="margin:16px 0">
-      <span class="field-icon">🔍</span>
-      <input id="admin-search" placeholder="Buscar por nombre o email…"/>
-    </div>`:""}
-    ${cargando?`<div class="dashed" style="padding:40px 24px"><p class="muted">Cargando usuarios…</p></div>`:""}
-    ${S.adminUsersError?`<div class="dashed" style="padding:40px 24px"><p style="color:#F87171;font-size:14px;margin:0">${S.adminUsersError}</p></div>`:""}
-    <div id="admin-list" class="gap8">${!cargando&&!S.adminUsersError?adminListHTML():""}</div>`;
+    <div class="u-stats four" style="margin-top:18px">${stats.map(([t,v,c])=>`<div class="u-stat"><p class="u-kicker">${t}</p><p class="v ${c}">${v}</p></div>`).join("")}</div>
+    <div class="field" style="margin:16px 0"><span class="field-icon">${ic("search",17)}</span><input id="admin-search" placeholder="Buscar por nombre o email…"/></div>`:""}
+    ${cargando?`<div class="u-empty" style="margin-top:18px"><div class="spinner" style="margin:0 auto 12px"></div><p class="sub" style="margin:0">Cargando usuarios…</p></div>`:""}
+    ${S.adminUsersError?`<div class="u-empty" style="margin-top:18px"><p style="color:var(--red);margin:0">${esc(S.adminUsersError)}</p></div>`:""}
+    ${!cargando&&!S.adminUsersError?`<div class="u-table">
+      <div class="u-tr head"><span>Usuario</span><span>Acceso</span><span>Alta</span><span>Último ingreso</span><span>Salas</span><span>Mercado Pago</span></div>
+      <div id="admin-list">${adminListHTML()}</div>
+    </div>`:""}`;
 }
 
 function adminListHTML(){
   const q=(S.adminSearch||"").trim().toLowerCase();
-  const lista=(S.adminUsers||[]).filter(u =>
-    !q || u.email.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q)
-  );
-  if(!lista.length){
-    return `<div class="dashed" style="padding:32px 24px"><p class="muted" style="margin:0">${q?"Nadie coincide con esa búsqueda.":"Todavía no se registró nadie."}</p></div>`;
-  }
+  const lista=(S.adminUsers||[]).filter(u => !q || u.email.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q));
+  if(!lista.length) return `<div style="padding:28px;text-align:center"><p class="muted" style="margin:0">${q?"Nadie coincide con esa búsqueda.":"Todavía no se registró nadie."}</p></div>`;
   return lista.map(u=>{
     const nombre=u.displayName||u.email||"(sin nombre)";
-    const ini=nombre.split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()||"?";
-    const esEsteAdmin=u.email.toLowerCase()===ADMIN_EMAIL;
-    return `<div class="card admin-row">
-      <div class="row" style="align-items:flex-start;gap:12px">
-        ${u.photoURL?`<img src="${u.photoURL}" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`:`<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:13px;color:#1A1206;font-weight:800;flex-shrink:0">${ini}</div>`}
-        <div style="flex:1;min-width:0">
-          <div class="row" style="gap:8px">
-            <p style="font-size:14.5px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nombre}${esEsteAdmin?` <span class="badge me" style="margin-left:4px">Admin</span>`:""}</p>
-          </div>
-          <p class="sub" style="margin:2px 0 0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email}</p>
-        </div>
-        <span class="badge ${u.provider.includes('Google')?'closed':'open'}" style="flex-shrink:0">${u.provider}</span>
-      </div>
-      <div class="admin-row-meta">
-        <div><span class="muted">Alta</span><p style="margin:2px 0 0;font-size:12.5px">${fmtFecha(u.createdAt)}</p></div>
-        <div><span class="muted">Último ingreso</span><p style="margin:2px 0 0;font-size:12.5px">${fmtFechaHora(u.lastSignIn)}</p></div>
-        <div><span class="muted">Salas</span><p style="margin:2px 0 0;font-size:12.5px">${u.roomsCreated}</p></div>
-        <div><span class="muted">Mercado Pago</span><p style="margin:2px 0 0;font-size:12.5px" class="${u.mpConnected?'green':''}">${u.mpConnected?(u.mpNickname||"Conectado"):"Sin conectar"}</p></div>
-      </div>
+    const esAdm=u.email.toLowerCase()===ADMIN_EMAIL;
+    return `<div class="u-tr">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0">${avatarHTML(nombre,u.photoURL)}<div style="min-width:0"><p style="font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nombre)}${esAdm?` <span class="u-chip info plain" style="padding:2px 8px;margin-left:4px">Admin</span>`:""}</p><p class="sub" style="font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.email)}</p></div></div>
+      <div><span class="lbl">Acceso</span><span class="u-chip ${u.provider.includes("Google")?"closed":"open"} plain">${esc(u.provider)}</span></div>
+      <div><span class="lbl">Alta</span><p style="font-size:13px">${fmtFecha(u.createdAt)}</p></div>
+      <div><span class="lbl">Último ingreso</span><p style="font-size:13px">${fmtFechaHora(u.lastSignIn)}</p></div>
+      <div><span class="lbl">Salas</span><p style="font-size:13px;font-weight:700">${u.roomsCreated}</p></div>
+      <div><span class="lbl">Mercado Pago</span><p class="${u.mpConnected?"green":"muted"}" style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.mpConnected?esc(u.mpNickname||"Conectado"):"Sin conectar"}</p></div>
     </div>`;
   }).join("");
 }
