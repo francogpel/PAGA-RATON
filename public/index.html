@@ -4,6 +4,15 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Pagá Ratón</title>
+<meta name="description" content="Dividí la cancha, el asado o lo que pinte, y cobrá directo en tu Mercado Pago."/>
+<meta name="theme-color" content="#0B0B0F"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="Pagá Ratón"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet"/>
@@ -443,6 +452,11 @@ svg{overflow:visible}
 .u-tr.head{border-top:none;background:rgba(255,255,255,.03);font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding-top:12px;padding-bottom:12px}
 .u-tr p{margin:0}
 .u-tr .lbl{display:none}
+
+.u-install{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 10px 12px 12px;border-radius:18px;background:linear-gradient(135deg,rgba(255,181,71,.14),rgba(255,107,24,.05));border:1px solid rgba(255,181,71,.3);animation:rise .3s ease}
+.u-install img{width:44px;height:44px;border-radius:12px;flex-shrink:0;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+.u-x{width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.06);color:var(--muted);font-size:16px;line-height:1;cursor:pointer;flex-shrink:0;padding:0}
+.u-x:hover{background:rgba(255,255,255,.12);color:var(--text)}
 
 /* Modales de la app (efectivo y confirmaciones) */
 #modal .modal-box,#confirm-modal .modal-box{border-radius:26px;padding:30px 24px 22px;background:linear-gradient(180deg,#1C1C25,#15151B);border:1px solid var(--border-hi);box-shadow:0 30px 70px rgba(0,0,0,.6)}
@@ -991,6 +1005,7 @@ function avatarMenuHTML(){
       <button onclick="menuGo('mis-salas')">${ic("list")} Mis salas</button>
       <button onclick="menuGo('setup')">${ic("plus")} Nueva sala</button>
       ${isSuperAdmin()?`<button onclick="menuGo('admin')">${ic("shield")} Panel admin</button>`:""}
+      ${puedeInstalar()?`<button onclick="installApp()">${ic("download")} Instalar app</button>`:""}
       <hr/>
       <button class="danger" onclick="menuLogout()">${ic("logout")} Cerrar sesión</button>
     </div>`:""}
@@ -1044,6 +1059,7 @@ function renderHome(){
       <div class="u-stat"><p class="u-kicker">Abiertas</p><p class="v">${abiertas}</p></div>
     </div>
     ${sinMP?`<div class="u-banner" style="margin-top:14px">${mpLogo(22)}<div style="flex:1;min-width:0"><p style="margin:0;font-weight:700;font-size:14px">Conectá tu Mercado Pago</p><p class="sub" style="margin:2px 0 0;font-size:12.5px">Lo necesitás para crear salas y cobrar.</p></div><button class="u-btn mp sm" onclick="connectMercadoPago()">Conectar</button></div>`:""}
+    ${installBannerHTML()}
     <button class="u-cta" style="margin-top:16px" onclick="S.screen='setup';render()">
       <div class="ico">${ic("plus",24,2.4)}</div>
       <div style="flex:1;position:relative;z-index:1"><p class="t">Crear sala</p><p class="s">Dividí la cancha, el asado o lo que pinte</p></div>
@@ -1482,7 +1498,9 @@ function askConfirm(o){
   const yes=document.getElementById("confirm-yes");
   yes.textContent=o.yes||"Sí";
   yes.classList.toggle("btn-danger",!!o.danger);
-  document.getElementById("confirm-no").textContent=o.no||"Cancelar";
+  const no=document.getElementById("confirm-no");
+  no.textContent=o.no||"Cancelar";
+  no.style.display=o.soloOk?"none":"";
   document.getElementById("confirm-modal").classList.add("show");
 }
 function closeConfirm(){ document.getElementById("confirm-modal").classList.remove("show"); confirmAction=null; }
@@ -1637,6 +1655,54 @@ function exportAdminUsersCSV(){
   a.download=`paga-raton-usuarios-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSTALAR COMO APP (PWA)
+// Chrome/Edge/Android avisan con "beforeinstallprompt" que se puede instalar;
+// iPhone no tiene ese evento y se instala desde Compartir → Agregar a inicio.
+// No se llama a preventDefault: así el navegador sigue mostrando su propia
+// barra de instalación (por ejemplo en el login), y además guardamos el evento
+// para ofrecer el botón propio en la app.
+// ═══════════════════════════════════════════════════════════════════════════════
+let installEvent=null;
+const ES_APP = matchMedia("(display-mode: standalone)").matches || navigator.standalone===true;
+const ES_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+window.addEventListener("beforeinstallprompt",e=>{ installEvent=e; if(S.screen!=="login") render(); });
+window.addEventListener("appinstalled",()=>{ installEvent=null; S.appInstalada=true; if(S.screen!=="login") render(); });
+
+function puedeInstalar(){ return !ES_APP && !S.appInstalada && (!!installEvent || ES_IOS); }
+function installDescartado(){ try{ return localStorage.getItem("pr-install-no")==="1"; }catch{ return false; } }
+function descartarInstall(){ try{ localStorage.setItem("pr-install-no","1"); }catch{} render(); }
+
+async function installApp(){
+  S.menuOpen=false;
+  if(installEvent){
+    installEvent.prompt();
+    try{ await installEvent.userChoice; }catch{}
+    installEvent=null; render();
+    return;
+  }
+  if(ES_IOS){
+    render();
+    askConfirm({
+      emoji:"📲", title:"Instalá Pagá Ratón", yes:"Entendido", soloOk:true,
+      text:"Tocá el botón <b style=\"color:var(--text)\">Compartir</b> del navegador y elegí <b style=\"color:var(--text)\">Agregar a pantalla de inicio</b>. Queda con su ícono, como cualquier app.",
+    });
+  }
+}
+function installBannerHTML(){
+  if(!puedeInstalar() || installDescartado()) return "";
+  return `<div class="u-install">
+    <img src="/icon-192.png" alt=""/>
+    <div style="flex:1;min-width:0"><p style="margin:0;font-weight:700;font-size:14px">Instalá la app</p><p class="sub" style="margin:2px 0 0;font-size:12.5px">Tenela en tu pantalla de inicio y abrila al toque.</p></div>
+    <button class="u-btn primary sm" onclick="installApp()">Instalar</button>
+    <button class="u-x" onclick="descartarInstall()" aria-label="Ahora no">×</button>
+  </div>`;
+}
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{ navigator.serviceWorker.register("/sw.js").catch(()=>{}); });
 }
 
 initFirebase();
