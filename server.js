@@ -334,17 +334,7 @@ app.post("/api/mp-oauth/disconnect", requireAdmin, async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 // Diagnóstico público y sin secretos: qué pasó con la cuenta admin al arrancar.
 app.get("/api/admin/bootstrap-status", (req, res) => {
-  // TEMPORAL — diagnóstico de por qué no llega ADMIN_SEED_PASSWORD. Expone solo
-  // los NOMBRES de variables con "ADMIN" (escapados, para ver espacios o
-  // caracteres invisibles) y si el valor está vacío. Nunca el valor ni su largo.
-  const pista = adminBootstrap === "sin-variable"
-    ? Object.keys(process.env).filter(k => /admin/i.test(k)).map(k => ({
-        nombre: JSON.stringify(k),
-        exacto: k === "ADMIN_SEED_PASSWORD",
-        vacia: (process.env[k] || "").length === 0,
-      }))
-    : undefined;
-  res.json({ estado: adminBootstrap, arrancoEn, pista });
+  res.json({ estado: adminBootstrap, arrancoEn });
 });
 
 app.get("/api/admin/users", requireAdmin, requireSuperAdmin, async (req, res) => {
