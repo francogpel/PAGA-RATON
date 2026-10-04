@@ -458,6 +458,20 @@ svg{overflow:visible}
 .u-x{width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.06);color:var(--muted);font-size:16px;line-height:1;cursor:pointer;flex-shrink:0;padding:0}
 .u-x:hover{background:rgba(255,255,255,.12);color:var(--text)}
 
+/* Botón "Descargar la app" del login */
+.dl-app{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:430px;margin:12px auto 0;padding:11px 16px;border-radius:14px;border:1px dashed rgba(255,181,71,.45);background:rgba(255,181,71,.07);color:var(--accent);font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.dl-app:hover{background:rgba(255,181,71,.14);border-style:solid;transform:translateY(-1px)}
+.dl-app .dl-plat{font-weight:500;font-size:11.5px;color:var(--dim)}
+@media (max-width:999px){
+  .dl-app{margin-top:clamp(8px,1.4dvh,12px);padding:clamp(8px,1.2dvh,11px) 14px}
+}
+@media (max-width:999px) and (max-height:700px){
+  .dl-app .dl-plat{display:none}
+}
+@media (min-width:1000px){
+  .login-form .dl-app{margin-top:clamp(10px,1.8vh,16px);padding:clamp(9px,1.3vh,12px) 16px}
+}
+
 /* Modales de la app (efectivo y confirmaciones) */
 #modal .modal-box,#confirm-modal .modal-box{border-radius:26px;padding:30px 24px 22px;background:linear-gradient(180deg,#1C1C25,#15151B);border:1px solid var(--border-hi);box-shadow:0 30px 70px rgba(0,0,0,.6)}
 #modal .modal-box > div:first-child,#confirm-emoji{width:64px;height:64px;border-radius:20px;margin:0 auto 16px !important;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:1px solid var(--border)}
@@ -474,6 +488,26 @@ svg{overflow:visible}
 @media (max-width:380px){
   .u-h1{font-size:24px}
   
+}
+
+/* Con el botón de descarga el login necesita más compactación en pantallas bajas */
+@media (max-width:999px) and (max-height:760px){
+  .dl-app{padding:7px 14px;margin-top:7px;font-size:12.5px}
+  .dl-app .dl-plat{display:none}
+  .auth-card{padding:9px}
+  .btn-google,.btn-mail{padding:9px}
+  .btn-mail{margin-top:8px}
+  .switch-line{margin-top:5px}
+  .dev-logo img{height:16px}
+}
+@media (min-width:1000px) and (max-height:700px){
+  .login-form .welcome-sub{display:none}
+}
+@media (min-width:1000px) and (max-height:640px){
+  /* en escritorio las pestañas ya ofrecen crear cuenta */
+  .login-form .switch-line{display:none}
+  .login-form .dl-app .dl-plat{display:none}
+  .login-form .dl-app{margin-top:8px;padding:8px 16px}
 }
 </style>
 </head>
@@ -866,6 +900,7 @@ function renderLogin(){
           ${authFieldsHTML(isSignup)}`}
           ${switchLineHTML(isSignup, movil)}
         </div>
+        ${ES_APP?"":`<button class="dl-app" onclick="installApp()">${ic("download",17,2.3)}<span>Descargar la app</span><span class="dl-plat">Android · iPhone · PC</span></button>`}
         <div class="dev-credit">
           <p>Desarrollado por <a href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer">Infinity Solutions</a></p>
           <a class="dev-logo" href="https://infinitysolutions.dev/#hero" target="_blank" rel="noopener noreferrer" aria-label="Infinity Solutions">
@@ -1677,19 +1712,27 @@ function descartarInstall(){ try{ localStorage.setItem("pr-install-no","1"); }ca
 
 async function installApp(){
   S.menuOpen=false;
+  // En el login NO se redibuja: se perdería lo que la persona está escribiendo.
+  const redibujar=()=>{ if(S.screen!=="login") render(); };
   if(installEvent){
     installEvent.prompt();
     try{ await installEvent.userChoice; }catch{}
-    installEvent=null; render();
+    installEvent=null; redibujar();
     return;
   }
+  redibujar();
+  const b=t=>`<b style="color:var(--text)">${t}</b>`;
   if(ES_IOS){
-    render();
-    askConfirm({
-      emoji:"📲", title:"Instalá Pagá Ratón", yes:"Entendido", soloOk:true,
-      text:"Tocá el botón <b style=\"color:var(--text)\">Compartir</b> del navegador y elegí <b style=\"color:var(--text)\">Agregar a pantalla de inicio</b>. Queda con su ícono, como cualquier app.",
-    });
+    askConfirm({ emoji:"📲", title:"Instalá Pagá Ratón", yes:"Entendido", soloOk:true,
+      text:`Tocá el botón ${b("Compartir")} del navegador y elegí ${b("Agregar a pantalla de inicio")}. Queda con su ícono, como cualquier app.` });
+    return;
   }
+  // Navegadores sin aviso de instalación (Firefox, Samsung Internet…) o app
+  // ya instalada: se explica cómo hacerlo desde el menú del navegador.
+  askConfirm({ emoji:"📲", title:"Instalá Pagá Ratón", yes:"Entendido", soloOk:true,
+    text:S.appInstalada
+      ? "La app ya quedó instalada: buscala en tu pantalla de inicio o en tus aplicaciones."
+      : `Abrí el menú del navegador (${b("⋮")}) y elegí ${b("Instalar aplicación")} o ${b("Agregar a la pantalla de inicio")}. Si no aparece, abrí este sitio desde Chrome.` });
 }
 function installBannerHTML(){
   if(!puedeInstalar() || installDescartado()) return "";
