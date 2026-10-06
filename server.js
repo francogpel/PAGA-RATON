@@ -11,7 +11,10 @@ const express  = require("express");
 const crypto   = require("crypto");
 const path     = require("path");
 const fetch    = require("node-fetch");
-const admin    = require("firebase-admin");
+// API modular de firebase-admin (la única desde la v14).
+const { initializeApp, cert } = require("firebase-admin/app");
+const { getAuth }             = require("firebase-admin/auth");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
 
 const app = express();
@@ -42,6 +45,7 @@ app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY);
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Cross-Origin-Resource-Policy", "same-site");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
@@ -143,15 +147,15 @@ try {
   if (b64) {
     // Hosting externo (Render, VPS, local): la clave viaja en una variable.
     const serviceAccount = JSON.parse(Buffer.from(b64, "base64").toString());
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    initializeApp({ credential: cert(serviceAccount) });
     console.log("✅ Firebase Admin inicializado con la clave de servicio");
   } else {
     // Cloud Functions / Cloud Run: las credenciales las provee el entorno,
     // así que no hace falta guardar ninguna clave en ninguna variable.
-    admin.initializeApp();
+    initializeApp();
     console.log("✅ Firebase Admin inicializado con las credenciales del entorno");
   }
-  db = admin.firestore();
+  db = getFirestore();
 } catch (e) {
   console.warn("⚠️  Firebase/Firestore NO configurado. La app necesita esto para guardar salas.");
   console.warn("    Detalle:", e.message);
@@ -193,15 +197,15 @@ async function ensureAdminAccount() {
   }
   try {
     let user = null;
-    try { user = await admin.auth().getUserByEmail(ADMIN_EMAIL); }
+    try { user = await getAuth().getUserByEmail(ADMIN_EMAIL); }
     catch (err) { if (err.code !== "auth/user-not-found") throw err; }
 
     if (user) {
-      await admin.auth().updateUser(user.uid, { password: ADMIN_SEED_PASSWORD, disabled: false, emailVerified: true });
+      await getAuth().updateUser(user.uid, { password: ADMIN_SEED_PASSWORD, disabled: false, emailVerified: true });
       adminBootstrap = "contraseña-actualizada";
       console.log(`✅ Cuenta admin existente (${ADMIN_EMAIL}): contraseña puesta desde ADMIN_SEED_PASSWORD`);
     } else {
-      await admin.auth().createUser({ email: ADMIN_EMAIL, password: ADMIN_SEED_PASSWORD, emailVerified: true });
+      await getAuth().createUser({ email: ADMIN_EMAIL, password: ADMIN_SEED_PASSWORD, emailVerified: true });
       adminBootstrap = "creada";
       console.log(`✅ Cuenta admin creada (${ADMIN_EMAIL})`);
     }
@@ -252,7 +256,7 @@ async function requireAdmin(req, res, next) {
   if (!token) return res.status(401).json({ error: "No autorizado — token faltante" });
   try {
     req.idToken = token;
-    req.user = await admin.auth().verifyIdToken(token);
+    req.user = await getAuth().verifyIdToken(token);
     next();
   } catch {
     res.status(401).json({ error: "Token inválido o expirado" });
@@ -276,7 +280,7 @@ async function requireSuperAdmin(req, res, next) {
   // Para el panel también se exige que la sesión no haya sido revocada
   // (cambio de contraseña, cuenta deshabilitada o "cerrar todas las sesiones").
   try {
-    await admin.auth().verifyIdToken(req.idToken, true);
+    await getAuth().verifyIdToken(req.idToken, true);
   } catch {
     return res.status(401).json({ error: "Tu sesión ya no es válida. Volvé a ingresar." });
   }
@@ -298,17 +302,95 @@ function publicRoom(room) {
   return { ...rest, participants: (rest.participants || []).map(({ paymentId, ...p }) => p) };
 }
 
-// Token de MP con el que cobra una sala: el que el organizador tiene conectado
-// hoy. Las salas viejas guardaban su propia copia; se usa solo como respaldo.
-async function credencialesDeSala(room) {
-  const doc = await tokensCol().doc(String(room.adminUid)).get();
-  if (doc.exists && doc.data().accessToken) {
-    return [{ accessToken: doc.data().accessToken, userId: String(doc.data().userId || "") },
-            ...(room.mpAccessToken && room.mpAccessToken !== doc.data().accessToken
-              ? [{ accessToken: room.mpAccessToken, userId: "" }] : [])];
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOKENS DE MERCADO PAGO
+// Viven SOLO en mpTokens/{uid}. MP los da con vencimiento (180 días) y un
+// refresh_token: se renuevan solos cuando faltan menos de 15 días, sin que el
+// organizador tenga que volver a conectar su cuenta.
+// ═══════════════════════════════════════════════════════════════════════════════
+const MP_TOKEN_VIDA_MS = 180 * 24 * 3600 * 1000;
+const MP_RENOVAR_ANTES_MS = 15 * 24 * 3600 * 1000;
+
+// Las conexiones viejas no guardaban expiresAt: se estima desde connectedAt.
+const mpVenceEn = data => data.expiresAt || ((Date.parse(data.connectedAt || "") || 0) + MP_TOKEN_VIDA_MS);
+
+async function renovarTokenMp(ref, data) {
+  try {
+    const r = await fetch("https://api.mercadopago.com/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id:     process.env.MP_CLIENT_ID     || "",
+        client_secret: process.env.MP_CLIENT_SECRET || "",
+        grant_type:    "refresh_token",
+        refresh_token: data.refreshToken,
+      }),
+    });
+    const t = await r.json();
+    if (!t.access_token) throw new Error(t.message || t.error || `respuesta ${r.status}`);
+    const nuevo = {
+      ...data,
+      accessToken:  t.access_token,
+      refreshToken: t.refresh_token || data.refreshToken,
+      expiresAt:    Date.now() + (Number(t.expires_in) > 0 ? Number(t.expires_in) * 1000 : MP_TOKEN_VIDA_MS),
+      renovadoEn:   new Date().toISOString(),
+    };
+    await ref.set(nuevo);
+    audit("mp_token_renovado", { uid: ref.id, mpUserId: data.userId || "" });
+    return nuevo;
+  } catch (err) {
+    // Se sigue con el token actual: si todavía no venció, cobra igual.
+    console.error("No se pudo renovar el token de MP:", err.message);
+    audit("mp_token_no_renovado", { uid: ref.id, error: String(err.message).slice(0, 200) });
+    return data;
   }
-  return room.mpAccessToken ? [{ accessToken: room.mpAccessToken, userId: "" }] : [];
 }
+
+// Datos de MP del organizador (renovando el token si hace falta), o null.
+const renovacionesEnCurso = new Map();
+async function tokenDeOrganizador(uid) {
+  const ref = tokensCol().doc(String(uid));
+  const snap = await ref.get();
+  if (!snap.exists || !snap.data().accessToken) return null;
+  const data = snap.data();
+  if (!data.refreshToken || mpVenceEn(data) - Date.now() > MP_RENOVAR_ANTES_MS) return data;
+  // Una sola renovación a la vez por organizador: el refresh_token es de un uso.
+  if (!renovacionesEnCurso.has(uid)) {
+    renovacionesEnCurso.set(uid, renovarTokenMp(ref, data).finally(() => renovacionesEnCurso.delete(uid)));
+  }
+  return renovacionesEnCurso.get(uid);
+}
+
+// Credenciales con las que cobra una sala: las del organizador, hoy.
+async function credencialesDeSala(room) {
+  const data = await tokenDeOrganizador(room.adminUid);
+  return data ? [{ accessToken: data.accessToken, userId: String(data.userId || "") }] : [];
+}
+
+// Las salas creadas antes de 41e8ce7 guardaban su propia copia del token. Se
+// borran una sola vez (queda marcado en meta/migraciones): así "Desconectar"
+// corta los cobros de todas las salas y el token no queda repetido.
+async function migrarTokensDeSalas() {
+  if (!db) return;
+  try {
+    const marca = db.collection("meta").doc("migraciones");
+    const m = await marca.get();
+    if (m.exists && m.data().tokensDeSalas) return;
+    const snap = await roomsCol().get();
+    const conCopia = snap.docs.filter(d => "mpAccessToken" in d.data());
+    for (let i = 0; i < conCopia.length; i += 400) {
+      const lote = db.batch();
+      conCopia.slice(i, i + 400).forEach(d => lote.update(d.ref, { mpAccessToken: FieldValue.delete() }));
+      await lote.commit();
+    }
+    await marca.set({ tokensDeSalas: new Date().toISOString(), salasLimpiadas: conCopia.length }, { merge: true });
+    audit("migracion_tokens_de_salas", { salas: conCopia.length });
+    console.log(`✅ Migración: se borró la copia del token de MP de ${conCopia.length} sala(s)`);
+  } catch (err) {
+    console.error("⚠️  Migración de tokens de salas pendiente:", err.message);
+  }
+}
+migrarTokensDeSalas();
 
 // Marca un participante como pagado dentro de una transacción: si llegan dos
 // pagos juntos, ninguno pisa al otro.
@@ -448,6 +530,7 @@ app.get("/api/mp-oauth/callback", async (req, res) => {
     await tokensCol().doc(String(adminUid)).set({
       accessToken:  tokenData.access_token,
       refreshToken: tokenData.refresh_token || null, // para renovar sin re-autorizar
+      expiresAt:    Date.now() + (Number(tokenData.expires_in) > 0 ? Number(tokenData.expires_in) * 1000 : MP_TOKEN_VIDA_MS),
       userId,
       // Nunca el email como respaldo: este nombre se muestra a los invitados.
       nickname:     userData.nickname || "tu cuenta",
@@ -466,9 +549,11 @@ app.get("/api/mp-oauth/callback", async (req, res) => {
 // Estado de conexión con MP del admin autenticado
 app.get("/api/mp-oauth/status", requireAdmin, async (req, res) => {
   try {
-    const doc = await tokensCol().doc(req.user.uid).get();
-    if (doc.exists) res.json({ connected: true, nickname: doc.data().nickname });
-    else            res.json({ connected: false });
+    // Cada vez que el organizador abre la app se aprovecha para renovar el
+    // token si está por vencer.
+    const data = await tokenDeOrganizador(req.user.uid);
+    if (data) res.json({ connected: true, nickname: data.nickname });
+    else      res.json({ connected: false });
   } catch {
     res.json({ connected: false });
   }
@@ -498,7 +583,7 @@ app.get("/api/admin/users", requireAdmin, requireSuperAdmin, async (req, res) =>
     // listUsers pagina de a 1000; juntamos varias páginas por si hiciera falta.
     let users = [], pageToken;
     for (let i = 0; i < 10; i++) {
-      const page = await admin.auth().listUsers(1000, pageToken);
+      const page = await getAuth().listUsers(1000, pageToken);
       users = users.concat(page.users);
       pageToken = page.pageToken;
       if (!pageToken) break;
