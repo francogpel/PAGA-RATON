@@ -1068,7 +1068,7 @@ function roomCardHTML(r){
   return `<div class="u-room" role="button" tabindex="0" onclick="${abrir}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${abrir}}">
     <div class="u-ring" style="--p:${s.pct};--c:${s.allPaid?"var(--green)":"var(--accent)"}"><span>${s.paid}/${s.n}</span></div>
     <div class="u-room-main"><p class="u-room-title">${esc(r.title)}</p><p class="sub" style="font-size:12.5px;margin-top:3px"><b style="color:var(--text)">${money(s.collected)}</b> de ${money(r.total)} · ${fecha}</p></div>
-    <div class="u-room-side"><span class="u-chip ${s.allPaid?"closed":"open"}">${s.allPaid?"Cerrada":"Abierta"}</span>${s.allPaid?"":`<button class="u-del" title="Eliminar sala" aria-label="Eliminar sala" onclick="event.stopPropagation();askDeleteRoomById('${esc(r.id)}')">${ic("trash",15)}</button>`}</div>
+    <div class="u-room-side"><span class="u-chip ${s.allPaid?"closed":"open"}">${s.allPaid?"Cerrada":"Abierta"}</span>${s.paid>0?"":`<button class="u-del" title="Eliminar sala" aria-label="Eliminar sala" onclick="event.stopPropagation();askDeleteRoomById('${esc(r.id)}')">${ic("trash",15)}</button>`}</div>
   </div>`;
 }
 function emptyRoomsHTML(){
@@ -1550,8 +1550,8 @@ function askSignOut(){
   });
 }
 
-// Borrar una sala. Las cerradas no se pueden borrar: quedan como constancia,
-// así que el botón ni siquiera se dibuja. El servidor lo vuelve a chequear.
+// Borrar una sala. Con algún pago registrado ya no se puede: queda como
+// constancia, así que el botón ni siquiera se dibuja. El servidor lo vuelve a chequear.
 function askDeleteRoom(id,title){
   askConfirm({
     emoji:"🗑️", title:"Eliminar sala", danger:true, yes:"Sí, eliminar",

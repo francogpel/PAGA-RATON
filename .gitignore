@@ -6,3 +6,6 @@ db.json
 *.log
 .firebase/
 firebase-debug.log
+
+# Informe de seguridad: describe cómo explotar fallas abiertas. El repo es público.
+AUDITORIA_SEGURIDAD*.md

@@ -8,14 +8,71 @@
 require("dotenv").config();
 
 const express  = require("express");
-const cors     = require("cors");
+const crypto   = require("crypto");
 const path     = require("path");
 const fetch    = require("node-fetch");
 const admin    = require("firebase-admin");
 const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
 
 const app = express();
-app.use(cors());
+// Sin CORS a propósito: la app y la API viven en el mismo dominio, así que
+// ningún otro sitio necesita leer estas respuestas.
+app.disable("x-powered-by");
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CABECERAS DE SEGURIDAD
+// - frame-ancestors / X-Frame-Options: ningún OTRO sitio puede meter la app en un iframe
+//   (evita que engañen a alguien para tocar "Eliminar" o "Efectivo").
+// - La política completa de scripts va en modo "Report-Only": solo avisa en la
+//   consola. La app usa onclick en línea en todo el HTML; activarla en serio
+//   requiere probar login con Google, Mercado Pago y pagos antes.
+// - No se manda Cross-Origin-Opener-Policy: rompería el popup de Google.
+// ═══════════════════════════════════════════════════════════════════════════════
+const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: https:",
+  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com",
+  "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com",
+].join("; ");
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
+  res.setHeader("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY);
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
+  next();
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LÍMITE DE PEDIDOS POR IP (en memoria; alcanza para una sola instancia)
+// Render está detrás de Cloudflare: la IP real viene en cf-connecting-ip.
+// ═══════════════════════════════════════════════════════════════════════════════
+function limitePorIp(maximo, ventanaMs) {
+  const hits = new Map();
+  setInterval(() => {
+    const ahora = Date.now();
+    for (const [ip, h] of hits) if (h.hasta <= ahora) hits.delete(ip);
+  }, ventanaMs).unref();
+  return (req, res, next) => {
+    const ip = req.get("cf-connecting-ip") || req.ip || "?";
+    const ahora = Date.now();
+    let h = hits.get(ip);
+    if (!h || h.hasta <= ahora) { h = { n: 0, hasta: ahora + ventanaMs }; hits.set(ip, h); }
+    if (++h.n > maximo) {
+      res.setHeader("Retry-After", Math.ceil((h.hasta - ahora) / 1000));
+      return res.status(429).json({ error: "Demasiados pedidos. Esperá un minuto y volvé a intentar." });
+    }
+    next();
+  };
+}
+app.use("/api/rooms/:roomId/pay", limitePorIp(30, 60_000));
+app.use("/api/webhook",           limitePorIp(300, 60_000));
+app.use("/api/",                  limitePorIp(600, 60_000));
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BLOQUE 0: PROXY DEL MANEJADOR DE AUTENTICACIÓN
@@ -33,15 +90,18 @@ app.use(cors());
 //
 // 🔧 FIREBASE_AUTH_DOMAIN sigue siendo el dominio real de Firebase: es el
 //    destino del reenvío, no lo que se le informa al navegador.
+//
+// 🔒 Solo existe con AUTH_HANDLER_PROPIO=true, solo acepta GET y nunca reenvía
+//    cookies ni el token de sesión.
 // ═══════════════════════════════════════════════════════════════════════════════
-app.use(["/__/auth", "/__/firebase"], async (req, res) => {
+if (process.env.AUTH_HANDLER_PROPIO === "true") app.use(["/__/auth", "/__/firebase"], async (req, res) => {
   const upstream = process.env.FIREBASE_AUTH_DOMAIN || "";
   if (!upstream) return res.status(500).send("Falta FIREBASE_AUTH_DOMAIN");
+  if (req.method !== "GET" && req.method !== "HEAD") return res.sendStatus(405);
   try {
     const cabeceras = {};
-    for (const [k, v] of Object.entries(req.headers)) {
-      if (["host", "connection", "content-length", "accept-encoding"].includes(k)) continue;
-      cabeceras[k] = v;
+    for (const k of ["accept", "accept-language", "user-agent", "if-none-match", "if-modified-since"]) {
+      if (req.headers[k]) cabeceras[k] = req.headers[k];
     }
     const respuesta = await fetch(`https://${upstream}${req.originalUrl}`, {
       method: req.method,
@@ -114,12 +174,8 @@ const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "infinitysolutions.arg@gmail.com
 // si no está seteada, directamente no se crea la cuenta sola.
 const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "";
 
-// Resultado del último arranque, consultable en /api/admin/bootstrap-status.
-// No contiene ningún secreto: solo dice qué pasó con la cuenta.
+// Resultado del último arranque (solo queda en los logs).
 let adminBootstrap = "pendiente";
-// Hora en que arrancó este proceso: permite saber si un cambio de variables
-// de entorno ya tomó efecto (Render solo las lee al reiniciar).
-const arrancoEn = new Date().toISOString();
 
 // Mientras ADMIN_SEED_PASSWORD esté cargada, la cuenta admin queda con ESA
 // contraseña en cada arranque: si no existe la crea, y si ya existía (por
@@ -157,19 +213,36 @@ async function ensureAdminAccount() {
 ensureAdminAccount();
 
 // Colecciones de Firestore
-//   rooms/{roomId}     → cada sala (con su adminUid, participantes, etc.)
-//   mpTokens/{uid}     → el token de Mercado Pago conectado por cada admin
+//   rooms/{roomId}       → cada sala (con su adminUid, participantes, etc.)
+//   mpTokens/{uid}       → el token de Mercado Pago conectado por cada admin
+//   oauthStates/{state}  → autorizaciones de MP en curso (un solo uso, 10 min)
+//   auditLog/{auto}      → registro de acciones sensibles (solo lo escribe el servidor)
 const roomsCol   = () => db.collection("rooms");
 const tokensCol  = () => db.collection("mpTokens");
-const makeRoomId = () => Math.random().toString(36).slice(2, 8).toUpperCase();
+const statesCol  = () => db.collection("oauthStates");
+const auditCol   = () => db.collection("auditLog");
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// BLOQUE 2: MERCADO PAGO (token del servidor — fallback)
-// 🔧 MP_ACCESS_TOKEN: token de tu cuenta de MP (credenciales en el panel de MP)
-// ═══════════════════════════════════════════════════════════════════════════════
-const defaultMpClient = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN || ""
-});
+// ID de sala aleatorio de verdad (crypto, no Math.random): 10 caracteres sin
+// letras que se confundan (0/O, 1/I/L).
+const ID_ALFABETO = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const makeRoomId = () => Array.from(crypto.randomBytes(10), b => ID_ALFABETO[b % ID_ALFABETO.length]).join("");
+
+// IDs válidos en la URL. Corta de raíz cosas como "a%2Fb" (Express decodifica
+// la barra y Firestore la tomaría como una subcolección).
+const ID_VALIDO = /^[A-Za-z0-9]{1,32}$/;
+for (const nombre of ["id", "roomId", "participantId"]) {
+  app.param(nombre, (req, res, next, valor) =>
+    ID_VALIDO.test(valor) ? next() : res.status(400).json({ error: "ID inválido" }));
+}
+
+// Registro de auditoría: quién hizo qué y desde dónde. Nunca bloquea la
+// respuesta y nunca guarda tokens.
+function audit(evento, datos = {}, req = null) {
+  if (!db) return;
+  const ip = req ? (req.get("cf-connecting-ip") || req.ip || "") : "";
+  auditCol().add({ evento, ...datos, ip, fecha: new Date().toISOString() })
+    .catch(err => console.error("No se pudo escribir el log de auditoría:", err.message));
+}
 
 // ─── Middleware: verificar token de Firebase del admin ────────────────────────
 async function requireAdmin(req, res, next) {
@@ -178,6 +251,7 @@ async function requireAdmin(req, res, next) {
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!token) return res.status(401).json({ error: "No autorizado — token faltante" });
   try {
+    req.idToken = token;
     req.user = await admin.auth().verifyIdToken(token);
     next();
   } catch {
@@ -188,7 +262,7 @@ async function requireAdmin(req, res, next) {
 // Como requireAdmin, pero además exige que el email coincida con ADMIN_EMAIL.
 // Se usa SOLO para el panel de usuarios: tener sesión no alcanza, hay que ser
 // el admin del panel.
-function requireSuperAdmin(req, res, next) {
+async function requireSuperAdmin(req, res, next) {
   const email = (req.user?.email || "").toLowerCase();
   // El email solo prueba identidad si está VERIFICADO. El registro con email y
   // contraseña no verifica nada: sin este chequeo, cualquiera podría crear una
@@ -196,16 +270,59 @@ function requireSuperAdmin(req, res, next) {
   // Entrar con Google lo da por verificado; la cuenta que crea el servidor
   // también.
   if (email !== ADMIN_EMAIL || req.user?.email_verified !== true) {
+    audit("panel_admin_denegado", { uid: req.user?.uid || "", email }, req);
     return res.status(403).json({ error: "No tenés permiso para ver esto" });
+  }
+  // Para el panel también se exige que la sesión no haya sido revocada
+  // (cambio de contraseña, cuenta deshabilitada o "cerrar todas las sesiones").
+  try {
+    await admin.auth().verifyIdToken(req.idToken, true);
+  } catch {
+    return res.status(401).json({ error: "Tu sesión ya no es válida. Volvé a ingresar." });
   }
   next();
 }
 
-// Quita el token de MP antes de mandar la sala al cliente (seguridad)
+// Sala para su organizador: todo menos el token de MP.
 function safeRoom(room) {
   if (!room) return room;
   const { mpAccessToken, ...rest } = room;
   return rest;
+}
+
+// Sala para cualquiera que tenga el link: además se ocultan el uid del
+// organizador y los IDs de los pagos.
+function publicRoom(room) {
+  if (!room) return room;
+  const { mpAccessToken, adminUid, ...rest } = room;
+  return { ...rest, participants: (rest.participants || []).map(({ paymentId, ...p }) => p) };
+}
+
+// Token de MP con el que cobra una sala: el que el organizador tiene conectado
+// hoy. Las salas viejas guardaban su propia copia; se usa solo como respaldo.
+async function credencialesDeSala(room) {
+  const doc = await tokensCol().doc(String(room.adminUid)).get();
+  if (doc.exists && doc.data().accessToken) {
+    return [{ accessToken: doc.data().accessToken, userId: String(doc.data().userId || "") },
+            ...(room.mpAccessToken && room.mpAccessToken !== doc.data().accessToken
+              ? [{ accessToken: room.mpAccessToken, userId: "" }] : [])];
+  }
+  return room.mpAccessToken ? [{ accessToken: room.mpAccessToken, userId: "" }] : [];
+}
+
+// Marca un participante como pagado dentro de una transacción: si llegan dos
+// pagos juntos, ninguno pisa al otro.
+async function marcarPagado(ref, participantId, paymentId) {
+  return db.runTransaction(async t => {
+    const snap = await t.get(ref);
+    if (!snap.exists) return null;
+    const room = snap.data();
+    const participants = room.participants.map(p =>
+      p.id === participantId && !p.paid
+        ? { ...p, paid: true, paymentId, paidAt: new Date().toISOString() } : p);
+    t.update(ref, { participants });
+    return { ...room, participants };
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -236,7 +353,7 @@ app.get("/api/rooms/:id", async (req, res) => {
   try {
     const doc = await roomsCol().doc(req.params.id).get();
     if (!doc.exists) return res.status(404).json({ error: "Sala no encontrada" });
-    res.json(safeRoom(doc.data()));
+    res.json(publicRoom(doc.data()));
   } catch (err) {
     console.error("Error obteniendo sala:", err);
     res.status(500).json({ error: "Error del servidor" });
@@ -248,26 +365,60 @@ app.get("/api/rooms/:id", async (req, res) => {
 // 🔧 Requiere MP_CLIENT_ID y MP_CLIENT_SECRET en .env
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Genera la URL de autorización de MP
-app.get("/api/mp-oauth/url", requireAdmin, (req, res) => {
-  const clientId    = process.env.MP_CLIENT_ID || "";
-  const redirectUri = encodeURIComponent(`${PUBLIC_URL}/api/mp-oauth/callback`);
-  const state       = req.user.uid; // para saber a qué admin guardar el token
+// Genera la URL de autorización de MP.
+//
+// 🔒 El "state" es un valor aleatorio de un solo uso guardado en el servidor,
+//    NO el uid. Antes era el uid (que además era público), y cualquiera podía
+//    terminar una autorización con SU cuenta de MP poniendo el uid de otro
+//    organizador: los cobros de esa persona pasaban a su cuenta.
+const STATE_VIGENCIA_MS = 10 * 60 * 1000;
+app.get("/api/mp-oauth/url", requireAdmin, async (req, res) => {
+  const clientId = process.env.MP_CLIENT_ID || "";
   if (!clientId) return res.status(500).json({ error: "MP_CLIENT_ID no configurado en .env" });
-  // Pedimos los permisos necesarios para cobrar en nombre del admin.
-  // offline_access → devuelve un refresh_token para que la conexión no expire.
-  const scope = encodeURIComponent("offline_access read write");
-  const url = `https://auth.mercadopago.com/authorization?` +
-    `client_id=${clientId}&response_type=code&platform_id=mp` +
-    `&scope=${scope}` +
-    `&redirect_uri=${redirectUri}&state=${state}`;
-  res.json({ url });
+  try {
+    const state = crypto.randomBytes(32).toString("hex");
+    await statesCol().doc(state).set({ uid: req.user.uid, expiresAt: Date.now() + STATE_VIGENCIA_MS });
+    // Pedimos los permisos necesarios para cobrar en nombre del admin.
+    // offline_access → devuelve un refresh_token para que la conexión no expire.
+    const params = new URLSearchParams({
+      client_id: clientId, response_type: "code", platform_id: "mp",
+      scope: "offline_access read write",
+      redirect_uri: `${PUBLIC_URL}/api/mp-oauth/callback`,
+      state,
+    });
+    res.json({ url: `https://auth.mercadopago.com/authorization?${params}` });
+  } catch (err) {
+    console.error("Error preparando OAuth MP:", err);
+    res.status(500).json({ error: "No se pudo iniciar la conexión con Mercado Pago" });
+  }
 });
+
+// Toma el state y lo borra en la misma transacción: sirve una sola vez.
+// Devuelve el uid que lo pidió, o null si no existe o venció.
+async function consumirState(state) {
+  if (typeof state !== "string" || !/^[a-f0-9]{64}$/.test(state)) return null;
+  try {
+    return await db.runTransaction(async t => {
+      const ref = statesCol().doc(state);
+      const snap = await t.get(ref);
+      if (!snap.exists) return null;
+      t.delete(ref);
+      const { uid, expiresAt } = snap.data();
+      return expiresAt > Date.now() ? uid : null;
+    });
+  } catch { return null; }
+}
 
 // Callback de MP: intercambia el código por el token del admin y lo guarda en Firestore
 app.get("/api/mp-oauth/callback", async (req, res) => {
-  const { code, state: adminUid } = req.query;
-  if (!code || !adminUid) return res.redirect(`/?mp_error=no_code`);
+  const { code } = req.query;
+  if (typeof code !== "string" || !code) return res.redirect(`/?mp_error=no_code`);
+  // El uid sale del state guardado por NOSOTROS, nunca de la URL.
+  const adminUid = db ? await consumirState(req.query.state) : null;
+  if (!adminUid) {
+    audit("oauth_state_invalido", {}, req);
+    return res.redirect(`/?mp_error=state_invalido`);
+  }
   try {
     const response = await fetch("https://api.mercadopago.com/oauth/token", {
       method: "POST",
@@ -288,14 +439,22 @@ app.get("/api/mp-oauth/callback", async (req, res) => {
     });
     const userData = await userRes.json();
 
+    // Si ya había otra cuenta de MP conectada, queda registrado el cambio.
+    const anterior = await tokensCol().doc(String(adminUid)).get();
+    const userIdAnterior = anterior.exists ? String(anterior.data().userId || "") : "";
+    const userId = String(tokenData.user_id || "");
+
     // Guardamos el token del admin en Firestore (persistente)
     await tokensCol().doc(String(adminUid)).set({
       accessToken:  tokenData.access_token,
       refreshToken: tokenData.refresh_token || null, // para renovar sin re-autorizar
-      userId:       String(tokenData.user_id || ""),
-      nickname:     userData.nickname || userData.email || "tu cuenta",
+      userId,
+      // Nunca el email como respaldo: este nombre se muestra a los invitados.
+      nickname:     userData.nickname || "tu cuenta",
       connectedAt:  new Date().toISOString(),
     });
+    audit(userIdAnterior && userIdAnterior !== userId ? "mp_cuenta_cambiada" : "mp_conectado",
+      { uid: adminUid, mpUserId: userId, mpUserIdAnterior: userIdAnterior, nickname: userData.nickname || "" }, req);
 
     res.redirect(`/?mp_connected=true`);
   } catch (err) {
@@ -318,6 +477,7 @@ app.get("/api/mp-oauth/status", requireAdmin, async (req, res) => {
 // Desconectar MP
 app.post("/api/mp-oauth/disconnect", requireAdmin, async (req, res) => {
   try { await tokensCol().doc(req.user.uid).delete(); } catch {}
+  audit("mp_desconectado", { uid: req.user.uid }, req);
   res.json({ ok: true });
 });
 
@@ -332,12 +492,8 @@ app.post("/api/mp-oauth/disconnect", requireAdmin, async (req, res) => {
 // y si conectó su Mercado Pago), para que el panel diga algo útil y no solo
 // una lista de emails.
 // ═══════════════════════════════════════════════════════════════════════════════
-// Diagnóstico público y sin secretos: qué pasó con la cuenta admin al arrancar.
-app.get("/api/admin/bootstrap-status", (req, res) => {
-  res.json({ estado: adminBootstrap, arrancoEn });
-});
-
 app.get("/api/admin/users", requireAdmin, requireSuperAdmin, async (req, res) => {
+  audit("panel_admin", { uid: req.user.uid, email: req.user.email }, req);
   try {
     // listUsers pagina de a 1000; juntamos varias páginas por si hiciera falta.
     let users = [], pageToken;
@@ -395,11 +551,28 @@ app.get("/api/rooms", requireAdmin, async (req, res) => {
   }
 });
 
+// Valida lo que llega para crear una sala. Devuelve { sala } o { error }.
+// Los límites coinciden con los del formulario (60 y 30 caracteres).
+function validarSala(body) {
+  const { title, total, participants } = body || {};
+  const titulo = typeof title === "string" ? title.trim() : "";
+  const monto  = Number(total);
+  const nombres = Array.isArray(participants)
+    ? participants.map(n => typeof n === "string" ? n.trim() : "") : [];
+  if (!titulo || titulo.length > 60) return { error: "El nombre de la sala tiene que tener entre 1 y 60 caracteres." };
+  if (!Number.isInteger(monto) || monto < 1 || monto > 100_000_000) return { error: "El total tiene que ser un número entero válido." };
+  if (nombres.length < 2 || nombres.length > 100) return { error: "Tiene que haber entre 2 y 100 personas." };
+  if (nombres.some(n => !n || n.length > 30)) return { error: "Hay un nombre vacío o de más de 30 caracteres." };
+  if (new Set(nombres).size !== nombres.length) return { error: "Hay nombres repetidos." };
+  if (Math.round(monto / nombres.length) < 1) return { error: "El total es muy chico para dividirlo entre tantas personas." };
+  return { sala: { title: titulo, total: monto, participants: nombres } };
+}
+
 // Crear sala (queda guardada en Firestore, asociada al admin)
 app.post("/api/rooms", requireAdmin, async (req, res) => {
-  const { title, total, participants } = req.body;
-  if (!title || !total || !Array.isArray(participants) || participants.length < 2)
-    return res.status(400).json({ error: "Datos incompletos" });
+  const { sala, error } = validarSala(req.body);
+  if (error) return res.status(400).json({ error });
+  const { title, total, participants } = sala;
   try {
     const uid = req.user.uid;
     const id  = makeRoomId();
@@ -417,17 +590,20 @@ app.post("/api/rooms", requireAdmin, async (req, res) => {
       });
     }
 
+    // El token de MP NO se copia a la sala: vive solo en mpTokens/{uid} y se
+    // busca al cobrar. Así "Desconectar" desconecta de verdad.
     const room = {
       id, title, total,
       mpAlias,
-      mpAccessToken: mpToken || null, // guardado pero nunca enviado al cliente
       adminUid:      uid,
       createdAt:     new Date().toISOString(),
       participants:  participants.map((name, i) => ({
         id: String(i + 1), name, paid: false, paymentId: null, paidAt: null,
       })),
     };
-    await roomsCol().doc(id).set(room);
+    // create() falla si el ID ya existe, en vez de pisar la sala de otro.
+    await roomsCol().doc(id).create(room);
+    audit("sala_creada", { uid, sala: id }, req);
     res.json({ ...safeRoom(room), shareUrl: `${PUBLIC_URL}/?room=${id}` });
   } catch (err) {
     console.error("Error creando sala:", err);
@@ -442,7 +618,9 @@ app.patch("/api/rooms/:id/alias", requireAdmin, async (req, res) => {
     const doc = await ref.get();
     if (!doc.exists) return res.status(404).json({ error: "Sala no encontrada" });
     if (doc.data().adminUid !== req.user.uid) return res.status(403).json({ error: "No autorizado" });
-    await ref.update({ mpAlias: (req.body.alias || "").trim() });
+    const alias = typeof req.body.alias === "string" ? req.body.alias.trim() : "";
+    if (alias.length > 60) return res.status(400).json({ error: "El alias es muy largo" });
+    await ref.update({ mpAlias: alias });
     const updated = (await ref.get()).data();
     res.json(safeRoom(updated));
   } catch (err) {
@@ -454,8 +632,8 @@ app.patch("/api/rooms/:id/alias", requireAdmin, async (req, res) => {
 // Marcar participante como pagado en efectivo (solo admin)
 // ═══════════════════════════════════════════════════════════════════════════════
 // Eliminar una sala.
-// Solo la puede borrar el admin que la creó, y solo mientras siga ABIERTA:
-// una vez que pagaron todos, la sala queda como constancia y no se elimina.
+// Solo la puede borrar el admin que la creó, y solo mientras NADIE haya pagado:
+// en cuanto entra un pago, la sala queda como constancia de ese cobro.
 // ═══════════════════════════════════════════════════════════════════════════════
 app.delete("/api/rooms/:id", requireAdmin, async (req, res) => {
   try {
@@ -467,14 +645,14 @@ app.delete("/api/rooms/:id", requireAdmin, async (req, res) => {
     if (room.adminUid !== req.user.uid)
       return res.status(403).json({ error: "Esta sala no es tuya" });
 
-    const cerrada = Array.isArray(room.participants) && room.participants.length > 0
-      && room.participants.every(p => p.paid);
-    if (cerrada)
+    const conPagos = Array.isArray(room.participants) && room.participants.some(p => p.paid);
+    if (conPagos)
       return res.status(409).json({
-        error: "La sala está cerrada: queda como constancia de que pagaron todos.",
+        error: "Esta sala ya tiene pagos registrados: queda como constancia y no se puede eliminar.",
       });
 
     await ref.delete();
+    audit("sala_borrada", { uid: req.user.uid, sala: req.params.id, titulo: room.title }, req);
     res.json({ ok: true, id: req.params.id });
   } catch (err) {
     console.error("Error eliminando sala:", err);
@@ -487,15 +665,11 @@ app.post("/api/rooms/:roomId/mark-paid/:participantId", requireAdmin, async (req
     const ref = roomsCol().doc(req.params.roomId);
     const doc = await ref.get();
     if (!doc.exists) return res.status(404).json({ error: "Sala no encontrada" });
-    const room = doc.data();
-    if (room.adminUid !== req.user.uid) return res.status(403).json({ error: "No autorizado" });
-    const participants = room.participants.map(p =>
-      p.id === req.params.participantId
-        ? { ...p, paid: true, paymentId: "efectivo", paidAt: new Date().toISOString() }
-        : p
-    );
-    await ref.update({ participants });
-    res.json(safeRoom({ ...room, participants }));
+    if (doc.data().adminUid !== req.user.uid) return res.status(403).json({ error: "No autorizado" });
+    const room = await marcarPagado(ref, req.params.participantId, "efectivo");
+    if (!room) return res.status(404).json({ error: "Sala no encontrada" });
+    audit("pago_efectivo", { uid: req.user.uid, sala: req.params.roomId, participante: req.params.participantId }, req);
+    res.json(safeRoom(room));
   } catch (err) {
     console.error("Error marcando pago:", err);
     res.status(500).json({ error: "Error del servidor" });
@@ -517,10 +691,11 @@ app.post("/api/rooms/:roomId/pay/:participantId", async (req, res) => {
 
     const amount = Math.round(room.total / room.participants.length);
 
-    // ⚠️  Sin respaldo al token del servidor A PROPÓSITO. Si esta sala no tiene
-    //     el token de su propio admin, cobrar con el del servidor mandaría la
-    //     plata de estos invitados a la cuenta equivocada. Mejor fallar.
-    const tokenToUse = room.mpAccessToken || "";
+    // ⚠️  Sin respaldo al token del servidor A PROPÓSITO. Si el organizador no
+    //     tiene su Mercado Pago conectado, cobrar con el del servidor mandaría
+    //     la plata de estos invitados a la cuenta equivocada. Mejor fallar.
+    const [cred] = await credencialesDeSala(room);
+    const tokenToUse = cred?.accessToken || "";
     if (!tokenToUse) {
       return res.status(409).json({
         error: "El organizador de esta sala todavía no conectó su Mercado Pago. Pedile que lo haga y volvé a intentar.",
@@ -538,7 +713,7 @@ app.post("/api/rooms/:roomId/pay/:participantId", async (req, res) => {
         external_reference: `${room.id}:${p.id}`,
         // 📡 WEBHOOK: incluimos el roomId en la URL para que la verificación
         // use el token del admin de ESA sala (crítico para multi-usuario)
-        notification_url: `${PUBLIC_URL}/api/webhook?roomId=${room.id}`,
+        notification_url: `${PUBLIC_URL}/api/webhook?roomId=${encodeURIComponent(room.id)}`,
         back_urls: {
           success: `${PUBLIC_URL}/?room=${room.id}&pago=ok`,
           failure: `${PUBLIC_URL}/?room=${room.id}&pago=error`,
@@ -557,67 +732,89 @@ app.post("/api/rooms/:roomId/pay/:participantId", async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 // BLOQUE 7: WEBHOOK DE MERCADO PAGO (confirma pagos automáticamente)
 // Actualiza la sala en Firestore cuando MP confirma un pago.
+//
+// 🔒 Reglas (antes no existían y se podía marcar como pagado a alguien de
+//    OTRA sala pagándose a uno mismo):
+//    - La sala es la de la URL y la referencia del pago tiene que ser ESA sala.
+//    - El pago se consulta solo con el token del organizador de esa sala
+//      (nunca con el del servidor).
+//    - El cobro tiene que haber ido a la cuenta de MP de ese organizador, en
+//      pesos y por el monto de la cuota.
+//    - Si está MP_WEBHOOK_SECRET (panel de MP → Webhooks → clave secreta), se
+//      exige la firma x-signature.
 // ═══════════════════════════════════════════════════════════════════════════════
+function firmaWebhookValida(req, secreto) {
+  const partes = {};
+  for (const p of String(req.get("x-signature") || "").split(",")) {
+    const [k, v] = p.split("=").map(s => (s || "").trim());
+    if (k && v) partes[k] = v;
+  }
+  if (!partes.ts || !partes.v1) return false;
+  // Formato de MP: id:<data.id>;request-id:<x-request-id>;ts:<ts>; (se omite lo que no venga)
+  const dataId = String(req.query["data.id"] || "").toLowerCase();
+  const reqId  = req.get("x-request-id") || "";
+  const manifest = (dataId ? `id:${dataId};` : "") + (reqId ? `request-id:${reqId};` : "") + `ts:${partes.ts};`;
+  const esperado = Buffer.from(crypto.createHmac("sha256", secreto).update(manifest).digest("hex"));
+  const recibido = Buffer.from(partes.v1);
+  return esperado.length === recibido.length && crypto.timingSafeEqual(esperado, recibido);
+}
+
 app.post("/api/webhook", async (req, res) => {
-  res.sendStatus(200); // responder rápido siempre
+  const secreto = process.env.MP_WEBHOOK_SECRET || "";
+  if (secreto && !firmaWebhookValida(req, secreto)) {
+    audit("webhook_rechazado", { motivo: "firma_invalida" }, req);
+    return res.sendStatus(401);
+  }
   try {
     const topic     = req.query.topic || req.query.type || req.body?.type;
-    const paymentId = req.query["data.id"] || req.body?.data?.id;
-    if (topic !== "payment" || !paymentId) return;
+    const paymentId = String(req.query["data.id"] || req.body?.data?.id || "");
+    const roomId    = String(req.query.roomId || "");
+    // Avisos que no son de pagos (o sin sala) no tienen nada que hacer acá.
+    if (topic !== "payment" || !/^\d{1,24}$/.test(paymentId) || !ID_VALIDO.test(roomId))
+      return res.sendStatus(200);
 
-    // El roomId viene en la URL del webhook (lo pusimos al crear la preferencia).
-    // Lo necesitamos ANTES de verificar, para usar el token del admin correcto.
-    const roomIdFromQuery = req.query.roomId || null;
+    const ref  = roomsCol().doc(roomId);
+    const snap = await ref.get();
+    if (!snap.exists) return res.sendStatus(200);
+    const room = snap.data();
 
-    // Función que verifica el pago con un token dado
-    async function getPaymentInfo(accessToken) {
-      const client  = accessToken ? new MercadoPagoConfig({ accessToken }) : defaultMpClient;
-      const payment = new Payment(client);
-      return payment.get({ id: paymentId });
-    }
-
-    let info = null;
-    let room = null;
-    let ref  = null;
-
-    if (roomIdFromQuery) {
-      // Camino principal: cargamos la sala y verificamos con SU token
-      ref = roomsCol().doc(roomIdFromQuery);
-      const doc = await ref.get();
-      if (doc.exists) {
-        room = doc.data();
-        try {
-          info = await getPaymentInfo(room.mpAccessToken || process.env.MP_ACCESS_TOKEN);
-        } catch (e) {
-          // fallback: intentar con el token del servidor
-          info = await getPaymentInfo(process.env.MP_ACCESS_TOKEN);
-        }
-      }
+    // Consultamos el pago con el token de ESTE organizador (y nada más).
+    let info = null, cred = null;
+    for (const c of await credencialesDeSala(room)) {
+      try { info = await new Payment(new MercadoPagoConfig({ accessToken: c.accessToken })).get({ id: paymentId }); cred = c; break; }
+      catch { /* probar con la siguiente credencial del mismo organizador */ }
     }
     if (!info) {
-      // Camino de respaldo (webhooks viejos sin roomId): token del servidor
-      info = await getPaymentInfo(process.env.MP_ACCESS_TOKEN);
+      audit("webhook_rechazado", { motivo: "pago_no_visible_para_el_organizador", sala: roomId, pago: paymentId }, req);
+      return res.sendStatus(200);
     }
-    if (!info || info.status !== "approved") return;
+    if (info.status !== "approved") return res.sendStatus(200);
 
-    // Identificar sala y participante desde la referencia del pago
-    const [roomId, participantId] = (info.external_reference || "").split(":");
-    if (!room || room.id !== roomId) {
-      ref = roomsCol().doc(roomId);
-      const doc = await ref.get();
-      if (!doc.exists) return;
-      room = doc.data();
+    const [refRoom, participantId] = String(info.external_reference || "").split(":");
+    const participante = room.participants.find(p => p.id === participantId);
+    const cuota = Math.round(room.total / room.participants.length);
+    const motivo =
+        refRoom !== room.id                                   ? "referencia_de_otra_sala"
+      : !participante                                         ? "participante_inexistente"
+      : cred.userId && info.collector_id != null && String(info.collector_id) !== cred.userId
+                                                              ? "cobro_a_otra_cuenta"
+      : info.currency_id !== "ARS"                            ? "moneda"
+      : !(Number(info.transaction_amount) >= cuota)           ? "monto_menor"
+      : null;
+    if (motivo) {
+      audit("webhook_rechazado", { motivo, sala: roomId, pago: paymentId, referencia: String(info.external_reference || "") }, req);
+      return res.sendStatus(200);
     }
 
-    const participants = room.participants.map(p =>
-      p.id === participantId && !p.paid
-        ? { ...p, paid: true, paymentId: String(paymentId), paidAt: new Date().toISOString() }
-        : p
-    );
-    await ref.update({ participants });
-    console.log(`✅ Pago confirmado en Firestore: ${room.title} — participante ${participantId}`);
+    await marcarPagado(ref, participantId, paymentId);
+    audit("pago_confirmado", { sala: roomId, participante: participantId, pago: paymentId, monto: info.transaction_amount }, req);
+    console.log(`✅ Pago confirmado en Firestore: sala ${roomId} — participante ${participantId}`);
+    res.sendStatus(200);
   } catch (err) {
-    console.error("Error en webhook MP:", err);
+    // 500 → Mercado Pago reintenta más tarde (antes se respondía 200 de entrada
+    // y un error dejaba el pago sin marcar para siempre).
+    console.error("Error en webhook MP:", err.message);
+    res.sendStatus(500);
   }
 });
 
@@ -633,8 +830,8 @@ if (require.main === module) {
     console.log(`🌐 URL: ${PUBLIC_URL}`);
     console.log(`\nEstado de configuración:`);
     console.log(`  Firestore:  ${db ? "✅ conectado (salas persistentes)" : "❌ FALTA — las salas no se guardarán"}`);
-    console.log(`  MP Token:   ${process.env.MP_ACCESS_TOKEN ? "✅" : "❌ falta MP_ACCESS_TOKEN"}`);
-    console.log(`  MP OAuth:   ${process.env.MP_CLIENT_ID ? "✅" : "❌ falta MP_CLIENT_ID"}\n`);
+    console.log(`  MP OAuth:   ${process.env.MP_CLIENT_ID ? "✅" : "❌ falta MP_CLIENT_ID"}`);
+    console.log(`  Firma MP:   ${process.env.MP_WEBHOOK_SECRET ? "✅ se exige x-signature" : "⚠️  falta MP_WEBHOOK_SECRET (webhook sin firma)"}\n`);
   });
 }
 
