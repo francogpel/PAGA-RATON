@@ -857,8 +857,14 @@ app.post("/api/rooms/:roomId/pay/:participantId", async (req, res) => {
 //      (nunca con el del servidor).
 //    - El cobro tiene que haber ido a la cuenta de MP de ese organizador, en
 //      pesos y por el monto de la cuota.
-//    - Si está MP_WEBHOOK_SECRET (panel de MP → Webhooks → clave secreta), se
-//      exige la firma x-signature.
+//    - Firma x-signature (panel de MP → Webhooks → clave secreta), en dos pasos:
+//        1. MP_WEBHOOK_SECRET sola: se verifica y se anota en auditLog
+//           ("webhook_firma", valida true/false), pero NO se rechaza nada.
+//           Sirve para confirmar que MP firma los avisos de la notification_url
+//           de cada pago antes de depender de eso.
+//        2. Además MP_WEBHOOK_FIRMA_OBLIGATORIA=true: sin firma válida → 401.
+//      Las otras reglas de arriba ya frenan los pagos falsos; la firma suma
+//      que nadie más que MP pueda siquiera disparar el webhook.
 // ═══════════════════════════════════════════════════════════════════════════════
 function firmaWebhookValida(req, secreto) {
   const partes = {};
@@ -878,9 +884,14 @@ function firmaWebhookValida(req, secreto) {
 
 app.post("/api/webhook", async (req, res) => {
   const secreto = process.env.MP_WEBHOOK_SECRET || "";
-  if (secreto && !firmaWebhookValida(req, secreto)) {
-    audit("webhook_rechazado", { motivo: "firma_invalida" }, req);
-    return res.sendStatus(401);
+  if (secreto) {
+    const valida = firmaWebhookValida(req, secreto);
+    audit("webhook_firma", {
+      valida, conFirma: !!req.get("x-signature"),
+      tipo: String(req.query.type || req.query.topic || req.body?.type || "").slice(0, 40),
+      conSala: !!req.query.roomId,
+    }, req);
+    if (!valida && process.env.MP_WEBHOOK_FIRMA_OBLIGATORIA === "true") return res.sendStatus(401);
   }
   try {
     const topic     = req.query.topic || req.query.type || req.body?.type;
@@ -948,7 +959,8 @@ if (require.main === module) {
     console.log(`\nEstado de configuración:`);
     console.log(`  Firestore:  ${db ? "✅ conectado (salas persistentes)" : "❌ FALTA — las salas no se guardarán"}`);
     console.log(`  MP OAuth:   ${process.env.MP_CLIENT_ID ? "✅" : "❌ falta MP_CLIENT_ID"}`);
-    console.log(`  Firma MP:   ${process.env.MP_WEBHOOK_SECRET ? "✅ se exige x-signature" : "⚠️  falta MP_WEBHOOK_SECRET (webhook sin firma)"}\n`);
+    console.log(`  Firma MP:   ${!process.env.MP_WEBHOOK_SECRET ? "⚠️  falta MP_WEBHOOK_SECRET (no se verifica)"
+      : process.env.MP_WEBHOOK_FIRMA_OBLIGATORIA === "true" ? "✅ se exige x-signature" : "👀 se verifica y se anota, sin rechazar"}\n`);
   });
 }
 
