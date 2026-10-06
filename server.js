@@ -17,6 +17,12 @@ const { getAuth }             = require("firebase-admin/auth");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 const { MercadoPagoConfig, Preference, Payment } = require("mercadopago");
 
+// Una promesa rechazada que nadie atrapó (por ejemplo, dentro de una librería
+// de Google) cerraría el proceso y con él la app entera. Se registra y se sigue.
+process.on("unhandledRejection", err => {
+  console.error("Promesa rechazada sin manejar:", err?.message || err);
+});
+
 const app = express();
 // Sin CORS a propósito: la app y la API viven en el mismo dominio, así que
 // ningún otro sitio necesita leer estas respuestas.
@@ -26,23 +32,33 @@ app.disable("x-powered-by");
 // CABECERAS DE SEGURIDAD
 // - frame-ancestors / X-Frame-Options: ningún OTRO sitio puede meter la app en un iframe
 //   (evita que engañen a alguien para tocar "Eliminar" o "Efectivo").
-// - La política completa de scripts va en modo "Report-Only": solo avisa en la
-//   consola. La app usa onclick en línea en todo el HTML; activarla en serio
-//   requiere probar login con Google, Mercado Pago y pagos antes.
+// - Content-Security-Policy: el navegador solo carga scripts, estilos,
+//   iframes y conexiones de los orígenes de esta lista. Aunque se colara un
+//   XSS, no podría traer código de otro dominio ni mandar datos afuera.
+//   'unsafe-inline' sigue porque toda la app usa onclick en línea.
+// - Las violaciones se registran en /api/csp-report (log de auditoría): si un
+//   cambio de Google o Firebase bloqueara algo, queda asentado.
 // - No se manda Cross-Origin-Opener-Policy: rompería el popup de Google.
 // ═══════════════════════════════════════════════════════════════════════════════
-const CSP_REPORT_ONLY = [
+const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: https:",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com",
+  "img-src 'self' data: https://*.googleusercontent.com",
+  "connect-src 'self' https://*.googleapis.com https://apis.google.com https://www.google.com https://*.firebaseio.com https://*.firebaseapp.com",
   "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com",
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  "upgrade-insecure-requests",
+  "report-uri /api/csp-report",
 ].join("; ");
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
-  res.setHeader("Content-Security-Policy-Report-Only", CSP_REPORT_ONLY);
+  res.setHeader("Content-Security-Policy", CSP);
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Cross-Origin-Resource-Policy", "same-site");
@@ -74,6 +90,7 @@ function limitePorIp(maximo, ventanaMs) {
     next();
   };
 }
+app.use("/api/csp-report",        limitePorIp(30, 60_000));
 app.use("/api/rooms/:roomId/pay", limitePorIp(30, 60_000));
 app.use("/api/webhook",           limitePorIp(300, 60_000));
 app.use("/api/",                  limitePorIp(600, 60_000));
@@ -124,6 +141,21 @@ if (process.env.AUTH_HANDLER_PROPIO === "true") app.use(["/__/auth", "/__/fireba
     res.status(502).send("No se pudo contactar a Firebase Auth");
   }
 });
+
+// Reportes de violaciones de la CSP (los manda el navegador solo).
+app.post("/api/csp-report",
+  express.json({ type: ["application/csp-report", "application/reports+json", "application/json"], limit: "10kb" }),
+  (req, res) => {
+    const r = req.body?.["csp-report"] || req.body?.[0]?.body || req.body || {};
+    const dato = v => String(v || "").slice(0, 300);
+    console.warn("CSP bloqueó:", dato(r["violated-directive"] || r.effectiveDirective), dato(r["blocked-uri"] || r.blockedURL));
+    audit("csp_violacion", {
+      directiva: dato(r["violated-directive"] || r.effectiveDirective),
+      bloqueado: dato(r["blocked-uri"] || r.blockedURL),
+      pagina:    dato(r["document-uri"] || r.documentURL).split("?")[0],
+    }, req);
+    res.sendStatus(204);
+  });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
